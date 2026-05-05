@@ -5,7 +5,7 @@ import '../../../../core/constants/text_styles.dart';
 class StudentAttendanceRow extends StatefulWidget {
   final String initials;
   final String name;
-  final String nis;
+  final String nisn;
   final String initialStatus; // 'Hadir', 'Izin', 'Sakit', 'Alpha'
   final bool isReadOnly;
 
@@ -13,7 +13,7 @@ class StudentAttendanceRow extends StatefulWidget {
     Key? key,
     required this.initials,
     required this.name,
-    required this.nis,
+    required this.nisn,
     this.initialStatus = 'Hadir',
     this.isReadOnly = false,
   }) : super(key: key);
@@ -67,7 +67,7 @@ class _StudentAttendanceRowState extends State<StudentAttendanceRow> {
                   style: AppTextStyles.cardTitle.copyWith(fontSize: 14),
                 ),
                 Text(
-                  'NIS: ${widget.nis}',
+                  'NISN: ${widget.nisn}',
                   style: AppTextStyles.cardSubtitle.copyWith(fontSize: 12),
                 ),
               ],
