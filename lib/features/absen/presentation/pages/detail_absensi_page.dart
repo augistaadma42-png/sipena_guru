@@ -28,15 +28,15 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
   int _resetCount = 0; // Digunakan untuk force rebuild child widgets saat reset
 
   final List<Map<String, dynamic>> _dummyStudents = [
-    {'initials': 'EF', 'name': 'Esa Farellio', 'nis': '2021001', 'status': 'Hadir'},
-    {'initials': 'AA', 'name': 'Augista A.Z', 'nis': '2021002', 'status': 'Izin'},
-    {'initials': 'FS', 'name': 'Feby Shandy I.', 'nis': '2021003', 'status': 'Sakit'},
-    {'initials': 'GK', 'name': 'Gavin K.H', 'nis': '2021004', 'status': 'Alpha'},
-    {'initials': 'FA', 'name': 'Fariskha A.F', 'nis': '2021005', 'status': 'Hadir'},
-    {'initials': 'DA', 'name': 'Devita A.V.P', 'nis': '2021006', 'status': 'Hadir'},
-    {'initials': 'AF', 'name': 'Anindya F.A', 'nis': '2021007', 'status': 'Hadir'},
-    {'initials': 'HA', 'name': 'Helmalia A', 'nis': '2021008', 'status': 'Hadir'},
-    {'initials': 'ER', 'name': 'Eka Rara A.A', 'nis': '2021009', 'status': 'Hadir'},
+    {'initials': 'EF', 'name': 'Esa Farellio', 'nisn': '2021001', 'status': 'Hadir'},
+    {'initials': 'AA', 'name': 'Augista A.Z', 'nisn': '2021002', 'status': 'Izin'},
+    {'initials': 'FS', 'name': 'Feby Shandy I.', 'nisn': '2021003', 'status': 'Sakit'},
+    {'initials': 'GK', 'name': 'Gavin K.H', 'nisn': '2021004', 'status': 'Alpha'},
+    {'initials': 'FA', 'name': 'Fariskha A.F', 'nisn': '2021005', 'status': 'Hadir'},
+    {'initials': 'DA', 'name': 'Devita A.V.P', 'nisn': '2021006', 'status': 'Hadir'},
+    {'initials': 'AF', 'name': 'Anindya F.A', 'nisn': '2021007', 'status': 'Hadir'},
+    {'initials': 'HA', 'name': 'Helmalia A', 'nisn': '2021008', 'status': 'Hadir'},
+    {'initials': 'ER', 'name': 'Eka Rara A.A', 'nisn': '2021009', 'status': 'Hadir'},
   ];
 
   void _simpanAbsensi() {
@@ -279,7 +279,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
               key: ValueKey('student_${index}_$_resetCount'),
               initials: student['initials'],
               name: student['name'],
-              nis: student['nis'],
+              nisn: student['nisn'],
               initialStatus: widget.isReadOnly ? student['status'] : initialStatus,
               isReadOnly: widget.isReadOnly,
             );
