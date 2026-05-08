@@ -57,7 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Senin, 24 Mei 2024 • Semester Genap',
+                'Senin, 24 Mei 2024 ',
                 style: GoogleFonts.inter(
                   fontSize: 16, // Diperbesar dari 14
                   fontWeight: FontWeight.w400,
