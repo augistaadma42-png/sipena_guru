@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/colors.dart';
@@ -6,6 +8,7 @@ import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_drawer.dart';
 import '../widgets/attendance_card.dart';
 import '../widgets/task_summary_card.dart';
+import 'package:intl/intl.dart';
 import '../../../absen/presentation/pages/detail_absensi_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -23,6 +26,26 @@ class _DashboardPageState extends State<DashboardPage> {
     _attendanceScrollController.dispose();
     super.dispose();
   }
+    String getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour < 12) {
+      return 'Selamat Pagi';
+    } else if (hour < 15) {
+      return 'Selamat Siang';
+    } else if (hour < 18) {
+      return 'Selamat Sore';
+    } else {
+      return 'Selamat Malam';
+    }
+  }
+
+  String getFormattedDate() {
+    return DateFormat(
+      'EEEE, dd MMMM yyyy',
+      'id_ID',
+    ).format(DateTime.now());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               // Greeting Section
               Text(
-                'Selamat Pagi,',
+                '${getGreeting()},',
                 style: GoogleFonts.inter(
                   fontSize: 28, // Diperbesar dari 24
                   fontWeight: FontWeight.w400,
@@ -57,7 +80,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Senin, 24 Mei 2024 ',
+                 getFormattedDate(),
                 style: GoogleFonts.inter(
                   fontSize: 16, // Diperbesar dari 14
                   fontWeight: FontWeight.w400,

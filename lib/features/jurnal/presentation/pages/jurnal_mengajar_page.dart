@@ -8,15 +8,28 @@ import '../widgets/jurnal_terbaru_timeline.dart';
 import 'rekap_jurnal_page.dart';
 
 class JurnalMengajarPage extends StatefulWidget {
-  const JurnalMengajarPage({Key? key}) : super(key: key);
+
+  final Map<String, String>? initialData;
+
+  const JurnalMengajarPage({
+    Key? key,
+    this.initialData,
+  }) : super(key: key);
 
   @override
-  State<JurnalMengajarPage> createState() => _JurnalMengajarPageState();
+  State<JurnalMengajarPage> createState() =>
+      _JurnalMengajarPageState();
 }
-
 class _JurnalMengajarPageState extends State<JurnalMengajarPage> {
   final ScrollController _scrollController = ScrollController();
   Map<String, String>? _editingJurnalData;
+  Map<String, String>? _autoFillData;
+
+  @override
+  void initState() {
+    super.initState();
+    _autoFillData = widget.initialData;
+  }
 
   void _handleEditJurnal(Map<String, String> data) {
     setState(() {
@@ -58,7 +71,9 @@ class _JurnalMengajarPageState extends State<JurnalMengajarPage> {
               const PanduanJurnalCard(),
               const SizedBox(height: 20),
               BuatJurnalForm(
-                initialData: _editingJurnalData,
+                initialData:
+                  _editingJurnalData ??
+                  _autoFillData,
                 onCancelEdit: _cancelEdit,
               ),
               const SizedBox(height: 20),
