@@ -20,7 +20,7 @@ class _ManajemenIzinPageState extends State<ManajemenIzinPage>
     {
       'id': '001',
       'initials': 'AA',
-      'nama': 'Augusta A.Z',
+      'nama': 'Augista A.Z',
       'nisn': '2001001',
       'kelas': 'XI RPL 1',
       'jenis': 'Izin',
@@ -32,7 +32,7 @@ class _ManajemenIzinPageState extends State<ManajemenIzinPage>
     {
       'id': '002',
       'initials': 'RS',
-      'nama': 'Reby Shandi S.',
+      'nama': 'Feby Shandi I.',
       'nisn': '2022002',
       'kelas': 'XI RPL 1',
       'jenis': 'Sakit',
@@ -44,7 +44,7 @@ class _ManajemenIzinPageState extends State<ManajemenIzinPage>
     {
       'id': '003',
       'initials': 'GK',
-      'nama': 'Savin K.H',
+      'nama': 'Gavin K.H',
       'nisn': '2022992',
       'kelas': 'XI RPL 2',
       'jenis': 'Dispen',
@@ -56,7 +56,7 @@ class _ManajemenIzinPageState extends State<ManajemenIzinPage>
     {
       'id': '004',
       'initials': 'FA',
-      'nama': 'Farisalha A.F',
+      'nama': 'Fariskha F.A',
       'nisn': '2001001',
       'kelas': 'X DKV 1',
       'jenis': 'Izin',
@@ -200,7 +200,7 @@ class _ManajemenIzinPageState extends State<ManajemenIzinPage>
   }
 }
 
-// ─── Tab Count Badge ────────────────────────────────────────────────────────
+
 
 class _CountBadge extends StatelessWidget {
   final int count;
@@ -224,7 +224,7 @@ class _CountBadge extends StatelessWidget {
   }
 }
 
-// ─── List Widget ─────────────────────────────────────────────────────────────
+
 
 class _PengajuanList extends StatelessWidget {
   final List<Map<String, dynamic>> items;
@@ -279,7 +279,7 @@ class _PengajuanList extends StatelessWidget {
   }
 }
 
-// ─── Card Widget ─────────────────────────────────────────────────────────────
+
 
 class _PengajuanCard extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -512,8 +512,6 @@ class _PengajuanCard extends StatelessWidget {
     );
   }
 }
-
-// ─── Bottom Sheet Lihat Bukti ─────────────────────────────────────────────
 
 class _BuktiBottomSheet extends StatelessWidget {
   final Map<String, dynamic> item;
