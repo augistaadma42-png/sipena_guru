@@ -288,7 +288,7 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
   }
 }
 
-// ─── List ─────────────────────────────────────────────────────────────────
+// ─── List 
 
 class _IzinList extends StatelessWidget {
   final List<Map<String, dynamic>> items;
@@ -334,7 +334,7 @@ class _IzinList extends StatelessWidget {
   }
 }
 
-// ─── Card ─────────────────────────────────────────────────────────────────
+// ─── Card 
 
 class _IzinCard extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -547,7 +547,7 @@ class _IzinCard extends StatelessWidget {
   }
 }
 
-// ─── Bottom Sheet Bukti ─────────────────────────────────────────────────────
+// ─── Bottom Sheet Bukti
 
 class _BuktiSheet extends StatelessWidget {
   final Map<String, dynamic> item;

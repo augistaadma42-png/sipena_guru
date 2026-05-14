@@ -100,7 +100,7 @@ class _PengaturanNotifikasiPageState extends State<PengaturanNotifikasiPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Notifikasi Internal ─────────────────────────────────────
+            // ── Notifikasi Internal
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -242,7 +242,7 @@ class _PengaturanNotifikasiPageState extends State<PengaturanNotifikasiPage> {
             ),
             const SizedBox(height: 20),
 
-            // ── Notifikasi Email (Opsional) ──────────────────────────────
+            // ── Notifikasi Email 
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(

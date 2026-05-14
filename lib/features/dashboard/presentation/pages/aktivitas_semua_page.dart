@@ -30,10 +30,15 @@ class _AktivitasSemuaState extends State<AktivitasSemua> {
     {'tanggal': DateTime(2026, 5, 7), 'jam': '19.00', 'deskripsi': 'Password diubah', 'jenis': 'sistem', 'icon': Icons.lock_outline},
     {'tanggal': DateTime(2026, 5, 7), 'jam': '07.00', 'deskripsi': 'Mengisi Absensi XI RPL 1', 'jenis': 'absensi', 'icon': Icons.fact_check_outlined},
     {'tanggal': DateTime(2026, 5, 6), 'jam': '08.00', 'deskripsi': 'Mengedit absensi XI DKV 2', 'jenis': 'absensi', 'icon': Icons.edit_note_outlined},
-    {'tanggal': DateTime(2026, 5, 6), 'jam': '09.00', 'deskripsi': 'Mengisi Jurnal XI RPL 1', 'jenis': 'jurnal', 'icon': Icons.book_outlined},
-    {'tanggal': DateTime(2026, 5, 5), 'jam': '10.00', 'deskripsi': 'Menambah tugas Matematika', 'jenis': 'tugas', 'icon': Icons.assignment_outlined},
-    {'tanggal': DateTime(2026, 5, 5), 'jam': '14.00', 'deskripsi': 'Menilai tugas XI RPL 2', 'jenis': 'nilai', 'icon': Icons.grade_outlined},
-    {'tanggal': DateTime(2026, 5, 4), 'jam': '08.30', 'deskripsi': 'Menyetujui izin Augusta A.Z', 'jenis': 'pengajuan', 'icon': Icons.check_circle_outline},
+    {'tanggal': DateTime(2026, 5, 6), 'jam': '09.00', 'deskripsi': 'Membuat jurnal XI RPL 1', 'jenis': 'jurnal', 'icon': Icons.book_outlined},
+    {'tanggal': DateTime(2026, 5, 5), 'jam': '10.00', 'deskripsi': 'Membuat tugas baru — Latihan Soal Bab 3', 'jenis': 'tugas', 'icon': Icons.assignment_outlined},
+    {'tanggal': DateTime(2026, 5, 5), 'jam': '10.30', 'deskripsi': 'Mengubah deadline tugas — Kuis Harian', 'jenis': 'tugas', 'icon': Icons.edit_calendar_outlined},
+    {'tanggal': DateTime(2026, 5, 5), 'jam': '11.00', 'deskripsi': 'Menghapus tugas — Tugas Prakarya', 'jenis': 'tugas', 'icon': Icons.delete_outline},
+    {'tanggal': DateTime(2026, 5, 5), 'jam': '14.00', 'deskripsi': 'Menginput nilai tugas XI RPL 2', 'jenis': 'nilai', 'icon': Icons.grade_outlined},
+    {'tanggal': DateTime(2026, 5, 4), 'jam': '12.00', 'deskripsi': 'Menyetujui pengajuan izin — Augusta A.Z', 'jenis': 'pengajuan', 'icon': Icons.check_circle_outline},
+    {'tanggal': DateTime(2026, 5, 4), 'jam': '12.30', 'deskripsi': 'Menolak pengajuan izin — Farisalha A.F', 'jenis': 'pengajuan', 'icon': Icons.cancel_outlined},
+    {'tanggal': DateTime(2026, 5, 4), 'jam': '13.00', 'deskripsi': 'Membuat jurnal X RPL 1', 'jenis': 'jurnal', 'icon': Icons.book_outlined},
+    {'tanggal': DateTime(2026, 5, 3), 'jam': '14.00', 'deskripsi': 'Mengedit jurnal XI RPL 2', 'jenis': 'jurnal', 'icon': Icons.edit_note_outlined},
   ];
 
   List<Map<String, dynamic>> get _filtered {

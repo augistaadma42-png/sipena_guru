@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/jadwal/presentation/pages/jadwal_pelajaran_page.dart';
+import '../../features/pengaturan/presentation/pages/pengaturan_page.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 
@@ -65,6 +66,18 @@ class CustomDrawer extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const JadwalPelajaranPage()),
+                    );
+                  },
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.settings_outlined,
+                  title: 'Pengaturan',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const PengaturanPage()),
                     );
                   },
                 ),

@@ -2,8 +2,42 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 
-class JadwalHeaderCard extends StatelessWidget {
+class JadwalHeaderCard extends StatefulWidget {
   const JadwalHeaderCard({Key? key}) : super(key: key);
+
+  @override
+  State<JadwalHeaderCard> createState() => _JadwalHeaderCardState();
+}
+
+class _JadwalHeaderCardState extends State<JadwalHeaderCard> {
+  bool _isDownloading = false;
+
+  Future<void> _downloadPDF() async {
+    setState(() => _isDownloading = true);
+
+    // Simulasi loading proses generate PDF
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() => _isDownloading = false);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_outline,
+                color: Colors.white, size: 18),
+            const SizedBox(width: 10),
+            const Text('Jadwal berhasil diunduh!'),
+          ],
+        ),
+        backgroundColor: AppColors.successGreen,
+        behavior: SnackBarBehavior.floating,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,15 +81,12 @@ class JadwalHeaderCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.access_time,
-                  size: 18,
-                  color: AppColors.primaryBlue,
-                ),
+                const Icon(Icons.access_time,
+                    size: 18, color: AppColors.primaryBlue),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Jadwal akan diperbarui setiap periode semester dan Jika terdapat perubahan jadwal tertentu.',
+                    'Jadwal akan diperbarui setiap periode semester dan jika terdapat perubahan jadwal tertentu.',
                     style: AppTextStyles.cardSubtitle.copyWith(
                       color: AppColors.primaryBlue.withOpacity(0.8),
                       fontSize: 12,
@@ -70,34 +101,46 @@ class JadwalHeaderCard extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Mengunduh Jadwal (PDF)... Simulasi Front-End'),
-                    backgroundColor: AppColors.successGreen,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                );
-              },
+              onPressed: _isDownloading ? null : _downloadPDF,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryOrange,
+                disabledBackgroundColor:
+                    AppColors.secondaryOrange.withOpacity(0.7),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
+                    borderRadius: BorderRadius.circular(24)),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.download_outlined, size: 20, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Download Jadwal (PDF)',
-                    style: AppTextStyles.cardTitle.copyWith(color: Colors.white),
-                  ),
-                ],
-              ),
+              child: _isDownloading
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Menyiapkan PDF...',
+                          style: AppTextStyles.cardTitle
+                              .copyWith(color: Colors.white),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.download_outlined,
+                            size: 20, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Download Jadwal (PDF)',
+                          style: AppTextStyles.cardTitle
+                              .copyWith(color: Colors.white),
+                        ),
+                      ],
+                    ),
             ),
           ),
         ],

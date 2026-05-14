@@ -43,6 +43,55 @@ class AktivitasTerbaruWidget extends StatelessWidget {
       'jenis': 'absensi',
       'icon': Icons.edit_note_outlined,
     },
+    {
+      'tanggal': '06 Mei 2026',
+      'jam': '09.00',
+      'deskripsi': 'Membuat jurnal XI RPL 1',
+      'jenis': 'jurnal',
+      'icon': Icons.book_outlined,
+    },
+    {
+      'tanggal': '05 Mei 2026',
+      'jam': '10.00',
+      'deskripsi': 'Membuat tugas baru — Latihan Soal Bab 3',
+      'jenis': 'tugas',
+      'icon': Icons.assignment_outlined,
+    },
+    {
+      'tanggal': '05 Mei 2026',
+      'jam': '10.30',
+      'deskripsi': 'Mengubah deadline tugas — Kuis Harian',
+      'jenis': 'tugas',
+      'icon': Icons.edit_calendar_outlined,
+    },
+    {
+      'tanggal': '05 Mei 2026',
+      'jam': '11.00',
+      'deskripsi': 'Menginput nilai tugas XI RPL 2',
+      'jenis': 'nilai',
+      'icon': Icons.grade_outlined,
+    },
+    {
+      'tanggal': '04 Mei 2026',
+      'jam': '12.00',
+      'deskripsi': 'Menyetujui pengajuan izin — Augusta A.Z',
+      'jenis': 'pengajuan',
+      'icon': Icons.check_circle_outline,
+    },
+    {
+      'tanggal': '04 Mei 2026',
+      'jam': '13.00',
+      'deskripsi': 'Membuat jurnal X RPL 1',
+      'jenis': 'jurnal',
+      'icon': Icons.book_outlined,
+    },
+    {
+      'tanggal': '03 Mei 2026',
+      'jam': '14.00',
+      'deskripsi': 'Mengedit jurnal XI RPL 2',
+      'jenis': 'jurnal',
+      'icon': Icons.edit_note_outlined,
+    },
   ];
 
   Color _jenisColor(String jenis) {
@@ -50,6 +99,8 @@ class AktivitasTerbaruWidget extends StatelessWidget {
       case 'absensi': return AppColors.primaryBlue;
       case 'jurnal': return const Color(0xFF6A1B9A);
       case 'tugas': return AppColors.secondaryOrange;
+      case 'nilai': return const Color(0xFF2E7D32);
+      case 'pengajuan': return const Color(0xFF1565C0);
       default: return AppColors.textSecondary;
     }
   }
@@ -59,6 +110,8 @@ class AktivitasTerbaruWidget extends StatelessWidget {
       case 'absensi': return AppColors.primaryBlue.withOpacity(0.1);
       case 'jurnal': return const Color(0xFFF3E5F5);
       case 'tugas': return const Color(0xFFFFF3E0);
+      case 'nilai': return const Color(0xFFE8F5E9);
+      case 'pengajuan': return const Color(0xFFE3F2FD);
       default: return AppColors.backgroundLight;
     }
   }
