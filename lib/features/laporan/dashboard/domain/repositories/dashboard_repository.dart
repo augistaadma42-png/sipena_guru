@@ -1,5 +1,5 @@
 import '../entities/menu_item.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../../core/errors/failures.dart';
 
 /// Repository Interface for Dashboard
 /// Abstract - harus diimplementasikan di data layer

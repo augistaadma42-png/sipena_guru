@@ -30,17 +30,6 @@ class AttendanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color getLeftBorderColor() {
-      switch (status) {
-        case AttendanceStatus.done:
-          return AppColors.primaryBlue;
-        case AttendanceStatus.pending:
-          return AppColors.secondaryOrange;
-        case AttendanceStatus.locked:
-          return Colors.transparent;
-      }
-    }
-
     Color getTimeBgColor() {
       switch (status) {
         case AttendanceStatus.done:
@@ -79,145 +68,217 @@ class AttendanceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderLight),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(
+          color: AppColors.borderLight,
+        ),
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
           children: [
-            // Left border indicator removed (dipindahkan ke scrollbar)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Time Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: getTimeBgColor(),
-                        borderRadius: BorderRadius.circular(8),
+
+            // Atas
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                // JAM (nggak disentuh)
+                Container(
+                  width: 58,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: getTimeBgColor(),
+                    borderRadius:
+                        BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'JAM',
+                        style: AppTextStyles
+                            .labelStyle
+                            .copyWith(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'JAM',
-                            style: AppTextStyles.labelStyle.copyWith(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            time,
-                            style: AppTextStyles.labelStyle.copyWith(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 2),
+                      Text(
+                        time,
+                        textAlign:
+                            TextAlign.center,
+                        style: AppTextStyles
+                            .labelStyle
+                            .copyWith(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Content
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '$className • $room',
-                                  style: AppTextStyles.cardTitle,
-                                ),
-                              ),
-                              if (status != AttendanceStatus.locked)
-                                InkWell(
-                                  onTap: onActionTap,
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: AppColors.primaryBlue),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          status == AttendanceStatus.done ? 'Lihat' : 'Absen',
-                                          style: AppTextStyles.labelStyle.copyWith(
-                                            color: AppColors.primaryBlue,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Icon(
-                                          status == AttendanceStatus.done ? Icons.check_circle : Icons.arrow_forward,
-                                          size: 14,
-                                          color: AppColors.primaryBlue,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Mapel : $subject',
-                            style: AppTextStyles.cardSubtitle,
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Icon(
-                                getStatusIcon(),
-                                size: 16,
-                                color: getStatusTextColor(),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                statusText,
-                                style: AppTextStyles.labelStyle.copyWith(
-                                  color: getStatusTextColor(),
-                                ),
-                              ),
-                              if (filledCount != null && totalCount != null) ...[
-                                const SizedBox(width: 4),
-                                Text(
-                                  '• $filledCount/$totalCount Siswa',
-                                  style: AppTextStyles.labelStyle.copyWith(
-                                    color: getStatusTextColor(),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+
+                      Text(
+                        '$className • $room',
+                        maxLines: 2,
+                        overflow:
+                            TextOverflow
+                                .ellipsis,
+                        style:
+                            AppTextStyles
+                                .cardTitle,
+                      ),
+
+                      const SizedBox(
+                          height: 4),
+
+                      Text(
+                        'Mapel : $subject',
+                        maxLines: 1,
+                        overflow:
+                            TextOverflow
+                                .ellipsis,
+                        style:
+                            AppTextStyles
+                                .cardSubtitle,
+                      ),
+
+                      const SizedBox(
+                          height: 8),
+
+                      Row(
+                        children: [
+                          Icon(
+                            getStatusIcon(),
+                            size: 14,
+                            color:
+                                getStatusTextColor(),
+                          ),
+
+                          const SizedBox(
+                              width: 4),
+
+                          Expanded(
+                            child: Text(
+                              filledCount !=
+                                          null &&
+                                      totalCount !=
+                                          null
+                                  ? '$statusText • $filledCount/$totalCount Siswa'
+                                  : statusText,
+                              maxLines: 1,
+                              overflow:
+                                  TextOverflow
+                                      .ellipsis,
+                              style:
+                                  AppTextStyles
+                                      .labelStyle
+                                      .copyWith(
+                                color:
+                                    getStatusTextColor(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
+
+            // tombol full bawah
+            if (status != AttendanceStatus.locked) ...[
+              const SizedBox(height: 14),
+
+              InkWell(
+                onTap: onActionTap,
+                borderRadius:
+                    BorderRadius.circular(
+                        20),
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(
+                    vertical: 12,
+                  ),
+                  decoration:
+                      BoxDecoration(
+                    color: AppColors
+                        .primaryBlue
+                        .withOpacity(
+                            0.08),
+                    border:
+                        Border.all(
+                      color:
+                          AppColors
+                              .primaryBlue,
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(
+                            20),
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .center,
+                    children: [
+                      Text(
+                        status ==
+                                AttendanceStatus.done
+                            ? 'Lihat'
+                            : 'Absen',
+                        style:
+                            AppTextStyles
+                                .labelStyle
+                                .copyWith(
+                          color:
+                              AppColors
+                                  .primaryBlue,
+                          fontWeight:
+                              FontWeight
+                                  .w700,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          width: 6),
+
+                      Icon(
+                        status ==
+                                AttendanceStatus.done
+                            ? Icons
+                                .check_circle
+                            : Icons
+                                .arrow_forward,
+                        size: 16,
+                        color:
+                            AppColors
+                                .primaryBlue,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ]
           ],
         ),
       ),
     );
   }
-}
+} 

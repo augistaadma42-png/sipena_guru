@@ -11,12 +11,12 @@ class PengaturanNotifikasiPage extends StatefulWidget {
       _PengaturanNotifikasiPageState();
 }
 
-class _PengaturanNotifikasiPageState extends State<PengaturanNotifikasiPage> {
-  // Toggle states
+class _PengaturanNotifikasiPageState
+    extends State<PengaturanNotifikasiPage> {
+
   bool _notifInternal = true;
   bool _notifEmail = false;
 
-  // Per-jenis internal
   bool _notifAbsensi = true;
   bool _notifTugasKumpul = true;
   bool _notifTugasBelumDinilai = true;
@@ -28,9 +28,6 @@ class _PengaturanNotifikasiPageState extends State<PengaturanNotifikasiPage> {
         content: Text(pesan),
         backgroundColor: AppColors.successGreen,
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -40,317 +37,436 @@ class _PengaturanNotifikasiPageState extends State<PengaturanNotifikasiPage> {
     required String deskripsi,
     required bool value,
     required ValueChanged<bool> onChanged,
-    bool enabled = true,
     IconData? icon,
     Color? iconColor,
   }) {
-    return Opacity(
-      opacity: enabled ? 1.0 : 0.5,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (icon != null) ...[
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: (iconColor ?? AppColors.primaryBlue).withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon,
-                  size: 18, color: iconColor ?? AppColors.primaryBlue),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (icon != null) ...[
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: (iconColor ?? AppColors.primaryBlue)
+                  .withOpacity(0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 14),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(judul,
-                    style: AppTextStyles.cardTitle.copyWith(fontSize: 14)),
-                const SizedBox(height: 2),
-                Text(deskripsi,
-                    style:
-                        AppTextStyles.cardSubtitle.copyWith(fontSize: 12)),
-              ],
+            child: Icon(
+              icon,
+              size: 18,
+              color: iconColor ?? AppColors.primaryBlue,
             ),
           ),
-          const SizedBox(width: 12),
-          Switch(
-            value: value,
-            onChanged: enabled ? onChanged : null,
-            activeColor: Colors.white,
-            activeTrackColor: AppColors.successGreen,
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: AppColors.borderLight,
-          ),
+          const SizedBox(width: 14),
         ],
-      ),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+              Text(
+                judul,
+                style: AppTextStyles.cardTitle
+                    .copyWith(fontSize: 14),
+              ),
+
+              const SizedBox(height: 2),
+
+              Text(
+                deskripsi,
+                style: AppTextStyles.cardSubtitle
+                    .copyWith(fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: Colors.white,
+          activeTrackColor:
+              AppColors.successGreen,
+          inactiveThumbColor:
+              Colors.white,
+          inactiveTrackColor:
+              AppColors.borderLight,
+        )
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor:
+          AppColors.backgroundLight,
+
       appBar: const CustomAppBar(
-          title: 'Pengaturan Notifikasi', showBackButton: true),
+        title: 'Notifikasi',
+        showBackButton: true,
+      ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
+
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Notifikasi Internal
+
+            /// CARD INTERNAL
             Container(
-              padding: const EdgeInsets.all(20),
+              padding:
+                  const EdgeInsets.all(20),
+
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.borderLight),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                borderRadius:
+                    BorderRadius.circular(
+                        16),
+                border: Border.all(
+                    color: AppColors
+                        .borderLight),
               ),
+
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header toggle utama
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBlue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(Icons.notifications_outlined,
-                            color: AppColors.primaryBlue, size: 22),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Notifikasi Internal',
-                                style: AppTextStyles.sectionTitle
-                                    .copyWith(fontSize: 15)),
-                            Text(
-                              'Notifikasi di dalam aplikasi',
-                              style: AppTextStyles.cardSubtitle
-                                  .copyWith(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Switch(
-                        value: _notifInternal,
-                        onChanged: (val) {
-                          setState(() => _notifInternal = val);
-                          _showToast(val
-                              ? 'Notifikasi internal diaktifkan'
-                              : 'Notifikasi internal dinonaktifkan');
-                        },
-                        activeColor: Colors.white,
-                        activeTrackColor: AppColors.successGreen,
-                        inactiveThumbColor: Colors.white,
-                        inactiveTrackColor: AppColors.borderLight,
-                      ),
-                    ],
+
+                  _buildToggleItem(
+                    judul:
+                        'Notifikasi Internal',
+                    deskripsi:
+                        'Notifikasi di dalam aplikasi',
+                    value:
+                        _notifInternal,
+                    icon: Icons
+                        .notifications_outlined,
+                    iconColor:
+                        AppColors
+                            .primaryBlue,
+                    onChanged: (val) {
+                      setState(() {
+                        _notifInternal =
+                            val;
+                      });
+
+                      _showToast(
+                        val
+                            ? 'Notifikasi internal aktif'
+                            : 'Notifikasi internal mati',
+                      );
+                    },
                   ),
 
-                  // Per-jenis (hanya tampil kalau notif internal aktif)
                   if (_notifInternal) ...[
-                    const SizedBox(height: 16),
-                    const Divider(height: 1, color: AppColors.borderLight),
-                    const SizedBox(height: 16),
-                    Text('Jenis Notifikasi',
-                        style: AppTextStyles.labelStyle
-                            .copyWith(fontSize: 12, color: AppColors.textSecondary)),
-                    const SizedBox(height: 14),
+
+                    const SizedBox(
+                        height: 18),
+
+                    const Divider(),
+
+                    const SizedBox(
+                        height: 18),
 
                     _buildToggleItem(
-                      judul: 'Absensi Belum Diisi',
-                      deskripsi: 'Ingatkan jika ada kelas yang belum diabsen',
-                      value: _notifAbsensi,
-                      icon: Icons.fact_check_outlined,
-                      iconColor: AppColors.primaryBlue,
+                      judul:
+                          'Absensi Belum Diisi',
+                      deskripsi:
+                          'Ingatkan jika ada kelas belum diabsen',
+                      value:
+                          _notifAbsensi,
+                      icon: Icons
+                          .fact_check_outlined,
+                      iconColor:
+                          AppColors
+                              .primaryBlue,
                       onChanged: (val) {
-                        setState(() => _notifAbsensi = val);
-                        _showToast(val
-                            ? 'Notifikasi absensi diaktifkan'
-                            : 'Notifikasi absensi dinonaktifkan');
+                        setState(() {
+                          _notifAbsensi =
+                              val;
+                        });
                       },
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(height: 1, color: AppColors.borderLight),
-                    const SizedBox(height: 16),
+
+                    const SizedBox(
+                        height: 18),
 
                     _buildToggleItem(
-                      judul: 'Siswa Kumpul Tugas',
-                      deskripsi: 'Notif saat siswa mengumpulkan tugas',
-                      value: _notifTugasKumpul,
-                      icon: Icons.inbox_outlined,
-                      iconColor: AppColors.successGreen,
+                      judul:
+                          'Siswa Kumpul Tugas',
+                      deskripsi:
+                          'Notif siswa mengumpulkan tugas',
+                      value:
+                          _notifTugasKumpul,
+                      icon: Icons
+                          .inbox_outlined,
+                      iconColor:
+                          AppColors
+                              .successGreen,
                       onChanged: (val) {
-                        setState(() => _notifTugasKumpul = val);
-                        _showToast(val
-                            ? 'Notifikasi pengumpulan tugas diaktifkan'
-                            : 'Notifikasi pengumpulan tugas dinonaktifkan');
+                        setState(() {
+                          _notifTugasKumpul =
+                              val;
+                        });
                       },
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(height: 1, color: AppColors.borderLight),
-                    const SizedBox(height: 16),
+
+                    const SizedBox(
+                        height: 18),
 
                     _buildToggleItem(
-                      judul: 'Tugas Belum Dinilai',
-                      deskripsi: 'Ingatkan jika ada tugas lewat deadline belum dinilai',
-                      value: _notifTugasBelumDinilai,
-                      icon: Icons.access_time_outlined,
-                      iconColor: AppColors.secondaryOrange,
+                      judul:
+                          'Tugas Belum Dinilai',
+                      deskripsi:
+                          'Ingatkan tugas belum dinilai',
+                      value:
+                          _notifTugasBelumDinilai,
+                      icon: Icons
+                          .access_time_outlined,
+                      iconColor:
+                          AppColors
+                              .secondaryOrange,
                       onChanged: (val) {
-                        setState(() => _notifTugasBelumDinilai = val);
-                        _showToast(val
-                            ? 'Notifikasi tugas belum dinilai diaktifkan'
-                            : 'Notifikasi tugas belum dinilai dinonaktifkan');
+                        setState(() {
+                          _notifTugasBelumDinilai =
+                              val;
+                        });
                       },
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(height: 1, color: AppColors.borderLight),
-                    const SizedBox(height: 16),
+
+                    const SizedBox(
+                        height: 18),
 
                     _buildToggleItem(
-                      judul: 'Pengajuan Tidak Masuk',
-                      deskripsi: 'Notif saat ada siswa mengajukan izin/sakit/dispen',
-                      value: _notifPengajuan,
-                      icon: Icons.person_off_outlined,
-                      iconColor: const Color(0xFF1565C0),
+                      judul:
+                          'Pengajuan Tidak Masuk',
+                      deskripsi:
+                          'Notif izin / sakit / dispen',
+                      value:
+                          _notifPengajuan,
+                      icon: Icons
+                          .person_off_outlined,
+                      iconColor:
+                          Colors.blue,
                       onChanged: (val) {
-                        setState(() => _notifPengajuan = val);
-                        _showToast(val
-                            ? 'Notifikasi pengajuan diaktifkan'
-                            : 'Notifikasi pengajuan dinonaktifkan');
+                        setState(() {
+                          _notifPengajuan =
+                              val;
+                        });
                       },
                     ),
-                  ],
+                  ]
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
 
-            // ── Notifikasi Email 
+            /// CARD EMAIL
             Container(
-              padding: const EdgeInsets.all(20),
+              padding:
+                  const EdgeInsets.all(20),
+
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.borderLight),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                borderRadius:
+                    BorderRadius.circular(
+                        16),
+                border: Border.all(
+                    color: AppColors
+                        .borderLight),
               ),
+
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   Row(
+                    crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
+
                     children: [
+
                       Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF3E0),
-                          borderRadius: BorderRadius.circular(10),
+                        padding:
+                            const EdgeInsets
+                                .all(
+                                    10),
+
+                        decoration:
+                            BoxDecoration(
+                          color: const Color(
+                              0xFFFFF3E0),
+                          borderRadius:
+                              BorderRadius
+                                  .circular(
+                                      10),
                         ),
-                        child: const Icon(Icons.email_outlined,
-                            color: AppColors.secondaryOrange, size: 22),
+
+                        child:
+                            const Icon(
+                          Icons
+                              .email_outlined,
+                          color: AppColors
+                              .secondaryOrange,
+                        ),
                       ),
-                      const SizedBox(width: 14),
+
+                      const SizedBox(
+                          width: 14),
+
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                              CrossAxisAlignment
+                                  .start,
+
                           children: [
-                            Row(
+
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 4,
+
                               children: [
-                                Text('Notifikasi Email',
-                                    style: AppTextStyles.sectionTitle
-                                        .copyWith(fontSize: 15)),
-                                const SizedBox(width: 8),
+
+                                Text(
+                                  'Notifikasi Email',
+                                  style:
+                                      AppTextStyles
+                                          .sectionTitle,
+                                ),
+
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.backgroundLight,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: AppColors.borderLight),
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                    horizontal:
+                                        8,
+                                    vertical:
+                                        2,
                                   ),
-                                  child: Text('Opsional',
-                                      style: AppTextStyles.labelStyle
-                                          .copyWith(fontSize: 10)),
+
+                                  decoration:
+                                      BoxDecoration(
+                                    color:
+                                        AppColors.backgroundLight,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                            10),
+                                  ),
+
+                                  child:
+                                      const Text(
+                                    'Opsional',
+                                  ),
                                 ),
                               ],
                             ),
+
+                            const SizedBox(
+                                height: 4),
+
                             Text(
                               'Kirim ringkasan harian ke email',
-                              style: AppTextStyles.cardSubtitle
-                                  .copyWith(fontSize: 12),
-                            ),
+                              maxLines: 2,
+                              overflow:
+                                  TextOverflow
+                                      .ellipsis,
+                            )
                           ],
                         ),
                       ),
+
                       Switch(
-                        value: _notifEmail,
-                        onChanged: (val) {
-                          setState(() => _notifEmail = val);
-                          _showToast(val
-                              ? 'Notifikasi email diaktifkan'
-                              : 'Notifikasi email dinonaktifkan');
+                        value:
+                            _notifEmail,
+                        onChanged:
+                            (val) {
+                          setState(() {
+                            _notifEmail =
+                                val;
+                          });
+
+                          _showToast(
+                            val
+                                ? 'Notifikasi email aktif'
+                                : 'Notifikasi email mati',
+                          );
                         },
-                        activeColor: Colors.white,
-                        activeTrackColor: AppColors.successGreen,
-                        inactiveThumbColor: Colors.white,
-                        inactiveTrackColor: AppColors.borderLight,
-                      ),
+                      )
                     ],
                   ),
+
                   if (_notifEmail) ...[
-                    const SizedBox(height: 14),
-                    const Divider(height: 1, color: AppColors.borderLight),
-                    const SizedBox(height: 14),
+                    const SizedBox(
+                        height: 14),
+
+                    const Divider(),
+
+                    const SizedBox(
+                        height: 14),
+
                     Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: AppColors.backgroundLight,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.borderLight),
+                      padding:
+                          const EdgeInsets
+                              .all(14),
+
+                      decoration:
+                          BoxDecoration(
+                        color: AppColors
+                            .backgroundLight,
+                        borderRadius:
+                            BorderRadius
+                                .circular(
+                                    10),
                       ),
+
                       child: Row(
                         children: [
-                          const Icon(Icons.alternate_email,
-                              size: 16, color: AppColors.textSecondary),
-                          const SizedBox(width: 10),
-                          Text('umikulsumspd@sekolah.sch.id',
-                              style: AppTextStyles.cardSubtitle
-                                  .copyWith(fontSize: 13)),
+
+                          const Icon(
+                            Icons
+                                .alternate_email,
+                            size: 16,
+                          ),
+
+                          const SizedBox(
+                              width:
+                                  10),
+
+                          Expanded(
+                            child:
+                                Text(
+                              'umikulsumspd@sekolah.sch.id',
+                              overflow:
+                                  TextOverflow
+                                      .ellipsis,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
+
+                    const SizedBox(
+                        height: 8),
+
                     Text(
-                      'Ringkasan aktivitas akan dikirim setiap hari pukul 18.00',
-                      style: AppTextStyles.cardSubtitle.copyWith(fontSize: 11),
-                    ),
-                  ],
+                      'Ringkasan aktivitas dikirim setiap hari pukul 18.00',
+                      style:
+                          AppTextStyles
+                              .cardSubtitle
+                              .copyWith(
+                        fontSize:
+                            11,
+                      ),
+                    )
+                  ]
                 ],
               ),
             ),
+
             const SizedBox(height: 30),
           ],
         ),

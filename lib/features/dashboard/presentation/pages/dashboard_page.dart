@@ -137,7 +137,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     Text('Absensi Hari ini', style: AppTextStyles.sectionTitle),
                     const SizedBox(height: 16),
                     SizedBox(
-                      height: 350,
+                      height: MediaQuery.of(context).size.height * 0.4,
                       child: RawScrollbar(
                         controller: _attendanceScrollController,
                         thumbColor: AppColors.primaryBlue,

@@ -2,6 +2,7 @@ import '../../domain/entities/menu_item.dart';
 import '../../domain/repositories/dashboard_repository.dart';
 import '../models/menu_item_model.dart';
 import '../datasources/dashboard_local_datasource.dart';
+import '../../../../../core/errors/failures.dart';
 
 /// Repository Implementation
 /// Mengimplementasikan DashboardRepository interface
