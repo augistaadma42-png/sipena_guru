@@ -49,13 +49,45 @@ class NilaiStudentRow extends StatelessWidget {
                   style: AppTextStyles.tableBody,
                 ),
               ),
-              // Tanggal input
+              // Nilai
               Expanded(
                 flex: 2,
-                child: Text(
-                  student.tanggalInput,
-                  style: AppTextStyles.tableBody,
-                  textAlign: TextAlign.right,
+                child: Builder(
+                  builder: (context) {
+                    final intValue = int.tryParse(student.nilai) ?? 0;
+                    Color bgColor;
+                    Color textColor;
+
+                    if (intValue < 70) {
+                      bgColor = const Color(0xFFFEE2E2); // Light red
+                      textColor = const Color(0xFFEF4444); // Red
+                    } else if (intValue <= 80) {
+                      bgColor = AppColors.lightOrangeBg; // Light yellow/orange
+                      textColor = AppColors.warningOrange; // Yellow/orange
+                    } else {
+                      bgColor = AppColors.lightBlueBg; // Light blue
+                      textColor = AppColors.primaryBlue; // Blue
+                    }
+
+                    return Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          student.nilai,
+                          style: AppTextStyles.tableBodyBold.copyWith(
+                            fontSize: 15,
+                            color: textColor,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

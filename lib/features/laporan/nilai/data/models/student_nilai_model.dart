@@ -6,7 +6,7 @@ class StudentNilaiModel extends StudentNilaiEntity {
     required super.id,
     required super.nama,
     required super.kelas,
-    required super.tanggalInput,
+    required super.nilai,
   });
 
   /// Factory dari JSON (siap untuk integrasi API nanti)
@@ -15,7 +15,7 @@ class StudentNilaiModel extends StudentNilaiEntity {
       id: json['id'] as String,
       nama: json['nama'] as String,
       kelas: json['kelas'] as String,
-      tanggalInput: json['tanggal_input'] as String,
+      nilai: json['nilai'] as String,
     );
   }
 
@@ -25,7 +25,7 @@ class StudentNilaiModel extends StudentNilaiEntity {
       'id': id,
       'nama': nama,
       'kelas': kelas,
-      'tanggal_input': tanggalInput,
+      'nilai': nilai,
     };
   }
 
@@ -35,7 +35,7 @@ class StudentNilaiModel extends StudentNilaiEntity {
       id: id,
       nama: nama,
       kelas: kelas,
-      tanggalInput: tanggalInput,
+      nilai: nilai,
     );
   }
 }

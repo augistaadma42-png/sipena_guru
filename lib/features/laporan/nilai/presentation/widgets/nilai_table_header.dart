@@ -34,11 +34,11 @@ class NilaiTableHeader extends StatelessWidget {
             flex: 2,
             child: Text('KELAS', style: AppTextStyles.tableHeader),
           ),
-          // Kolom TANGGAL INPUT
+          // Kolom NILAI
           Expanded(
             flex: 2,
             child: Text(
-              'TANGGAL\nINPUT',
+              'NILAI',
               style: AppTextStyles.tableHeader,
               textAlign: TextAlign.right,
             ),
