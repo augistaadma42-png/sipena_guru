@@ -108,7 +108,7 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
     {
       'id': '001',
       'initials': 'AA',
-      'nama': 'Augusta A.Z',
+      'nama': 'Augista A.Z',
       'nisn': '2001001',
       'kelas': 'XI RPL 1',
       'jenis': 'Izin',
@@ -120,7 +120,7 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
     {
       'id': '002',
       'initials': 'RS',
-      'nama': 'Reby Shandi S.',
+      'nama': 'Feby Shandi S.',
       'nisn': '2022002',
       'kelas': 'XI RPL 1',
       'jenis': 'Sakit',
@@ -132,7 +132,7 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
     {
       'id': '003',
       'initials': 'GK',
-      'nama': 'Savin K.H',
+      'nama': 'Gavin K.H',
       'nisn': '2022992',
       'kelas': 'XI RPL 2',
       'jenis': 'Dispen',
@@ -144,7 +144,7 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
     {
       'id': '004',
       'initials': 'FA',
-      'nama': 'Farisalha A.F',
+      'nama': 'Fariskha F.A',
       'nisn': '2001001',
       'kelas': 'X DKV 1',
       'jenis': 'Izin',

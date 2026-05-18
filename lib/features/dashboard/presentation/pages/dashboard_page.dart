@@ -9,6 +9,7 @@ import '../widgets/task_summary_card.dart';
 import '../widgets/aktivitas_terbaru_widget.dart';
 import 'aktivitas_semua_page.dart';
 import 'package:intl/intl.dart';
+import '../../../absen/presentation/pages/absensi_dari_jadwal_page.dart';
 import '../../../absen/presentation/pages/detail_absensi_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -39,13 +40,12 @@ class _DashboardPageState extends State<DashboardPage> {
     return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(DateTime.now());
   }
 
-  // Navigasi ke DetailAbsensiPage (kelas sudah otomatis dari jadwal)
-  void _navigateToAbsensiDariJadwal({
+  // Tombol "Lihat" → DetailAbsensiPage (sama seperti di rekap absensi)
+  void _navigateToDetailAbsensi({
     required String className,
     required String subject,
     required String time,
     required String jamKe,
-    required bool isReadOnly,
   }) {
     Navigator.push(
       context,
@@ -55,8 +55,27 @@ class _DashboardPageState extends State<DashboardPage> {
           subject: subject,
           time: time,
           jamKe: jamKe,
-          isReadOnly: isReadOnly,
-          isEditMode: false,
+          isReadOnly: true,
+        ),
+      ),
+    );
+  }
+
+  // Tombol "Absen" → AbsensiDariJadwalPage (form input absensi baru)
+  void _navigateToInputAbsensi({
+    required String className,
+    required String subject,
+    required String time,
+    required String jamKe,
+  }) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AbsensiDariJadwalPage(
+          className: className,
+          subject: subject,
+          time: time,
+          jamKe: jamKe,
         ),
       ),
     );
@@ -129,6 +148,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           controller: _attendanceScrollController,
                           padding: const EdgeInsets.only(right: 16),
                           children: [
+                            // Sudah diisi → tombol "Lihat" → DetailAbsensiPage
                             AttendanceCard(
                               time: '10:40-12:00',
                               className: 'Kelas XI-RPL 1',
@@ -138,14 +158,14 @@ class _DashboardPageState extends State<DashboardPage> {
                               statusText: 'Sudah di isi',
                               filledCount: 34,
                               totalCount: 38,
-                              onActionTap: () => _navigateToAbsensiDariJadwal(
+                              onActionTap: () => _navigateToDetailAbsensi(
                                 className: 'XI-RPL 1',
                                 subject: 'Bahasa Indonesia',
                                 time: '10:40-12:00',
                                 jamKe: 'Jam ke-3',
-                                isReadOnly: true,
                               ),
                             ),
+                            // Belum diisi → tombol "Absen" → InputAbsensiTab
                             AttendanceCard(
                               time: '08:40-10:00',
                               className: 'Kelas XI-PSPT 2',
@@ -155,12 +175,11 @@ class _DashboardPageState extends State<DashboardPage> {
                               statusText: 'Belum di isi',
                               filledCount: 0,
                               totalCount: 34,
-                              onActionTap: () => _navigateToAbsensiDariJadwal(
+                              onActionTap: () => _navigateToInputAbsensi(
                                 className: 'XI-PSPT 2',
                                 subject: 'Bahasa Indonesia',
                                 time: '08:40-10:00',
                                 jamKe: 'Jam ke-2',
-                                isReadOnly: false,
                               ),
                             ),
                             const AttendanceCard(
@@ -228,7 +247,6 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       ),
-
     );
   }
 }

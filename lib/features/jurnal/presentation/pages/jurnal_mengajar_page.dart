@@ -75,6 +75,7 @@ class _JurnalMengajarPageState extends State<JurnalMengajarPage> {
                   _editingJurnalData ??
                   _autoFillData,
                 onCancelEdit: _cancelEdit,
+                isEditMode: _editingJurnalData != null,
               ),
               const SizedBox(height: 20),
               JurnalTerbaruTimeline(

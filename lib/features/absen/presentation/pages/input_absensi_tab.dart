@@ -5,7 +5,8 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../jurnal/presentation/pages/jurnal_mengajar_page.dart';
 
 class InputAbsensiTab extends StatefulWidget {
-  const InputAbsensiTab({Key? key}) : super(key: key);
+  final String? prefilledKelas;
+  const InputAbsensiTab({Key? key, this.prefilledKelas}) : super(key: key);
 
   @override
   State<InputAbsensiTab> createState() => _InputAbsensiTabState();
@@ -23,7 +24,7 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
     'XI-MP 4',
     'X-RPL 1',
     'X-TKJ 2',
-    'XI-MP 4',
+    'X-MP 4',
   ];
 
   final List<Map<String, dynamic>> _dummyStudents = [
@@ -46,6 +47,9 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
     super.initState();
     _studentStatuses =
         _dummyStudents.map((s) => s['status'] as String).toList();
+    if (widget.prefilledKelas != null) {
+      _selectedKelas = widget.prefilledKelas;
+    }
   }
 
   String get _formattedDate =>

@@ -150,7 +150,7 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
       child: Column(
         children: [
           // ── HEADER BARIS 1 
-          
+
           SizedBox(
             height: _headerH1,
             child: Row(
@@ -167,8 +167,8 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
             child: Row(
               children: [
                 _hCell('Jam\nKe-', _colJamKe, _headerH2, color: const Color(0xFF1B3C73)),
-                _hCell('Sen - Kam', _colSenKam, _headerH2, color: const Color(0xFFE06020)),
-                _hCell('Jumat', _colJumat, _headerH2, color: const Color(0xFFE06020)),
+                _hCell('Sen - Kam', _colSenKam, _headerH2, color: const Color.fromARGB(255, 238, 118, 58)),
+                _hCell('Jumat', _colJumat, _headerH2, color: const Color.fromARGB(255, 238, 118, 58)),
                 ..._hariList.map((h) =>
                     _hCell(h, _colHari, _headerH2, color: const Color(0xFF2d5299))),
               ],
@@ -220,8 +220,8 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
       decoration: BoxDecoration(
         color: color ?? const Color(0xFF002369),
         border: const Border(
-          right: BorderSide(color: Color(0xFF2d5299), width: 0.5),
-          bottom: BorderSide(color: Color(0xFF2d5299), width: 0.5),
+          right: BorderSide(color: Color.fromARGB(255, 254, 254, 254), width: 0.5),
+          bottom: BorderSide(color: Color.fromARGB(255, 255, 255, 255), width: 0.5),
         ),
       ),
       child: Center(

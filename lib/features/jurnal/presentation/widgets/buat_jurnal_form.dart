@@ -6,9 +6,14 @@ import '../../../../core/constants/text_styles.dart';
 class BuatJurnalForm extends StatefulWidget {
   final Map<String, String>? initialData;
   final VoidCallback? onCancelEdit;
+  final bool isEditMode;
 
-  const BuatJurnalForm({Key? key, this.initialData, this.onCancelEdit})
-    : super(key: key);
+  const BuatJurnalForm({
+    Key? key,
+    this.initialData,
+    this.onCancelEdit,
+    this.isEditMode = false,
+  }) : super(key: key);
 
   @override
   State<BuatJurnalForm> createState() => _BuatJurnalFormState();
@@ -114,13 +119,13 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.initialData != null ? 'Edit Jurnal' : 'Buat Jurnal Baru',
+            widget.isEditMode ? 'Edit Jurnal' : 'Buat Jurnal Baru',
             style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
           ),
           const SizedBox(height: 4),
           Text(
             widget.initialData != null
-                ? 'Ubah detail kegiatan jurnal yang telah dibuat.'
+                ? widget.isEditMode ? 'Ubah detail kegiatan jurnal yang telah dibuat.' : 'Isi detail kegiatan jurnal mengajar hari ini.'
                 : 'Catat kegiatan belajar mengajar hari ini.',
             style: AppTextStyles.cardSubtitle,
           ),
@@ -223,7 +228,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                     ),
                   ),
                   child: Text(
-                    widget.initialData != null ? 'Batalkan Edit' : 'Batalkan',
+                    widget.isEditMode ? 'Batalkan Edit' : 'Batalkan',
                     style: AppTextStyles.cardTitle.copyWith(
                       color: AppColors.primaryBlue,
                     ),
@@ -234,7 +239,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    final isEdit = widget.initialData != null;
+                    final isEdit = widget.isEditMode;
                     final result = {
                       'className': _selectedKelas ?? '',
                       'title': _materiController.text,
@@ -246,7 +251,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          widget.initialData != null
+                          widget.isEditMode
                               ? 'Jurnal berhasil diperbarui'
                               : 'Jurnal berhasil disimpan',
                         ),
@@ -286,7 +291,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        widget.initialData != null
+                        widget.isEditMode
                             ? 'Simpan Perubahan'
                             : 'Simpan Jurnal',
                         style: AppTextStyles.cardTitle.copyWith(
@@ -365,7 +370,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                 'X-RPL 1',
                 'X-TKJ 2',
                 'Apel Pagi',
-                'XI-MP 4',
+                'X-MP 4',
               ].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
