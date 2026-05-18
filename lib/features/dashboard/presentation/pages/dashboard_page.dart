@@ -6,6 +6,10 @@ import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_drawer.dart';
 import '../widgets/attendance_card.dart';
 import '../widgets/task_summary_card.dart';
+import '../widgets/aktivitas_terbaru_widget.dart';
+import 'aktivitas_semua_page.dart';
+import 'package:intl/intl.dart';
+import '../../../absen/presentation/pages/absensi_dari_jadwal_page.dart';
 import '../../../absen/presentation/pages/detail_absensi_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -24,6 +28,59 @@ class _DashboardPageState extends State<DashboardPage> {
     super.dispose();
   }
 
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return 'Selamat Pagi';
+    if (hour >= 12 && hour < 15) return 'Selamat Siang';
+    if (hour >= 15 && hour < 18) return 'Selamat Sore';
+    return 'Selamat Malam';
+  }
+
+  String getFormattedDate() {
+    return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(DateTime.now());
+  }
+
+  // Tombol "Lihat" → DetailAbsensiPage (sama seperti di rekap absensi)
+  void _navigateToDetailAbsensi({
+    required String className,
+    required String subject,
+    required String time,
+    required String jamKe,
+  }) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetailAbsensiPage(
+          className: className,
+          subject: subject,
+          time: time,
+          jamKe: jamKe,
+          isReadOnly: true,
+        ),
+      ),
+    );
+  }
+
+  // Tombol "Absen" → AbsensiDariJadwalPage (form input absensi baru)
+  void _navigateToInputAbsensi({
+    required String className,
+    required String subject,
+    required String time,
+    required String jamKe,
+  }) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AbsensiDariJadwalPage(
+          className: className,
+          subject: subject,
+          time: time,
+          jamKe: jamKe,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,9 +95,9 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               // Greeting Section
               Text(
-                'Selamat Pagi,',
+                '${getGreeting()},',
                 style: GoogleFonts.inter(
-                  fontSize: 28, // Diperbesar dari 24
+                  fontSize: 28,
                   fontWeight: FontWeight.w400,
                   color: const Color(0xFF002369),
                   height: 1.2,
@@ -49,7 +106,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Text(
                 'Umi Kulsum S.pd',
                 style: GoogleFonts.inter(
-                  fontSize: 32, // Diperbesar dari 24 agar nama lebih menonjol
+                  fontSize: 32,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF002369),
                   height: 1.2,
@@ -57,9 +114,9 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Senin, 24 Mei 2024 • Semester Genap',
+                getFormattedDate(),
                 style: GoogleFonts.inter(
-                  fontSize: 16, // Diperbesar dari 14
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: const Color(0xFF002369).withOpacity(0.7),
                 ),
@@ -70,17 +127,14 @@ class _DashboardPageState extends State<DashboardPage> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF4F6F9), // Menggunakan warna terang yang sama dengan Jurnal Terbaru
+                  color: const Color(0xFFF4F6F9),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.borderLight),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Absensi Hari ini',
-                      style: AppTextStyles.sectionTitle,
-                    ),
+                    Text('Absensi Hari ini', style: AppTextStyles.sectionTitle),
                     const SizedBox(height: 16),
                     SizedBox(
                       height: 350,
@@ -94,6 +148,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           controller: _attendanceScrollController,
                           padding: const EdgeInsets.only(right: 16),
                           children: [
+                            // Sudah diisi → tombol "Lihat" → DetailAbsensiPage
                             AttendanceCard(
                               time: '10:40-12:00',
                               className: 'Kelas XI-RPL 1',
@@ -103,21 +158,14 @@ class _DashboardPageState extends State<DashboardPage> {
                               statusText: 'Sudah di isi',
                               filledCount: 34,
                               totalCount: 38,
-                              onActionTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => DetailAbsensiPage(
-                                      className: 'Kelas XI-RPL 1',
-                                      subject: 'Bahasa Indonesia',
-                                      time: '10:40-12:00',
-                                      jamKe: 'Jam ke-3',
-                                      isReadOnly: true,
-                                    ),
-                                  ),
-                                );
-                              },
+                              onActionTap: () => _navigateToDetailAbsensi(
+                                className: 'XI-RPL 1',
+                                subject: 'Bahasa Indonesia',
+                                time: '10:40-12:00',
+                                jamKe: 'Jam ke-3',
+                              ),
                             ),
+                            // Belum diisi → tombol "Absen" → InputAbsensiTab
                             AttendanceCard(
                               time: '08:40-10:00',
                               className: 'Kelas XI-PSPT 2',
@@ -127,20 +175,12 @@ class _DashboardPageState extends State<DashboardPage> {
                               statusText: 'Belum di isi',
                               filledCount: 0,
                               totalCount: 34,
-                              onActionTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => DetailAbsensiPage(
-                                      className: 'Kelas XI-PSPT 2',
-                                      subject: 'Bahasa Indonesia',
-                                      time: '08:40-10:00',
-                                      jamKe: 'Jam ke-2',
-                                      isReadOnly: false,
-                                    ),
-                                  ),
-                                );
-                              },
+                              onActionTap: () => _navigateToInputAbsensi(
+                                className: 'XI-PSPT 2',
+                                subject: 'Bahasa Indonesia',
+                                time: '08:40-10:00',
+                                jamKe: 'Jam ke-2',
+                              ),
                             ),
                             const AttendanceCard(
                               time: '12:00-13:40',
@@ -158,7 +198,6 @@ class _DashboardPageState extends State<DashboardPage> {
                               status: AttendanceStatus.locked,
                               statusText: 'Belum Waktunya',
                             ),
-                            // Tambahan jadwal agar bisa discroll
                             const AttendanceCard(
                               time: '15:00-16:20',
                               className: 'Kelas X-RPL 2',
@@ -190,15 +229,23 @@ class _DashboardPageState extends State<DashboardPage> {
                 onSeeAllTap: () => print('Lihat Semua tapped'),
                 onTaskTap: (taskName) => print('Task tapped: $taskName'),
               ),
-              const SizedBox(height: 80), // Space for FAB
+              const SizedBox(height: 24),
+
+              // Aktivitas Terbaru Section
+              AktivitasTerbaruWidget(
+                onLihatSemua: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AktivitasSemua(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 80),
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.secondaryOrange,
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

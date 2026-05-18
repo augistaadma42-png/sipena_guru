@@ -203,7 +203,7 @@ class TaskSummarySection extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '5 Tugas',
+                        '15 siswa dari 5 tugas',
                         style: AppTextStyles.labelStyle.copyWith(
                           color: AppColors.secondaryOrange,
                         ),
