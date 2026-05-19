@@ -17,7 +17,7 @@ class ProgressPengumpulanBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Progress Pengumpulan',
+              'Progress',
               style: AppTextStyles.labelStyle,
             ),
             Text(

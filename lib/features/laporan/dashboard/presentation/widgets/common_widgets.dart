@@ -1,48 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fitur_guru/core/constants/colors.dart';
+import 'package:fitur_guru/core/widgets/custom_app_bar.dart';
 
 /// App Bar yang sesuai dengan gambar: Putih, ada tombol back, judul Laporan, dan icon profil
 class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DashboardAppBar({super.key});
-  
+  final String title;
+  final bool showBackButton;
+ 
+  const DashboardAppBar({
+    super.key,
+    this.title = 'Laporan',
+    this.showBackButton = true,
+  });
+ 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-  
+  Size get preferredSize => const Size.fromHeight(80);
+ 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: AppColors.primaryBlue),
-        onPressed: () => Navigator.maybePop(context),
-      ),
-      title: Text(
-        'Laporan',
-        style: GoogleFonts.inter(
-          color: AppColors.primaryBlue,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primaryBlue, width: 1.5),
-            ),
-            child: const Icon(
-              Icons.account_circle_outlined,
-              color: AppColors.primaryBlue,
-              size: 24,
-            ),
-          ),
-        ),
-      ],
+    return CustomAppBar(
+      title: title,
+      showBackButton: showBackButton,
     );
   }
 }
