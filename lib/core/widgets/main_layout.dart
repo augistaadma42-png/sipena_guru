@@ -150,7 +150,7 @@ import 'package:flutter/material.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/jurnal/presentation/pages/jurnal_mengajar_page.dart';
 import '../../features/absen/presentation/pages/absensi_page.dart';
-import '../../features/tugas/dashboard_tugas/presentation/pages/dashboard_tugas_page.dart';
+import '../../features/tugas/daftar_kelas/presentation/pages/daftar_kelas_page.dart';
 import '../../features/laporan/dashboard/presentation/pages/dashboard_page.dart'
     as laporan;
 import '../../core/constants/colors.dart';
@@ -203,7 +203,7 @@ class _MainLayoutState extends State<MainLayout> {
       key: _tugasNavigatorKey,
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
-          builder: (context) => const DashboardTugasPage(),
+          builder: (context) => const DaftarKelasPage(),
         );
       },
     ),

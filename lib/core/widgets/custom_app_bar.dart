@@ -7,12 +7,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showBackButton;
   final int notifCount;
+  final PreferredSizeWidget? bottom;
 
   const CustomAppBar({
     Key? key,
     required this.title,
     this.showBackButton = false,
     this.notifCount = 3, // dummy, nanti dari state management
+    this.bottom,
   }) : super(key: key);
 
   @override
@@ -128,9 +130,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ],
+      bottom: bottom,
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => Size.fromHeight(80.0 + (bottom?.preferredSize.height ?? 0.0));
 }

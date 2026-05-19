@@ -3,6 +3,7 @@ import '../../domain/entities/tugas.dart';
 
 class TugasFormController extends ChangeNotifier {
   // Text Controllers
+  final TextEditingController judulMateriController = TextEditingController();
   final TextEditingController judulController = TextEditingController();
   final TextEditingController deskripsiController = TextEditingController();
 
@@ -70,6 +71,7 @@ class TugasFormController extends ChangeNotifier {
 
   @override
   void dispose() {
+    judulMateriController.dispose();
     judulController.dispose();
     deskripsiController.dispose();
     kelas.dispose();

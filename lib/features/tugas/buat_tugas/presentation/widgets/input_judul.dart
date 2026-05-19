@@ -4,8 +4,17 @@ import '../../../../../../core/constants/colors.dart';
 
 class InputJudul extends StatelessWidget {
   final TextEditingController controller;
+  final String label;
+  final String hintText;
+  final bool isRequired;
 
-  const InputJudul({super.key, required this.controller});
+  const InputJudul({
+    super.key, 
+    required this.controller,
+    this.label = 'Judul',
+    this.hintText = 'Masukkan judul tugas',
+    this.isRequired = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,22 +38,24 @@ class InputJudul extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Judul',
+                label,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(width: 6),
-              Text(
-                '* WAJIB DIISI',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.red.shade400,
+              if (isRequired) ...[
+                const SizedBox(width: 6),
+                Text(
+                  '* WAJIB DIISI',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red.shade400,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
           const SizedBox(height: 8),
@@ -52,7 +63,7 @@ class InputJudul extends StatelessWidget {
             controller: controller,
             style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Masukkan judul tugas',
+              hintText: hintText,
               hintStyle: GoogleFonts.inter(
                 fontSize: 14,
                 color: AppColors.disabledGrey,

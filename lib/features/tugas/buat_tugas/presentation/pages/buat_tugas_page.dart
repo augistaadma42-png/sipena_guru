@@ -9,10 +9,13 @@ import '../widgets/tanggal_picker.dart';
 import '../widgets/topik_dropdown.dart';
 import '../widgets/lampiran_section.dart';
 import '../widgets/engagement_card.dart';
+import '../../../dashboard_tugas/domain/entities/tugas_entity.dart';
 import '../../../dashboard_tugas/presentation/pages/tugas_store.dart';
 
 class BuatTugasPage extends StatefulWidget {
-  const BuatTugasPage({super.key});
+  final TugasEntity? tugasToEdit;
+
+  const BuatTugasPage({super.key, this.tugasToEdit});
 
   @override
   State<BuatTugasPage> createState() => _BuatTugasPageState();
@@ -25,6 +28,15 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
   void initState() {
     super.initState();
     _controller = TugasFormController();
+    
+    if (widget.tugasToEdit != null) {
+      _controller.judulController.text = widget.tugasToEdit!.title;
+      _controller.deskripsiController.text = widget.tugasToEdit!.subtitle;
+      if (TugasFormController.kelasList.contains(widget.tugasToEdit!.kelas)) {
+        _controller.kelas.value = widget.tugasToEdit!.kelas;
+      }
+    }
+
     // rebuild tombol simpan saat judul berubah
     _controller.judulController.addListener(() => setState(() {}));
   }
@@ -53,7 +65,11 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Tugas "${tugas.judul}" berhasil disimpan!'),
+        content: Text(
+          widget.tugasToEdit != null 
+              ? 'Tugas "${tugas.judul}" berhasil diperbarui!' 
+              : 'Tugas "${tugas.judul}" berhasil disimpan!'
+        ),
         backgroundColor: AppColors.successGreen,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -87,8 +103,20 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
                     _buildChipSection(),
                     const SizedBox(height: 16),
 
-                    // Input Judul
-                    InputJudul(controller: _controller.judulController),
+                    // Input Judul Materi (Opsional)
+                    InputJudul(
+                      controller: _controller.judulMateriController,
+                      label: 'Judul Materi',
+                      hintText: 'Judul Materi / Referensi (Opsional)',
+                      isRequired: false,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Input Judul Tugas
+                    InputJudul(
+                      controller: _controller.judulController,
+                      label: 'Judul Tugas',
+                    ),
                     const SizedBox(height: 12),
 
                     // Deskripsi + Toolbar

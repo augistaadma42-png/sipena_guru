@@ -16,6 +16,7 @@ import '../widgets/empty_tugas_widget.dart';
 import '../widgets/loading_dashboard_widget.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../buat_tugas/presentation/pages/buat_tugas_page.dart';
+import '../widgets/daftar_siswa_tab.dart';
 
 class DashboardTugasPage extends StatelessWidget {
   const DashboardTugasPage({super.key});
@@ -42,10 +43,40 @@ class DashboardTugasView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: const DashboardTugasAppBar(),
-      body: BlocBuilder<DashboardTugasBloc, DashboardTugasState>(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        appBar: const DashboardTugasAppBar(
+          bottom: TabBar(
+            indicatorColor: AppColors.primaryBlue,
+            labelColor: AppColors.primaryBlue,
+            unselectedLabelColor: AppColors.textSecondary,
+            tabs: [
+              Tab(text: 'Tugas & Nilai'),
+              Tab(text: 'Daftar Siswa'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildTugasTab(context),
+            const DaftarSiswaTab(),
+          ],
+        ),
+        floatingActionButton: FloatingAddTugasButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const BuatTugasPage()),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTugasTab(BuildContext context) {
+    return BlocBuilder<DashboardTugasBloc, DashboardTugasState>(
         builder: (context, state) {
           // Debug log untuk membantu troubleshooting
           debugPrint('[DashboardTugasView] Current State: $state');
@@ -88,14 +119,6 @@ class DashboardTugasView extends StatelessWidget {
 
           return const SizedBox.shrink();
         },
-      ),
-      floatingActionButton: FloatingAddTugasButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => BuatTugasPage()),
-          );
-        },
-      ),
-    );
+      );
   }
 }

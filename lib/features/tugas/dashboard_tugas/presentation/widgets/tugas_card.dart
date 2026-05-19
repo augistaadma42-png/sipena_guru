@@ -3,6 +3,7 @@ import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../domain/entities/tugas_entity.dart';
 import '../../../detail_tugas/presentation/pages/rekap_pengumpulan_tugas_page.dart';
+import '../../../buat_tugas/presentation/pages/buat_tugas_page.dart';
 import 'tugas_badge.dart';
 import 'deadline_widget.dart';
 import 'anggota_avatar_group.dart';
@@ -52,9 +53,48 @@ class TugasCard extends StatelessWidget {
                   label: tugas.kelas,
                   isBlue: !tugas.isUrgent,
                 ),
-                DeadlineWidget(
-                  sisaHari: tugas.sisaHari,
-                  isUrgent: tugas.isUrgent,
+                Row(
+                  children: [
+                    DeadlineWidget(
+                      sisaHari: tugas.sisaHari,
+                      isUrgent: tugas.isUrgent,
+                    ),
+                    const SizedBox(width: 8),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BuatTugasPage(tugasToEdit: tugas),
+                            ),
+                          );
+                        } else if (value == 'detail') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RekapPengumpulanTugasPage(
+                                tugasId: tugas.id,
+                                tugasTitle: tugas.title,
+                                tugasSubtitle: tugas.subtitle,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Text('Edit Tugas'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'detail',
+                          child: Text('Detail Tugas'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
