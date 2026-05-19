@@ -153,10 +153,10 @@ class AktivitasTerbaruWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ..._aktivitasList.asMap().entries.map((entry) {
+          ...(_aktivitasList.take(5).toList()).asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
-            final isLast = index == _aktivitasList.length - 1;
+            final isLast = index == 4;
 
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,

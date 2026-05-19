@@ -7,6 +7,7 @@ import '../../../../core/widgets/custom_drawer.dart';
 import '../widgets/attendance_card.dart';
 import '../widgets/task_summary_card.dart';
 import '../widgets/aktivitas_terbaru_widget.dart';
+import '../../../tugas/dashboard_tugas/presentation/pages/dashboard_tugas_page.dart';
 import 'aktivitas_semua_page.dart';
 import 'package:intl/intl.dart';
 import '../../../absen/presentation/pages/absensi_dari_jadwal_page.dart';
@@ -137,7 +138,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     Text('Absensi Hari ini', style: AppTextStyles.sectionTitle),
                     const SizedBox(height: 16),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.4,
+                      height: 350,
                       child: RawScrollbar(
                         controller: _attendanceScrollController,
                         thumbColor: AppColors.primaryBlue,
@@ -225,9 +226,24 @@ class _DashboardPageState extends State<DashboardPage> {
 
               // Ringkasan Tugas Section
               TaskSummarySection(
-                onCheckNowTap: () => print('Periksa Sekarang tapped'),
-                onSeeAllTap: () => print('Lihat Semua tapped'),
-                onTaskTap: (taskName) => print('Task tapped: $taskName'),
+                onCheckNowTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DashboardTugasPage(),
+                  ),
+                ),
+                onSeeAllTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DashboardTugasPage(),
+                  ),
+                ),
+                onTaskTap: (taskName) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DashboardTugasPage(),
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
 
