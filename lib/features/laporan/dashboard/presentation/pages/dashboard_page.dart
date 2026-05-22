@@ -18,13 +18,6 @@ import 'package:fitur_guru/features/laporan/absensi/domain/usecases/get_student_
 import 'package:fitur_guru/features/laporan/absensi/presentation/bloc/laporan_absensi_bloc.dart';
 import 'package:fitur_guru/features/laporan/absensi/presentation/pages/laporan_absensi_bulanan.dart';
 
-import 'package:fitur_guru/features/laporan/input_nilai/data/datasources/input_nilai_local_datasource.dart';
-import 'package:fitur_guru/features/laporan/input_nilai/data/repositories/input_nilai_repository_impl.dart';
-import 'package:fitur_guru/features/laporan/input_nilai/domain/usecases/get_class_statistics_usecase.dart';
-import 'package:fitur_guru/features/laporan/input_nilai/domain/usecases/get_student_ranking_usecase.dart';
-import 'package:fitur_guru/features/laporan/input_nilai/presentation/bloc/input_nilai_bloc.dart';
-import 'package:fitur_guru/features/laporan/input_nilai/presentation/pages/input_nilai_siswa_page.dart';
-
 import 'package:fitur_guru/features/laporan/laporan_tugas/presentation/pages/laporan_tugas_page.dart';
 
 /// DashboardPage - Tampilan PERSIS seperti gambar yang diberikan
@@ -116,12 +109,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   'accentColor': AppColors.secondaryOrange,
                 },
                 {
-                  'title': 'Laporan Statistik Kelas',
-                  'description': 'Statistik utama kelas, peringkat nilai, dan ringkasan performa siswa.',
-                  'icon': Icons.edit_note_rounded,
-                  'accentColor': AppColors.primaryBlue,
-                },
-                {
                   'title': 'Laporan Tugas',
                   'description': 'Analisis tugas, status pengumpulan, dan distribusi nilai siswa.',
                   'icon': Icons.analytics_outlined,
@@ -165,23 +152,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   );
                 } else if (index == 2) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (_) {
-                          final ds = InputNilaiLocalDatasourceImpl();
-                          final repo = InputNilaiRepositoryImpl(localDatasource: ds);
-                          return InputNilaiBloc(
-                            getClassStatisticsUsecase: GetClassStatisticsUsecase(repo),
-                            getStudentRankingUsecase: GetStudentRankingUsecase(repo),
-                          );
-                        },
-                        child: const InputNilaiSiswaPage(),
-                      ),
-                    ),
-                  );
-                } else if (index == 3) {
                   // Navigasi ke Laporan Tugas (Statistik Tugas)
                   Navigator.push(
                     context,

@@ -66,15 +66,11 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
   ];
 
   final List<StudentAttendanceModel> _studentList = [
-    const StudentAttendanceModel(id: 's1', nisn: '2021001', name: 'Esa Farellio',   initials: 'EF', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's2', nisn: '2021002', name: 'Augista A.Z',    initials: 'AA', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's3', nisn: '2021003', name: 'Feby Shandy I.', initials: 'FS', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's4', nisn: '2021004', name: 'Gavin K.H',      initials: 'GK', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's5', nisn: '2021005', name: 'Fariskha A.F',   initials: 'FA', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's6', nisn: '2021006', name: 'Devita A.V.P',   initials: 'DA', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's7', nisn: '2021007', name: 'Anindya F.A',    initials: 'AF', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's8', nisn: '2021008', name: 'Helmalia A',     initials: 'HA', status: 'Hadir'),
-    const StudentAttendanceModel(id: 's9', nisn: '2021009', name: 'Eka Rara A.A',   initials: 'ER', status: 'Hadir'),
+    const StudentAttendanceModel(id: 's1', nisn: '0057281', name: 'Ahmad Fauzan', initials: 'AF', status: 'hadir'),
+    const StudentAttendanceModel(id: 's2', nisn: '0057282', name: 'Budi Santoso', initials: 'BS', status: 'hadir'),
+    const StudentAttendanceModel(id: 's3', nisn: '0057283', name: 'Citra Kirana', initials: 'CK', status: 'hadir'),
+    const StudentAttendanceModel(id: 's4', nisn: '0057284', name: 'Dewi Lestari', initials: 'DL', status: 'hadir'),
+    const StudentAttendanceModel(id: 's5', nisn: '0057285', name: 'Eka Saputra', initials: 'ES', status: 'hadir'),
   ];
 
   final List<LeaveRequestModel> _leaveRequests = [
