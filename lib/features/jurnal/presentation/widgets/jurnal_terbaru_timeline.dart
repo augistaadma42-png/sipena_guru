@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../domain/entities/jurnal_entity.dart';
 
 class JurnalTerbaruTimeline extends StatefulWidget {
+  final List<JurnalEntity> jurnalList;
   final VoidCallback onLihatRekapTap;
-  final Function(Map<String, String>)? onEditTap;
+  final Function(JurnalEntity)? onEditTap;
 
   const JurnalTerbaruTimeline({
     Key? key,
+    required this.jurnalList,
     required this.onLihatRekapTap,
     this.onEditTap,
   }) : super(key: key);
@@ -21,39 +24,6 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
   int _activeIndex = 0;
   final double _itemHeight = 130.0;
 
-  final List<Map<String, String>> _jurnals = [
-    {
-      'time': '13:00 - 14:30',
-      'className': 'XI-MP 4',
-      'title': 'PPT Drama',
-      'description': 'Presentasi PPT mengenai materi drama pada...',
-    },
-    {
-      'time': '10:00 - 11:30',
-      'className': 'X-RPL 1',
-      'title': 'Latihan Soal Cerpen',
-      'description': 'Mengoreksi Bersama Latihan soal cerpen...',
-    },
-    {
-      'time': '08:00 - 09:30',
-      'className': 'XI-RPL 1',
-      'title': 'Praktik Drama',
-      'description': 'Diskusi kelompok mengenai penampilan praktik drama...',
-    },
-    {
-      'time': '07:00 - 08:00',
-      'className': 'X-TKJ 2',
-      'title': 'Pengantar Jaringan',
-      'description': 'Pengenalan dasar-dasar topologi jaringan komputer...',
-    },
-    {
-      'time': '06:30 - 07:00',
-      'className': 'Apel Pagi',
-      'title': 'Upacara Bendera',
-      'description': 'Mengikuti upacara bendera bersama seluruh siswa...',
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -61,7 +31,7 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
       // Menghitung indeks mana yang sedang berada di atas berdasarkan scroll
       int newIndex = (_scrollController.offset / _itemHeight).round();
       if (newIndex < 0) newIndex = 0;
-      if (newIndex >= _jurnals.length) newIndex = _jurnals.length - 1;
+      if (newIndex >= widget.jurnalList.length) newIndex = widget.jurnalList.length - 1;
 
       if (_activeIndex != newIndex) {
         setState(() {
@@ -95,19 +65,19 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 280, // Membatasi tinggi agar bisa di-scroll
+            height: 280,
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.only(right: 16),
-              itemCount: _jurnals.length,
+              itemCount: widget.jurnalList.length,
               itemBuilder: (context, index) {
-                final jurnal = _jurnals[index];
+                final jurnal = widget.jurnalList[index];
                 return _buildTimelineItem(
-                  time: jurnal['time']!,
-                  className: jurnal['className']!,
-                  title: jurnal['title']!,
-                  description: jurnal['description']!,
-                  isLast: index == _jurnals.length - 1,
+                  time: jurnal.time,
+                  className: jurnal.className,
+                  title: jurnal.title,
+                  description: jurnal.description,
+                  isLast: index == widget.jurnalList.length - 1,
                   isActive: index == _activeIndex,
                   onEdit: () {
                     if (widget.onEditTap != null) {
@@ -166,7 +136,7 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 24, // Fixed width for the column to center the dots
+            width: 24,
             child: Column(
               children: [
                 AnimatedContainer(
@@ -199,14 +169,41 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '$time • $className',
-                    style: AppTextStyles.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                  Row(
+                    children: [
+                      Text(
+                        time,
+                        style: AppTextStyles.labelStyle.copyWith(
+                          color: isActive ? AppColors.primaryBlue : AppColors.textSecondary,
+                          fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                          fontSize: 10,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isActive ? AppColors.primaryBlue.withOpacity(0.1) : AppColors.backgroundLight,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          className,
+                          style: AppTextStyles.labelStyle.copyWith(
+                            color: isActive ? AppColors.primaryBlue : AppColors.textSecondary,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     title,
-                    style: AppTextStyles.cardTitle.copyWith(fontSize: 14),
+                    style: AppTextStyles.cardTitle.copyWith(
+                      fontSize: 14,
+                      color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(

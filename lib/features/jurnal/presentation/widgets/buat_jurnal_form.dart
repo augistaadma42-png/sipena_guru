@@ -26,9 +26,6 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
   String? _subject;
   String? _jam;
 
-  String _getDescription() {
-    return _quillController.document.toPlainText().trim();
-  }
 
   @override
   void initState() {
@@ -239,13 +236,6 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    final isEdit = widget.isEditMode;
-                    final result = {
-                      'className': _selectedKelas ?? '',
-                      'title': _materiController.text,
-                      'description': _getDescription(),
-                      'date': DateTime.now().toString(),
-                    };
 
                     // kirim data balik
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -346,6 +336,12 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
   }
 
   Widget _buildDropdown() {
+    final Map<String, String> classSubjectMap = {
+      'XII IPA 1': 'Matematika Wajib',
+      'XII IPA 2': 'Matematika Wajib',
+      'XI IPA 1': 'Matematika Peminatan',
+    };
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -363,15 +359,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
             color: AppColors.secondaryOrange,
           ),
           items:
-              [
-                'XI-RPL 1',
-                'XI-PSPT 2',
-                'XI-MP 4',
-                'X-RPL 1',
-                'X-TKJ 2',
-                'Apel Pagi',
-                'X-MP 4',
-              ].map((String value) {
+              classSubjectMap.keys.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value, style: AppTextStyles.cardTitle),
@@ -380,6 +368,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
           onChanged: (value) {
             setState(() {
               _selectedKelas = value;
+              _subject = classSubjectMap[value];
             });
           },
         ),

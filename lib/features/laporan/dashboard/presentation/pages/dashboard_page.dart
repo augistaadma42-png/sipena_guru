@@ -79,20 +79,20 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: [
                   FilterDropdown(
                     label: 'Pilih Kelas',
-                    value: 'Kelas X - IPA 1',
-                    items: ['Kelas X - IPA 1', 'Kelas X - IPA 2', 'Kelas XI - IPA 1'],
+                    value: 'XII IPA 1',
+                    items: ['XII IPA 1', 'XII IPA 2', 'XI IPA 1'],
                   ),
                   SizedBox(height: 16),
                   FilterDropdown(
                     label: 'Pilih Mata Pelajaran',
-                    value: 'Matematika Peminatan',
-                    items: ['Matematika Peminatan', 'Fisika', 'Kimia'],
+                    value: 'Matematika Wajib',
+                    items: ['Matematika Wajib', 'Matematika Peminatan'],
                   ),
                   SizedBox(height: 16),
                   FilterDropdown(
                     label: 'Pilih Bulan',
-                    value: 'Oktober 2023',
-                    items: ['Oktober 2023', 'November 2023', 'Desember 2023'],
+                    value: 'Mei 2026',
+                    items: ['Maret 2026', 'April 2026', 'Mei 2026'],
                   ),
                 ],
               ),
@@ -116,14 +116,14 @@ class _DashboardPageState extends State<DashboardPage> {
                   'accentColor': AppColors.secondaryOrange,
                 },
                 {
-                  'title': 'Input Nilai Siswa',
-                  'description': 'Statistik utama kelas, peringkat nilai, dan ekspor ringkasan penilaian.',
+                  'title': 'Laporan Statistik Kelas',
+                  'description': 'Statistik utama kelas, peringkat nilai, dan ringkasan performa siswa.',
                   'icon': Icons.edit_note_rounded,
                   'accentColor': AppColors.primaryBlue,
                 },
                 {
-                  'title': 'Statistik Tugas',
-                  'description': 'Analisis tingkat kesulitan tugas dan distribusi nilai rata-rata kelas.',
+                  'title': 'Laporan Tugas',
+                  'description': 'Analisis tugas, status pengumpulan, dan distribusi nilai siswa.',
                   'icon': Icons.analytics_outlined,
                   'accentColor': const Color(0xFF3B82F6),
                 },
@@ -207,14 +207,14 @@ class _DashboardPageState extends State<DashboardPage> {
             const ActivityList(
               activities: [
                 {
-                  'title': 'Laporan Nilai Akhir - X IPA 1',
+                  'title': 'Laporan Nilai Akhir - XII IPA 1',
                   'time': 'Diunduh 2 jam yang lalu',
                   'icon': Icons.description_outlined,
                   'iconColor': AppColors.secondaryOrange,
                   'bgColor': Color(0xFFFFF7ED),
                 },
                 {
-                  'title': 'Statistik Tugas - XI IPS 1',
+                  'title': 'Statistik Tugas - XII IPA 2',
                   'time': 'Dilihat 5 jam yang lalu',
                   'icon': Icons.visibility_outlined,
                   'iconColor': Color(0xFF3B82F6),

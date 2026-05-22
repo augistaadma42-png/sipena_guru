@@ -10,7 +10,8 @@ import '../widgets/topik_dropdown.dart';
 import '../widgets/lampiran_section.dart';
 import '../widgets/engagement_card.dart';
 import '../../../dashboard_tugas/domain/entities/tugas_entity.dart';
-import '../../../dashboard_tugas/presentation/pages/tugas_store.dart';
+import '../../data/repositories/tugas_repository_impl.dart';
+import '../../domain/usecases/create_tugas.dart';
 
 class BuatTugasPage extends StatefulWidget {
   final TugasEntity? tugasToEdit;
@@ -61,7 +62,10 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     }
 
     final tugas = _controller.buildEntity();
-    TugasStore.tambah(context, tugas);
+    // Simulate saving task through usecase
+    final repo = TugasRepositoryImpl();
+    final createTugas = CreateTugas(repo);
+    createTugas(tugas);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

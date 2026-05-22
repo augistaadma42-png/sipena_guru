@@ -13,18 +13,18 @@ class DaftarKelasLocalDatasourceImpl implements DaftarKelasLocalDatasource {
     return [
       const KelasDiampuModel(
         id: '1',
-        namaKelas: 'XI RPL 1',
-        namaMapel: 'Sejarah Indonesia',
+        namaKelas: 'XII IPA 1',
+        namaMapel: 'Matematika Wajib',
       ),
       const KelasDiampuModel(
         id: '2',
-        namaKelas: 'XI RPL 2',
-        namaMapel: 'PKN',
+        namaKelas: 'XII IPA 2',
+        namaMapel: 'Matematika Wajib',
       ),
       const KelasDiampuModel(
         id: '3',
-        namaKelas: 'XII TKJ 1',
-        namaMapel: 'Matematika',
+        namaKelas: 'XI IPA 1',
+        namaMapel: 'Matematika Peminatan',
       ),
     ];
   }

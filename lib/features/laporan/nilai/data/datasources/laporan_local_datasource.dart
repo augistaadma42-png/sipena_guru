@@ -12,13 +12,13 @@ abstract class LaporanLocalDatasource {
 
 /// Implementasi datasource dengan dummy data lokal
 class LaporanLocalDatasourceImpl implements LaporanLocalDatasource {
-  /// Dummy data 32 siswa (sesuai desain referensi total 32 siswa)
+  /// Dummy data 30 siswa (sesuai jumlah siswa per kelas di requirement)
   static final List<StudentNilaiModel> _allStudents = [
     const StudentNilaiModel(
       id: '1',
-      nama: 'Aditya Pratama',
-      kelas: 'XII MIPA 4',
-      nilai: '96',
+      nama: 'Ahmad Fauzan',
+      kelas: 'XII IPA 1',
+      nilai: '95',
     ),
     const StudentNilaiModel(
       id: '2',

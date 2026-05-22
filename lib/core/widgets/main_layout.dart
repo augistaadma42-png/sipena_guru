@@ -159,15 +159,23 @@ import '../../core/constants/colors.dart';
 import 'custom_drawer.dart';
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({Key? key}) : super(key: key);
+  final int initialIndex;
+  final Map<String, dynamic>? initialData;
+  const MainLayout({Key? key, this.initialIndex = 0, this.initialData}) : super(key: key);
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
   DateTime? _lastPressedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   final GlobalKey<NavigatorState> _jurnalNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -203,7 +211,8 @@ class _MainLayoutState extends State<MainLayout> {
       key: _jurnalNavigatorKey,
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
-          builder: (context) => const JurnalMengajarPage(),
+          builder: (context) => JurnalMengajarPage(
+              initialData: widget.initialData?.cast<String, String>()),
         );
       },
     ),

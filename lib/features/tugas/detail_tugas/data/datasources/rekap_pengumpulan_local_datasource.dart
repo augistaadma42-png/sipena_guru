@@ -25,40 +25,40 @@ class RekapPengumpulanLocalDatasourceImpl
     return _getRekapTugas1();
   }
 
-  /// Data rekap untuk "Latihan Logika Dasar" (id: 1)
+  /// Data rekap untuk "Latihan Integral" (id: 1)
   AssignmentRecapModel _getRekapTugas1() {
     return AssignmentRecapModel(
       id: '1',
-      title: 'Latihan Logika Dasar',
-      subtitle: 'UTS Semester Ganjil 2023/2024',
-      totalStudents: 32,
+      title: 'Latihan Integral',
+      subtitle: 'Latihan soal integral tentu dan tak tentu - XII IPA 1',
+      totalStudents: 30,
       submittedCount: 24,
-      pendingCount: 8,
-      completionPercentage: 75.0,
-      lateStudentsCount: 5,
+      pendingCount: 6,
+      completionPercentage: 80.0,
+      lateStudentsCount: 3,
       submissions: [
         const AssignmentSubmissionModel(
           id: 's1',
-          studentName: 'Esa Farellio',
-          avatar: 'https://i.pravatar.cc/150?u=esa',
+          studentName: 'Ahmad Fauzan',
+          avatar: 'https://i.pravatar.cc/150?u=ahmad',
           submittedAt: '24 Okt, 08:30',
-          fileName: 'Esa_tugas.pdf',
-          score: 100,
+          fileName: 'Ahmad_Fauzan_Integral.pdf',
+          score: 95,
           isSubmitted: true,
         ),
         const AssignmentSubmissionModel(
           id: 's2',
-          studentName: 'Augista Adma Z',
-          avatar: 'https://i.pravatar.cc/150?u=augista',
+          studentName: 'Ananda Aryani',
+          avatar: 'https://i.pravatar.cc/150?u=ananda',
           submittedAt: '23 Okt, 14:15',
-          fileName: 'Ara_Project.pdf',
+          fileName: 'Ananda_Integral.pdf',
           score: 90,
           isSubmitted: true,
         ),
         const AssignmentSubmissionModel(
           id: 's3',
-          studentName: 'Feby Shandy I',
-          avatar: 'https://i.pravatar.cc/150?u=feby',
+          studentName: 'Bagus Akbar',
+          avatar: 'https://i.pravatar.cc/150?u=bagus',
           submittedAt: null,
           fileName: null,
           score: null,
@@ -66,19 +66,19 @@ class RekapPengumpulanLocalDatasourceImpl
         ),
         const AssignmentSubmissionModel(
           id: 's4',
-          studentName: 'Devita Aisyah V.P',
-          avatar: 'https://i.pravatar.cc/150?u=devita',
+          studentName: 'Bunga Pertiwi',
+          avatar: 'https://i.pravatar.cc/150?u=bunga',
           submittedAt: '23 Okt, 14:15',
-          fileName: 'Devita_A_VP_tugas.pdf',
+          fileName: 'Bunga_Integral.pdf',
           score: null,
           isSubmitted: true,
         ),
         const AssignmentSubmissionModel(
           id: 's5',
-          studentName: 'Rizky Maulana',
-          avatar: 'https://i.pravatar.cc/150?u=rizky1',
+          studentName: 'Candra Aditama',
+          avatar: 'https://i.pravatar.cc/150?u=candra',
           submittedAt: '22 Okt, 09:00',
-          fileName: 'Rizky_logika.pdf',
+          fileName: 'Candra_Integral.pdf',
           score: 85,
           isSubmitted: true,
         ),
@@ -86,12 +86,12 @@ class RekapPengumpulanLocalDatasourceImpl
     );
   }
 
-  /// Data rekap untuk "Projek Web Dinamis" (id: 2)
+  /// Data rekap untuk "Quiz Integral Substitusi" (id: 2)
   AssignmentRecapModel _getRekapTugas2() {
     return AssignmentRecapModel(
       id: '2',
-      title: 'Projek Web Dinamis',
-      subtitle: 'Integrasi Database MySQL',
+      title: 'Quiz Integral Substitusi',
+      subtitle: 'Membahas metode substitusi pada integral - XII IPA 2',
       totalStudents: 30,
       submittedCount: 18,
       pendingCount: 12,
@@ -100,26 +100,26 @@ class RekapPengumpulanLocalDatasourceImpl
       submissions: [
         const AssignmentSubmissionModel(
           id: 's1',
-          studentName: 'Bima Sakti',
-          avatar: 'https://i.pravatar.cc/150?u=bima',
+          studentName: 'Daffa Rizaldi',
+          avatar: 'https://i.pravatar.cc/150?u=daffa',
           submittedAt: '28 Okt, 10:15',
-          fileName: 'Bima_WebProject.zip',
+          fileName: 'Daffa_SubstitusiIntegral.pdf',
           score: 95,
           isSubmitted: true,
         ),
         const AssignmentSubmissionModel(
           id: 's2',
-          studentName: 'Nayla Putri',
-          avatar: 'https://i.pravatar.cc/150?u=nayla',
+          studentName: 'Eka Putri Sari',
+          avatar: 'https://i.pravatar.cc/150?u=eka',
           submittedAt: '27 Okt, 16:00',
-          fileName: 'Nayla_MySQL_Project.pdf',
+          fileName: 'Eka_Integral.pdf',
           score: 88,
           isSubmitted: true,
         ),
         const AssignmentSubmissionModel(
           id: 's3',
-          studentName: 'Dimas Pratama',
-          avatar: 'https://i.pravatar.cc/150?u=dimas',
+          studentName: 'Fajar Nugroho',
+          avatar: 'https://i.pravatar.cc/150?u=fajar',
           submittedAt: null,
           fileName: null,
           score: null,
@@ -127,8 +127,8 @@ class RekapPengumpulanLocalDatasourceImpl
         ),
         const AssignmentSubmissionModel(
           id: 's4',
-          studentName: 'Sari Indah K',
-          avatar: 'https://i.pravatar.cc/150?u=sari',
+          studentName: 'Gita Maharani',
+          avatar: 'https://i.pravatar.cc/150?u=gita',
           submittedAt: null,
           fileName: null,
           score: null,
@@ -136,10 +136,10 @@ class RekapPengumpulanLocalDatasourceImpl
         ),
         const AssignmentSubmissionModel(
           id: 's5',
-          studentName: 'Farhan Aditya',
-          avatar: 'https://i.pravatar.cc/150?u=farhan',
+          studentName: 'Hendra Wijaya',
+          avatar: 'https://i.pravatar.cc/150?u=hendra',
           submittedAt: '28 Okt, 08:45',
-          fileName: 'Farhan_WebDynamic.pdf',
+          fileName: 'Hendra_Substitusi.pdf',
           score: 78,
           isSubmitted: true,
         ),

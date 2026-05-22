@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../domain/entities/task_summary_entity.dart';
 
 class TaskItem extends StatelessWidget {
   final String title;
@@ -75,12 +76,14 @@ class TaskSummarySection extends StatelessWidget {
   final VoidCallback? onCheckNowTap;
   final VoidCallback? onSeeAllTap;
   final Function(String taskName)? onTaskTap;
+  final List<TaskSummaryEntity> taskSummaryList;
 
   const TaskSummarySection({
     Key? key,
     this.onCheckNowTap,
     this.onSeeAllTap,
     this.onTaskTap,
+    required this.taskSummaryList,
   }) : super(key: key);
 
   @override
@@ -225,32 +228,19 @@ class TaskSummarySection extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const Divider(color: AppColors.borderLight, height: 1),
-              TaskItem(
-                title: 'Tugas Matematika',
-                subtitle: 'XI-RPL 1',
-                countText: '30/38 Siswa',
-                dateText: '30 Apr 2026',
-                countColor: AppColors.secondaryOrange,
-                onTap: () => onTaskTap?.call('Tugas Matematika'),
-              ),
-              const Divider(color: AppColors.borderLight, height: 1),
-              TaskItem(
-                title: 'Latihan Soal',
-                subtitle: 'X-RPL 1',
-                countText: '25/32 Siswa',
-                dateText: '30 Apr 2026',
-                countColor: AppColors.secondaryOrange,
-                onTap: () => onTaskTap?.call('Latihan Soal'),
-              ),
-              const Divider(color: AppColors.borderLight, height: 1),
-              TaskItem(
-                title: 'Kuis Harian',
-                subtitle: 'XI-MP 4',
-                countText: '12/40 Siswa',
-                dateText: '29 Apr 2026',
-                countColor: AppColors.secondaryOrange,
-                onTap: () => onTaskTap?.call('Kuis Harian'),
-              ),
+              ...taskSummaryList.map((task) => Column(
+                    children: [
+                      TaskItem(
+                        title: task.title,
+                        subtitle: task.subtitle,
+                        countText: task.countText,
+                        dateText: task.dateText,
+                        countColor: AppColors.secondaryOrange,
+                        onTap: () => onTaskTap?.call(task.title),
+                      ),
+                      const Divider(color: AppColors.borderLight, height: 1),
+                    ],
+                  )),
               const SizedBox(height: 16),
               Align(
                 alignment: Alignment.centerLeft,

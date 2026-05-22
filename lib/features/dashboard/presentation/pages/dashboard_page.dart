@@ -13,14 +13,45 @@ import 'package:intl/intl.dart';
 import '../../../absen/presentation/pages/absensi_dari_jadwal_page.dart';
 import '../../../absen/presentation/pages/detail_absensi_page.dart';
 
-class DashboardPage extends StatefulWidget {
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/dashboard_bloc.dart';
+import '../bloc/dashboard_event.dart';
+import '../bloc/dashboard_state.dart';
+import '../../domain/entities/attendance_overview_entity.dart';
+import '../../data/datasources/dashboard_local_datasource.dart';
+import '../../data/repositories/dashboard_repository_impl.dart';
+import '../../domain/usecases/get_aktivitas_terbaru_usecase.dart';
+import '../../domain/usecases/get_task_summary_usecase.dart';
+import '../../domain/usecases/get_attendance_overview_usecase.dart';
+
+class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) {
+        final ds = DashboardLocalDatasourceImpl();
+        final repo = DashboardRepositoryImpl(localDatasource: ds);
+        return DashboardBloc(
+          getAktivitasTerbaruUsecase: GetAktivitasTerbaruUsecase(repo),
+          getTaskSummaryUsecase: GetTaskSummaryUsecase(repo),
+          getAttendanceOverviewUsecase: GetAttendanceOverviewUsecase(repo),
+        )..add(LoadDashboardDataEvent());
+      },
+      child: const _DashboardPageContent(),
+    );
+  }
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _DashboardPageContent extends StatefulWidget {
+  const _DashboardPageContent({Key? key}) : super(key: key);
+
+  @override
+  State<_DashboardPageContent> createState() => _DashboardPageContentState();
+}
+
+class _DashboardPageContentState extends State<_DashboardPageContent> {
   final ScrollController _attendanceScrollController = ScrollController();
 
   @override
@@ -88,27 +119,34 @@ class _DashboardPageState extends State<DashboardPage> {
       backgroundColor: AppColors.backgroundLight,
       appBar: const CustomAppBar(title: 'Dashboard'),
       drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      body: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, state) {
+          if (state is DashboardLoading || state is DashboardInitial) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is DashboardError) {
+            return Center(child: Text(state.message));
+          } else if (state is DashboardLoaded) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
               // Greeting Section
               Text(
                 '${getGreeting()},',
                 style: GoogleFonts.inter(
-                  fontSize: 28,
+                  fontSize: 18,
                   fontWeight: FontWeight.w400,
                   color: const Color(0xFF002369),
-                  height: 1.2,
+                  height: 1.3,
                 ),
               ),
               Text(
-                'Umi Kulsum S.pd',
+                'Pak/Bu Umi Kulsum S.Pd.',
                 style: GoogleFonts.inter(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
                   color: const Color(0xFF002369),
                   height: 1.2,
                 ),
@@ -148,74 +186,37 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: ListView(
                           controller: _attendanceScrollController,
                           padding: const EdgeInsets.only(right: 16),
-                          children: [
-                            // Sudah diisi → tombol "Lihat" → DetailAbsensiPage
-                            AttendanceCard(
-                              time: '10:40-12:00',
-                              className: 'Kelas XI-RPL 1',
-                              room: 'LAB 1',
-                              subject: 'Bahasa Indonesia',
-                              status: AttendanceStatus.done,
-                              statusText: 'Sudah di isi',
-                              filledCount: 34,
-                              totalCount: 38,
-                              onActionTap: () => _navigateToDetailAbsensi(
-                                className: 'XI-RPL 1',
-                                subject: 'Bahasa Indonesia',
-                                time: '10:40-12:00',
-                                jamKe: 'Jam ke-3',
-                              ),
-                            ),
-                            // Belum diisi → tombol "Absen" → InputAbsensiTab
-                            AttendanceCard(
-                              time: '08:40-10:00',
-                              className: 'Kelas XI-PSPT 2',
-                              room: 'LAB 1',
-                              subject: 'Bahasa Indonesia',
-                              status: AttendanceStatus.pending,
-                              statusText: 'Belum di isi',
-                              filledCount: 0,
-                              totalCount: 34,
-                              onActionTap: () => _navigateToInputAbsensi(
-                                className: 'XI-PSPT 2',
-                                subject: 'Bahasa Indonesia',
-                                time: '08:40-10:00',
-                                jamKe: 'Jam ke-2',
-                              ),
-                            ),
-                            const AttendanceCard(
-                              time: '12:00-13:40',
-                              className: 'Kelas XI-RPL 1',
-                              room: 'LAB 1',
-                              subject: 'Bahasa Indonesia',
-                              status: AttendanceStatus.locked,
-                              statusText: 'Belum Waktunya',
-                            ),
-                            const AttendanceCard(
-                              time: '13:40-15:00',
-                              className: 'Kelas XI-RPL 1',
-                              room: 'LAB 1',
-                              subject: 'Bahasa Indonesia',
-                              status: AttendanceStatus.locked,
-                              statusText: 'Belum Waktunya',
-                            ),
-                            const AttendanceCard(
-                              time: '15:00-16:20',
-                              className: 'Kelas X-RPL 2',
-                              room: 'LAB 2',
-                              subject: 'Pemrograman Web',
-                              status: AttendanceStatus.locked,
-                              statusText: 'Belum Waktunya',
-                            ),
-                            const AttendanceCard(
-                              time: '16:20-17:40',
-                              className: 'Kelas X-RPL 2',
-                              room: 'LAB 2',
-                              subject: 'Pemrograman Web',
-                              status: AttendanceStatus.locked,
-                              statusText: 'Belum Waktunya',
-                            ),
-                          ],
+                          children: state.attendanceOverviewList.map((item) {
+                            return AttendanceCard(
+                              time: item.time,
+                              className: item.className,
+                              room: item.room,
+                              subject: item.subject,
+                              status: item.status == AttendanceOverviewStatus.done
+                                  ? AttendanceStatus.done
+                                  : item.status == AttendanceOverviewStatus.pending
+                                      ? AttendanceStatus.pending
+                                      : AttendanceStatus.locked,
+                              statusText: item.statusText,
+                              filledCount: item.filledCount,
+                              totalCount: item.totalCount,
+                              onActionTap: item.status == AttendanceOverviewStatus.done
+                                  ? () => _navigateToDetailAbsensi(
+                                        className: item.className,
+                                        subject: item.subject,
+                                        time: item.time,
+                                        jamKe: 'Jam ke-1 & 2',
+                                      )
+                                  : item.status == AttendanceOverviewStatus.pending
+                                      ? () => _navigateToInputAbsensi(
+                                            className: item.className,
+                                            subject: item.subject,
+                                            time: item.time,
+                                            jamKe: 'Jam ke-3 & 4',
+                                          )
+                                      : null,
+                            );
+                          }).toList(),
                         ),
                       ),
                     ),
@@ -226,6 +227,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
               // Ringkasan Tugas Section
               TaskSummarySection(
+                taskSummaryList: state.taskSummaryList,
                 onCheckNowTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -249,6 +251,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
               // Aktivitas Terbaru Section
               AktivitasTerbaruWidget(
+                aktivitasList: state.aktivitasList,
                 onLihatSemua: () {
                   Navigator.push(
                     context,
@@ -262,7 +265,11 @@ class _DashboardPageState extends State<DashboardPage> {
             ],
           ),
         ),
-      ),
+      );
+        }
+        return const SizedBox.shrink();
+      },
+    ),
     );
   }
 }

@@ -20,18 +20,11 @@ class LaporanNilaiPage extends StatefulWidget {
 }
 
 class _LaporanNilaiPageState extends State<LaporanNilaiPage> {
-  int _activeNavIndex = 2; // Laporan aktif
-
   @override
   void initState() {
     super.initState();
     // Trigger load data saat halaman pertama dibuka
     context.read<LaporanBloc>().add(const LoadLaporanEvent());
-  }
-
-  void _onNavTap(int index) {
-    setState(() => _activeNavIndex = index);
-    // TODO: Navigasi ke halaman lain sesuai index
   }
 
   void _onExportPdf() {

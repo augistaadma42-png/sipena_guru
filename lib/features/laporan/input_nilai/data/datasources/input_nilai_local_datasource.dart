@@ -12,22 +12,22 @@ class InputNilaiLocalDatasourceImpl implements InputNilaiLocalDatasource {
   static const List<StudentRankingModel> _topThree = [
     StudentRankingModel(
       id: '1',
-      nama: 'Ahmad Z.',
-      nis: '1029381',
+      nama: 'Ananda Aryani',
+      nis: '0057282',
       nilai: 98.2,
       ranking: 1,
     ),
     StudentRankingModel(
       id: '2',
-      nama: 'Siti R.',
-      nis: '1029382',
+      nama: 'Ahmad Fauzan',
+      nis: '0057281',
       nilai: 95.5,
       ranking: 2,
     ),
     StudentRankingModel(
       id: '3',
-      nama: 'Budi S.',
-      nis: '1029383',
+      nama: 'Candra Aditama',
+      nis: '0057285',
       nilai: 92.8,
       ranking: 3,
     ),
@@ -36,36 +36,36 @@ class InputNilaiLocalDatasourceImpl implements InputNilaiLocalDatasource {
   static const List<StudentRankingModel> _extended = [
     StudentRankingModel(
       id: '4',
-      nama: 'Dewi L.',
-      nis: '1029384',
+      nama: 'Bunga Pertiwi',
+      nis: '0057284',
       nilai: 91.0,
       ranking: 4,
     ),
     StudentRankingModel(
       id: '5',
-      nama: 'Eko P.',
-      nis: '1029385',
+      nama: 'Bagus Akbar',
+      nis: '0057283',
       nilai: 89.4,
       ranking: 5,
     ),
     StudentRankingModel(
       id: '6',
-      nama: 'Fitri A.',
-      nis: '1029386',
+      nama: 'Daffa Rizaldi',
+      nis: '0057291',
       nilai: 88.1,
       ranking: 6,
     ),
     StudentRankingModel(
       id: '7',
-      nama: 'Gita M.',
-      nis: '1029387',
+      nama: 'Eka Putri Sari',
+      nis: '0057292',
       nilai: 86.5,
       ranking: 7,
     ),
     StudentRankingModel(
       id: '8',
-      nama: 'Hadi K.',
-      nis: '1029388',
+      nama: 'Gita Maharani',
+      nis: '0057294',
       nilai: 85.0,
       ranking: 8,
     ),
@@ -77,7 +77,7 @@ class InputNilaiLocalDatasourceImpl implements InputNilaiLocalDatasource {
     return const ClassStatisticsModel(
       rataRata: 84.5,
       trendPercent: 2.4,
-      totalSiswa: 32,
+      totalSiswa: 30,
     );
   }
 

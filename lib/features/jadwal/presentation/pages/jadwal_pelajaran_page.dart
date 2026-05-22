@@ -1,103 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_drawer.dart';
+import '../bloc/jadwal_bloc.dart';
+import '../bloc/jadwal_event.dart';
+import '../bloc/jadwal_state.dart';
 import '../widgets/jadwal_header_card.dart';
+import '../../data/datasources/jadwal_local_datasource.dart';
+import '../../data/repositories/jadwal_repository_impl.dart';
+import '../../domain/entities/jadwal_slot_entity.dart';
+import '../../domain/entities/jam_slot_entity.dart';
+import '../../domain/usecases/get_jadwal_pelajaran.dart';
+import '../../domain/usecases/get_jam_slots.dart';
 
-class JamSlot {
-  final String label;
-  final String jamSenKam;
-  final String jamJumat;
-  final bool isIstirahat;
-
-  const JamSlot({
-    required this.label,
-    required this.jamSenKam,
-    required this.jamJumat,
-    this.isIstirahat = false,
-  });
-}
-
-class JadwalSlot {
-  final String hari;
-  final int jamKe;
-  final String mapel;
-  final String kelas;
-  final String ruang;
-
-  const JadwalSlot({
-    required this.hari,
-    required this.jamKe,
-    required this.mapel,
-    required this.kelas,
-    required this.ruang,
-  });
-}
-
-class JadwalPelajaranPage extends StatefulWidget {
+class JadwalPelajaranPage extends StatelessWidget {
   const JadwalPelajaranPage({Key? key}) : super(key: key);
 
   @override
-  State<JadwalPelajaranPage> createState() => _JadwalPelajaranPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) {
+        final ds = JadwalLocalDatasourceImpl();
+        final repo = JadwalRepositoryImpl(localDatasource: ds);
+        return JadwalBloc(
+          getJamSlotsUsecase: GetJamSlotsUsecase(repo),
+          getJadwalPelajaranUsecase: GetJadwalPelajaranUsecase(repo),
+        )..add(LoadJadwalEvent());
+      },
+      child: const _JadwalPelajaranPageContent(),
+    );
+  }
 }
 
-class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
-  static const List<JamSlot> _slots = [
-    JamSlot(label: '1',  jamSenKam: '07:00 - 07:40', jamJumat: '07:00 - 07:30'),
-    JamSlot(label: '2',  jamSenKam: '07:40 - 08:20', jamJumat: '07:30 - 08:00'),
-    JamSlot(label: '3',  jamSenKam: '08:20 - 09:00', jamJumat: '08:00 - 08:30'),
-    JamSlot(label: '4',  jamSenKam: '09:00 - 09:40', jamJumat: '08:30 - 09:00'),
-    JamSlot(label: 'Istirahat', jamSenKam: '09:40 - 10:00', jamJumat: '09:00 - 09:30', isIstirahat: true),
-    JamSlot(label: '5',  jamSenKam: '10:00 - 10:40', jamJumat: '09:30 - 09:50'),
-    JamSlot(label: '6',  jamSenKam: '10:40 - 11:20', jamJumat: '09:50 - 10:20'),
-    JamSlot(label: '7',  jamSenKam: '11:20 - 12:00', jamJumat: '10:20 - 10:50'),
-    JamSlot(label: 'Istirahat', jamSenKam: '12:00 - 13:00', jamJumat: '11:20 - 13:00', isIstirahat: true),
-    JamSlot(label: '8',  jamSenKam: '13:00 - 13:40', jamJumat: '13:00 - 13:30'),
-    JamSlot(label: '9',  jamSenKam: '13:40 - 14:20', jamJumat: '13:30 - 14:00'),
-    JamSlot(label: '10', jamSenKam: '14:20 - 15:00', jamJumat: '14:00 - 14:30'),
-    JamSlot(label: '11', jamSenKam: '-',              jamJumat: '14:30 - 15:00'),
-    JamSlot(label: '12', jamSenKam: '-',              jamJumat: '14:30 - 15:00'),
-  ];
+class _JadwalPelajaranPageContent extends StatelessWidget {
+  const _JadwalPelajaranPageContent({Key? key}) : super(key: key);
 
   static const List<String> _hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
-  static const List<JadwalSlot> _jadwalData = [
-    JadwalSlot(hari: 'Senin',  jamKe: 1,  mapel: 'Bahasa Indonesia', kelas: 'XI-RPL 1', ruang: 'R.04'),
-    JadwalSlot(hari: 'Senin',  jamKe: 2,  mapel: 'Bahasa Indonesia', kelas: 'XI-RPL 1', ruang: 'R.04'),
-    JadwalSlot(hari: 'Senin',  jamKe: 5,  mapel: 'Bahasa Indonesia', kelas: 'X-RPL 1',  ruang: 'R.12'),
-    JadwalSlot(hari: 'Senin',  jamKe: 6,  mapel: 'Bahasa Indonesia', kelas: 'X-RPL 1',  ruang: 'R.12'),
-    JadwalSlot(hari: 'Selasa', jamKe: 1,  mapel: 'Bahasa Indonesia', kelas: 'XI-RPL 2', ruang: 'Lab RPL 1'),
-    JadwalSlot(hari: 'Selasa', jamKe: 2,  mapel: 'Bahasa Indonesia', kelas: 'XI-RPL 2', ruang: 'Lab RPL 1'),
-    JadwalSlot(hari: 'Selasa', jamKe: 3,  mapel: 'Bahasa Indonesia', kelas: 'XI-RPL 2', ruang: 'Lab RPL 1'),
-    JadwalSlot(hari: 'Selasa', jamKe: 5,  mapel: 'Bahasa Indonesia', kelas: 'XI-TKJ 2', ruang: 'Lab TKJ 1'),
-    JadwalSlot(hari: 'Rabu',   jamKe: 3,  mapel: 'Bahasa Indonesia', kelas: 'X-TKJ 3',  ruang: 'R.17'),
-    JadwalSlot(hari: 'Kamis',  jamKe: 1,  mapel: 'Bahasa Indonesia', kelas: 'XI-ULW 1', ruang: 'R.54'),
-    JadwalSlot(hari: 'Kamis',  jamKe: 2,  mapel: 'Bahasa Indonesia', kelas: 'XI-ULW 1', ruang: 'R.54'),
-    JadwalSlot(hari: 'Jumat',  jamKe: 1,  mapel: 'Bahasa Indonesia', kelas: 'XI-BD 1',  ruang: 'R.40'),
-    JadwalSlot(hari: 'Jumat',  jamKe: 2,  mapel: 'Bahasa Indonesia', kelas: 'XI-BD 1',  ruang: 'R.40'),
-    JadwalSlot(hari: 'Jumat',  jamKe: 5,  mapel: 'Bahasa Indonesia', kelas: 'XI-MP 2',  ruang: 'R.19'),
-    JadwalSlot(hari: 'Jumat',  jamKe: 6,  mapel: 'Bahasa Indonesia', kelas: 'XI-MP 2',  ruang: 'R.19'),
-  ];
-
   // Ukuran kolom
-  static const double _colJamKe   = 55;
-  static const double _colSenKam  = 110;
-  static const double _colJumat   = 100;
-  static const double _colHari    = 130;
-  static const double _rowHeight  = 56;
-  static const double _headerH1   = 36;
-  static const double _headerH2   = 30;
+  static const double _colJamKe  = 55;
+  static const double _colSenKam = 110;
+  static const double _colJumat  = 100;
+  static const double _colHari   = 130;
+  static const double _rowHeight = 56;
+  static const double _headerH1  = 36;
+  static const double _headerH2  = 30;
 
-  JadwalSlot? _getJadwal(String hari, int jamKe) {
+  JadwalSlotEntity? _getJadwal(
+    List<JadwalSlotEntity> jadwalData,
+    String hari,
+    int jamKe,
+  ) {
     try {
-      return _jadwalData.firstWhere((j) => j.hari == hari && j.jamKe == jamKe);
+      return jadwalData.firstWhere((j) => j.hari == hari && j.jamKe == jamKe);
     } catch (_) {
       return null;
     }
   }
 
-  int _slotToJamKe(JamSlot slot) => int.tryParse(slot.label) ?? -1;
+  int _slotToJamKe(JamSlotEntity slot) => int.tryParse(slot.label) ?? -1;
 
   @override
   Widget build(BuildContext context) {
@@ -105,52 +68,65 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
       backgroundColor: AppColors.backgroundLight,
       appBar: const CustomAppBar(title: 'Jadwal Pelajaran'),
       drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const JadwalHeaderCard(),
-              const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.borderLight),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
+      body: BlocBuilder<JadwalBloc, JadwalState>(
+        builder: (context, state) {
+          if (state is JadwalLoading || state is JadwalInitial) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is JadwalError) {
+            return Center(child: Text(state.message));
+          } else if (state is JadwalLoaded) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const JadwalHeaderCard(),
+                    const SizedBox(height: 24),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.borderLight),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: _buildCustomTable(state.slots, state.jadwalData),
+                        ),
+                      ),
                     ),
+                    const SizedBox(height: 40),
                   ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: _buildCustomTable(),
-                  ),
-                ),
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
 
-  Widget _buildCustomTable() {
+  Widget _buildCustomTable(
+    List<JamSlotEntity> slots,
+    List<JadwalSlotEntity> jadwalData,
+  ) {
     final totalWidth = _colJamKe + _colSenKam + _colJumat + (_colHari * 5);
 
     return SizedBox(
       width: totalWidth,
       child: Column(
         children: [
-          // ── HEADER BARIS 1 
-
+          // ── HEADER BARIS 1
           SizedBox(
             height: _headerH1,
             child: Row(
@@ -161,7 +137,7 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
               ],
             ),
           ),
-          // ── HEADER BARIS 2 
+          // ── HEADER BARIS 2
           SizedBox(
             height: _headerH2,
             child: Row(
@@ -174,8 +150,8 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
               ],
             ),
           ),
-          // ── DATA ROWS 
-          ..._slots.asMap().entries.map((entry) {
+          // ── DATA ROWS
+          ...slots.asMap().entries.map((entry) {
             final i = entry.key;
             final slot = entry.value;
             final isIstirahat = slot.isIstirahat;
@@ -199,7 +175,7 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
                   ..._hariList.map((hari) {
                     final isJumat = hari == 'Jumat';
                     if (senKamKosong && !isJumat) return _emptyCell();
-                    final jadwal = _getJadwal(hari, jamKe);
+                    final jadwal = _getJadwal(jadwalData, hari, jamKe);
                     return jadwal != null ? _jadwalCell(jadwal) : _emptyCell();
                   }),
                 ],
@@ -210,8 +186,6 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
       ),
     );
   }
-
-  // ── Header cell 
 
   Widget _hCell(String text, double width, double height, {Color? color}) {
     return Container(
@@ -238,8 +212,6 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
     );
   }
 
-  // ── Jam ke cell
-
   Widget _jamKeCell(String label) {
     return Container(
       width: _colJamKe,
@@ -262,8 +234,6 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
     );
   }
 
-  // ── Waktu cell 
-
   Widget _waktuCell(String waktu, {required double width}) {
     return Container(
       width: width,
@@ -280,23 +250,19 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
           textAlign: TextAlign.center,
           style: AppTextStyles.cardSubtitle.copyWith(
             fontSize: 10,
-            color: waktu == '-'
-                ? AppColors.textSecondary
-                : AppColors.textPrimary,
+            color: waktu == '-' ? AppColors.textSecondary : AppColors.textPrimary,
           ),
         ),
       ),
     );
   }
 
-  // ── Jadwal cell 
-
-  Widget _jadwalCell(JadwalSlot jadwal) {
+  Widget _jadwalCell(JadwalSlotEntity jadwal) {
     return Container(
       width: _colHari,
       height: _rowHeight,
       decoration: BoxDecoration(
-        color: AppColors.primaryBlue.withOpacity(0.07),
+        color: AppColors.primaryBlue.withValues(alpha: 0.07),
         border: const Border(
           right: BorderSide(color: AppColors.borderLight),
           bottom: BorderSide(color: AppColors.borderLight),
@@ -334,8 +300,6 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
     );
   }
 
-  // ── Empty cell 
-
   Widget _emptyCell() {
     return Container(
       width: _colHari,
@@ -350,9 +314,7 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
     );
   }
 
-  // ── Istirahat row ────────────────────────────────────────────────────
-
-  Widget _istirahatRow(JamSlot slot, double totalWidth) {
+  Widget _istirahatRow(JamSlotEntity slot, double totalWidth) {
     return Container(
       height: 36,
       width: totalWidth,
@@ -425,4 +387,3 @@ class _JadwalPelajaranPageState extends State<JadwalPelajaranPage> {
     );
   }
 }
-

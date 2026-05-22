@@ -65,10 +65,13 @@ class DashboardTugasView extends StatelessWidget {
           ],
         ),
         floatingActionButton: FloatingAddTugasButton(
-          onPressed: () {
-            Navigator.of(context).push(
+          onPressed: () async {
+            await Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const BuatTugasPage()),
             );
+            if (context.mounted) {
+              context.read<DashboardTugasBloc>().add(RefreshDashboardEvent());
+            }
           },
         ),
       ),

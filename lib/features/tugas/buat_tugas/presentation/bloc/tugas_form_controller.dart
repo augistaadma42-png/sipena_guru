@@ -8,9 +8,9 @@ class TugasFormController extends ChangeNotifier {
   final TextEditingController deskripsiController = TextEditingController();
 
   // ValueNotifiers
-  final ValueNotifier<String> kelas = ValueNotifier('Untuk XI PPLG Konsentrasi Keahlian');
+  final ValueNotifier<String> kelas = ValueNotifier('XII IPA 1');
   final ValueNotifier<String> jenisNilai = ValueNotifier('Ulangan harian');
-  final ValueNotifier<String> mapel = ValueNotifier('Mapel');
+  final ValueNotifier<String> mapel = ValueNotifier('Matematika Wajib');
   final ValueNotifier<String> siswa = ValueNotifier('Semua pelajar');
   final ValueNotifier<DateTime?> tenggat = ValueNotifier(null);
   final ValueNotifier<String> topik = ValueNotifier('Tidak ada topik');
@@ -18,9 +18,9 @@ class TugasFormController extends ChangeNotifier {
 
   // Options
   static const List<String> kelasList = [
-    'Untuk XI PPLG Konsentrasi Keahlian',
-    'Untuk X PPLG',
-    'Untuk XII PPLG',
+    'XII IPA 1',
+    'XII IPA 2',
+    'XI IPA 1',
   ];
 
   static const List<String> jenisNilaiList = [
@@ -32,11 +32,11 @@ class TugasFormController extends ChangeNotifier {
   ];
 
   static const List<String> mapelList = [
-    'Mapel',
-    'Matematika',
-    'Bahasa Indonesia',
-    'Bahasa Inggris',
-    'Pemrograman',
+    'Matematika Wajib',
+    'Matematika Peminatan',
+    'Fisika',
+    'Kimia',
+    'Biologi',
   ];
 
   static const List<String> siswaList = [
@@ -47,9 +47,10 @@ class TugasFormController extends ChangeNotifier {
 
   static const List<String> topikList = [
     'Tidak ada topik',
-    'Bab 1',
-    'Bab 2',
-    'Bab 3',
+    'Integral Tentu & Tak Tentu',
+    'Integral Substitusi',
+    'Integral Parsial',
+    'Trigonometri',
   ];
 
   bool get isValid => judulController.text.trim().isNotEmpty;

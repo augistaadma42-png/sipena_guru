@@ -5,16 +5,48 @@ import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_drawer.dart';
 import 'input_absensi_tab.dart';
 import 'riwayat_absensi_tab.dart';
-import 'manajemen_izin_page.dart';
 
-class AbsensiPage extends StatefulWidget {
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/absen_bloc.dart';
+import '../bloc/absen_event.dart';
+import '../bloc/absen_state.dart';
+import '../../domain/entities/leave_request_entity.dart';
+import '../../data/datasources/absen_local_datasource.dart';
+import '../../data/repositories/absen_repository_impl.dart';
+import '../../domain/usecases/get_riwayat_absensi_usecase.dart';
+import '../../domain/usecases/get_student_attendance_usecase.dart';
+import '../../domain/usecases/get_leave_requests_usecase.dart';
+import '../../domain/usecases/update_leave_request_status_usecase.dart';
+
+class AbsensiPage extends StatelessWidget {
   const AbsensiPage({Key? key}) : super(key: key);
 
   @override
-  State<AbsensiPage> createState() => _AbsensiPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) {
+        final ds = AbsenLocalDatasourceImpl();
+        final repo = AbsenRepositoryImpl(localDatasource: ds);
+        return AbsenBloc(
+          getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
+          getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
+          getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
+          updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(repo),
+        );
+      },
+      child: const _AbsensiPageContent(),
+    );
+  }
 }
 
-class _AbsensiPageState extends State<AbsensiPage>
+class _AbsensiPageContent extends StatefulWidget {
+  const _AbsensiPageContent({Key? key}) : super(key: key);
+
+  @override
+  State<_AbsensiPageContent> createState() => _AbsensiPageContentState();
+}
+
+class _AbsensiPageContentState extends State<_AbsensiPageContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -104,73 +136,13 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
     with SingleTickerProviderStateMixin {
   late TabController _innerTab;
 
-  final List<Map<String, dynamic>> _pengajuanList = [
-    {
-      'id': '001',
-      'initials': 'AA',
-      'nama': 'Augista A.Z',
-      'nisn': '2001001',
-      'kelas': 'XI RPL 1',
-      'jenis': 'Izin',
-      'tanggal': '24 Mei 2024',
-      'alasan': 'Keperluan keluarga mendesak',
-      'suratAda': true,
-      'status': StatusPengajuan.menunggu,
-    },
-    {
-      'id': '002',
-      'initials': 'RS',
-      'nama': 'Feby Shandi S.',
-      'nisn': '2022002',
-      'kelas': 'XI RPL 1',
-      'jenis': 'Sakit',
-      'tanggal': '24 Mei 2024',
-      'alasan': 'Demam dan sakit kepala',
-      'suratAda': true,
-      'status': StatusPengajuan.menunggu,
-    },
-    {
-      'id': '003',
-      'initials': 'GK',
-      'nama': 'Gavin K.H',
-      'nisn': '2022992',
-      'kelas': 'XI RPL 2',
-      'jenis': 'Dispen',
-      'tanggal': '24 Mei 2024',
-      'alasan': 'Mewakili sekolah lomba LKS tingkat provinsi',
-      'suratAda': true,
-      'status': StatusPengajuan.disetujui,
-    },
-    {
-      'id': '004',
-      'initials': 'FA',
-      'nama': 'Fariskha F.A',
-      'nisn': '2001001',
-      'kelas': 'X DKV 1',
-      'jenis': 'Izin',
-      'tanggal': '21 Mei 2024',
-      'alasan': 'Acara pernikahan saudara',
-      'suratAda': false,
-      'status': StatusPengajuan.ditolak,
-    },
-    {
-      'id': '005',
-      'initials': 'DA',
-      'nama': 'Devita A.V.P',
-      'nisn': '2002991',
-      'kelas': 'XI RPL 2',
-      'jenis': 'Sakit',
-      'tanggal': '20 Mei 2024',
-      'alasan': 'Gastritis kambuh',
-      'suratAda': true,
-      'status': StatusPengajuan.menunggu,
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
     _innerTab = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AbsenBloc>().add(LoadLeaveRequestsEvent());
+    });
   }
 
   @override
@@ -179,22 +151,13 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
     super.dispose();
   }
 
-  List<Map<String, dynamic>> _filtered(StatusPengajuan status) =>
-      _pengajuanList.where((p) => p['status'] == status).toList();
-
   void _setujui(String id) {
-    setState(() {
-      final idx = _pengajuanList.indexWhere((p) => p['id'] == id);
-      if (idx != -1) _pengajuanList[idx]['status'] = StatusPengajuan.disetujui;
-    });
+    context.read<AbsenBloc>().add(UpdateLeaveRequestStatusEvent(id: id, status: 'approved'));
     _snack('Pengajuan berhasil disetujui', AppColors.successGreen);
   }
 
   void _tolak(String id) {
-    setState(() {
-      final idx = _pengajuanList.indexWhere((p) => p['id'] == id);
-      if (idx != -1) _pengajuanList[idx]['status'] = StatusPengajuan.ditolak;
-    });
+    context.read<AbsenBloc>().add(UpdateLeaveRequestStatusEvent(id: id, status: 'rejected'));
     _snack('Pengajuan telah ditolak', Colors.redAccent);
   }
 
@@ -210,7 +173,7 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
     );
   }
 
-  void _lihatBukti(Map<String, dynamic> item) {
+  void _lihatBukti(LeaveRequestEntity item) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -222,68 +185,86 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          color: Colors.white,
-          child: TabBar(
-            controller: _innerTab,
-            labelColor: AppColors.primaryBlue,
-            unselectedLabelColor: AppColors.textSecondary,
-            indicatorColor: AppColors.secondaryOrange,
-            indicatorWeight: 2,
-            labelStyle: AppTextStyles.cardTitle.copyWith(fontSize: 12),
-            tabs: [
-              Tab(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Menunggu'),
-                    const SizedBox(width: 5),
-                    if (_filtered(StatusPengajuan.menunggu).isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: AppColors.secondaryOrange,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '${_filtered(StatusPengajuan.menunggu).length}',
-                          style: AppTextStyles.cardTitle
-                              .copyWith(color: Colors.white, fontSize: 10),
-                        ),
-                      ),
-                  ],
-                ),
+    return BlocBuilder<AbsenBloc, AbsenState>(
+      builder: (context, state) {
+        List<LeaveRequestEntity> listMenunggu = [];
+        List<LeaveRequestEntity> listDisetujui = [];
+        List<LeaveRequestEntity> listDitolak = [];
+
+        if (state is LeaveRequestsLoaded) {
+          listMenunggu = state.leaveRequests.where((p) => p.status == 'pending').toList();
+          listDisetujui = state.leaveRequests.where((p) => p.status == 'approved').toList();
+          listDitolak = state.leaveRequests.where((p) => p.status == 'rejected').toList();
+        }
+
+        return Column(
+          children: [
+            Container(
+              color: Colors.white,
+              child: TabBar(
+                controller: _innerTab,
+                labelColor: AppColors.primaryBlue,
+                unselectedLabelColor: AppColors.textSecondary,
+                indicatorColor: AppColors.secondaryOrange,
+                indicatorWeight: 2,
+                labelStyle: AppTextStyles.cardTitle.copyWith(fontSize: 12),
+                tabs: [
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Menunggu'),
+                        const SizedBox(width: 5),
+                        if (listMenunggu.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryOrange,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${listMenunggu.length}',
+                              style: AppTextStyles.cardTitle
+                                  .copyWith(color: Colors.white, fontSize: 10),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const Tab(text: 'Disetujui'),
+                  const Tab(text: 'Ditolak'),
+                ],
               ),
-              const Tab(text: 'Disetujui'),
-              const Tab(text: 'Ditolak'),
-            ],
-          ),
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: _innerTab,
-            children: [
-              _IzinList(
-                  items: _filtered(StatusPengajuan.menunggu),
-                  onSetujui: _setujui,
-                  onTolak: _tolak,
-                  onBukti: _lihatBukti,
-                  empty: 'Tidak ada pengajuan menunggu'),
-              _IzinList(
-                  items: _filtered(StatusPengajuan.disetujui),
-                  onBukti: _lihatBukti,
-                  empty: 'Belum ada pengajuan disetujui'),
-              _IzinList(
-                  items: _filtered(StatusPengajuan.ditolak),
-                  onBukti: _lihatBukti,
-                  empty: 'Belum ada pengajuan ditolak'),
-            ],
-          ),
-        ),
-      ],
+            ),
+            Expanded(
+              child: state is AbsenLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : state is AbsenError
+                      ? Center(child: Text(state.message))
+                      : TabBarView(
+                          controller: _innerTab,
+                          children: [
+                            _IzinList(
+                                items: listMenunggu,
+                                onSetujui: _setujui,
+                                onTolak: _tolak,
+                                onBukti: _lihatBukti,
+                                empty: 'Tidak ada pengajuan menunggu'),
+                            _IzinList(
+                                items: listDisetujui,
+                                onBukti: _lihatBukti,
+                                empty: 'Belum ada pengajuan disetujui'),
+                            _IzinList(
+                                items: listDitolak,
+                                onBukti: _lihatBukti,
+                                empty: 'Belum ada pengajuan ditolak'),
+                          ],
+                        ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -291,10 +272,10 @@ class _ManajemenIzinTabContentState extends State<_ManajemenIzinTabContent>
 // ─── List 
 
 class _IzinList extends StatelessWidget {
-  final List<Map<String, dynamic>> items;
+  final List<LeaveRequestEntity> items;
   final void Function(String)? onSetujui;
   final void Function(String)? onTolak;
-  final void Function(Map<String, dynamic>) onBukti;
+  final void Function(LeaveRequestEntity) onBukti;
   final String empty;
 
   const _IzinList({
@@ -326,8 +307,8 @@ class _IzinList extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (_, i) => _IzinCard(
         item: items[i],
-        onSetujui: onSetujui != null ? () => onSetujui!(items[i]['id']) : null,
-        onTolak: onTolak != null ? () => onTolak!(items[i]['id']) : null,
+        onSetujui: onSetujui != null ? () => onSetujui!(items[i].id) : null,
+        onTolak: onTolak != null ? () => onTolak!(items[i].id) : null,
         onBukti: () => onBukti(items[i]),
       ),
     );
@@ -337,7 +318,7 @@ class _IzinList extends StatelessWidget {
 // ─── Card 
 
 class _IzinCard extends StatelessWidget {
-  final Map<String, dynamic> item;
+  final LeaveRequestEntity item;
   final VoidCallback? onSetujui;
   final VoidCallback? onTolak;
   final VoidCallback onBukti;
@@ -350,7 +331,7 @@ class _IzinCard extends StatelessWidget {
   });
 
   Color get _jenisColor {
-    switch (item['jenis']) {
+    switch (item.type) {
       case 'Sakit': return const Color(0xFF1565C0);
       case 'Izin': return const Color(0xFFF57F17);
       case 'Dispen': return const Color(0xFF6A1B9A);
@@ -359,7 +340,7 @@ class _IzinCard extends StatelessWidget {
   }
 
   Color get _jenisBg {
-    switch (item['jenis']) {
+    switch (item.type) {
       case 'Sakit': return const Color(0xFFE3F2FD);
       case 'Izin': return const Color(0xFFFFF9C4);
       case 'Dispen': return const Color(0xFFF3E5F5);
@@ -369,8 +350,8 @@ class _IzinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final StatusPengajuan status = item['status'];
-    final menunggu = status == StatusPengajuan.menunggu;
+    final String status = item.status;
+    final menunggu = status == 'pending';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -395,7 +376,7 @@ class _IzinCard extends StatelessWidget {
               CircleAvatar(
                 radius: 22,
                 backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
-                child: Text(item['initials'],
+                child: Text(item.initials,
                     style: AppTextStyles.cardTitle
                         .copyWith(color: AppColors.primaryBlue, fontSize: 14)),
               ),
@@ -404,14 +385,15 @@ class _IzinCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item['nama'],
+                    Text(item.studentName,
                         style: AppTextStyles.cardTitle.copyWith(fontSize: 14)),
                     Text(
-                        'NISN: ${item['nisn']} • ${item['kelas']}',
+                        'NISN: ${item.nisn} • ${item.className}',
                         style:
                             AppTextStyles.cardSubtitle.copyWith(fontSize: 12)),
                     const SizedBox(height: 2),
-                    Text(item['tanggal'],
+                    Text(
+                        '${item.date.day}-${item.date.month}-${item.date.year}',
                         style:
                             AppTextStyles.cardSubtitle.copyWith(fontSize: 12)),
                   ],
@@ -423,7 +405,7 @@ class _IzinCard extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: _jenisBg,
                     borderRadius: BorderRadius.circular(20)),
-                child: Text(item['jenis'],
+                child: Text(item.type,
                     style: AppTextStyles.labelStyle.copyWith(
                         color: _jenisColor, fontWeight: FontWeight.bold)),
               ),
@@ -439,7 +421,7 @@ class _IzinCard extends StatelessWidget {
                   size: 15, color: AppColors.textSecondary),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(item['alasan'],
+                child: Text(item.reason,
                     style: AppTextStyles.cardSubtitle.copyWith(fontSize: 13)),
               ),
             ],
@@ -448,22 +430,22 @@ class _IzinCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                item['suratAda'] ? Icons.attach_file : Icons.cancel_outlined,
+                item.suratAda ? Icons.attach_file : Icons.cancel_outlined,
                 size: 15,
-                color: item['suratAda'] ? AppColors.primaryBlue : Colors.redAccent,
+                color: item.suratAda ? AppColors.primaryBlue : Colors.redAccent,
               ),
               const SizedBox(width: 6),
               Text(
-                item['suratAda']
+                item.suratAda
                     ? 'Surat keterangan tersedia'
                     : 'Tidak ada surat keterangan',
                 style: AppTextStyles.cardSubtitle.copyWith(
                     fontSize: 12,
-                    color: item['suratAda']
+                    color: item.suratAda
                         ? AppColors.primaryBlue
                         : Colors.redAccent),
               ),
-              if (item['suratAda']) ...[
+              if (item.suratAda) ...[
                 const SizedBox(width: 6),
                 GestureDetector(
                   onTap: onBukti,
@@ -518,21 +500,21 @@ class _IzinCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  status == StatusPengajuan.disetujui
+                  status == 'approved'
                       ? Icons.check_circle
                       : Icons.cancel,
                   size: 16,
-                  color: status == StatusPengajuan.disetujui
+                  color: status == 'approved'
                       ? AppColors.successGreen
                       : Colors.redAccent,
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  status == StatusPengajuan.disetujui
+                  status == 'approved'
                       ? 'Pengajuan disetujui'
                       : 'Pengajuan ditolak',
                   style: AppTextStyles.labelStyle.copyWith(
-                    color: status == StatusPengajuan.disetujui
+                    color: status == 'approved'
                         ? AppColors.successGreen
                         : Colors.redAccent,
                     fontWeight: FontWeight.bold,
@@ -550,7 +532,7 @@ class _IzinCard extends StatelessWidget {
 // ─── Bottom Sheet Bukti
 
 class _BuktiSheet extends StatelessWidget {
-  final Map<String, dynamic> item;
+  final LeaveRequestEntity item;
   const _BuktiSheet({required this.item});
 
   @override
@@ -573,7 +555,7 @@ class _BuktiSheet extends StatelessWidget {
           Text('Bukti Surat Keterangan',
               style: AppTextStyles.sectionTitle.copyWith(fontSize: 18)),
           const SizedBox(height: 6),
-          Text('${item['nama']} • ${item['jenis']} • ${item['tanggal']}',
+          Text('${item.studentName} • ${item.type} • ${item.date.day}-${item.date.month}-${item.date.year}',
               style: AppTextStyles.cardSubtitle),
           const SizedBox(height: 20),
           Container(
@@ -588,7 +570,7 @@ class _BuktiSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  item['jenis'] == 'Sakit'
+                  item.type == 'Sakit'
                       ? Icons.local_hospital_outlined
                       : Icons.description_outlined,
                   size: 56,
@@ -596,7 +578,7 @@ class _BuktiSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'surat_${item['jenis'].toString().toLowerCase()}_${item['nisn']}.pdf',
+                  'surat_${item.type.toLowerCase()}_${item.nisn}.pdf',
                   style: AppTextStyles.cardSubtitle,
                 ),
                 const SizedBox(height: 6),

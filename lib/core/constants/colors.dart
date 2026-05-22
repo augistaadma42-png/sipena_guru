@@ -15,4 +15,5 @@ class AppColors {
   static const Color disabledGrey = Color(0xFF94A3B8);
   static const Color lightOrangeBg = Color(0xFFFEF3C7);
   static const Color lightBlueBg = Color(0xFFE0E7FF);
+  static const Color errorRed = Color(0xFFEF4444);
 }

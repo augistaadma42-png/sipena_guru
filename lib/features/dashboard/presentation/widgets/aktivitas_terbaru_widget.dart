@@ -2,97 +2,17 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 
+import '../../domain/entities/aktivitas_entity.dart';
+
 class AktivitasTerbaruWidget extends StatelessWidget {
   final VoidCallback? onLihatSemua;
+  final List<AktivitasEntity> aktivitasList;
 
-  const AktivitasTerbaruWidget({Key? key, this.onLihatSemua}) : super(key: key);
-
-  static const List<Map<String, dynamic>> _aktivitasList = [
-    {
-      'tanggal': '08 Mei 2026',
-      'jam': '07.00',
-      'deskripsi': 'Login berhasil',
-      'jenis': 'sistem',
-      'icon': Icons.login,
-    },
-    {
-      'tanggal': '08 Mei 2026',
-      'jam': '13.15',
-      'deskripsi': 'Logout',
-      'jenis': 'sistem',
-      'icon': Icons.logout,
-    },
-    {
-      'tanggal': '07 Mei 2026',
-      'jam': '19.00',
-      'deskripsi': 'Password diubah',
-      'jenis': 'sistem',
-      'icon': Icons.lock_outline,
-    },
-    {
-      'tanggal': '07 Mei 2026',
-      'jam': '07.00',
-      'deskripsi': 'Mengisi Absensi XI RPL 1',
-      'jenis': 'absensi',
-      'icon': Icons.fact_check_outlined,
-    },
-    {
-      'tanggal': '06 Mei 2026',
-      'jam': '08.00',
-      'deskripsi': 'Mengedit absensi XI DKV 2',
-      'jenis': 'absensi',
-      'icon': Icons.edit_note_outlined,
-    },
-    {
-      'tanggal': '06 Mei 2026',
-      'jam': '09.00',
-      'deskripsi': 'Membuat jurnal XI RPL 1',
-      'jenis': 'jurnal',
-      'icon': Icons.book_outlined,
-    },
-    {
-      'tanggal': '05 Mei 2026',
-      'jam': '10.00',
-      'deskripsi': 'Membuat tugas baru — Latihan Soal Bab 3',
-      'jenis': 'tugas',
-      'icon': Icons.assignment_outlined,
-    },
-    {
-      'tanggal': '05 Mei 2026',
-      'jam': '10.30',
-      'deskripsi': 'Mengubah deadline tugas — Kuis Harian',
-      'jenis': 'tugas',
-      'icon': Icons.edit_calendar_outlined,
-    },
-    {
-      'tanggal': '05 Mei 2026',
-      'jam': '11.00',
-      'deskripsi': 'Menginput nilai tugas XI RPL 2',
-      'jenis': 'nilai',
-      'icon': Icons.grade_outlined,
-    },
-    {
-      'tanggal': '04 Mei 2026',
-      'jam': '12.00',
-      'deskripsi': 'Menyetujui pengajuan izin — Augusta A.Z',
-      'jenis': 'pengajuan',
-      'icon': Icons.check_circle_outline,
-    },
-    {
-      'tanggal': '04 Mei 2026',
-      'jam': '13.00',
-      'deskripsi': 'Membuat jurnal X RPL 1',
-      'jenis': 'jurnal',
-      'icon': Icons.book_outlined,
-    },
-    {
-      'tanggal': '03 Mei 2026',
-      'jam': '14.00',
-      'deskripsi': 'Mengedit jurnal XI RPL 2',
-      'jenis': 'jurnal',
-      'icon': Icons.edit_note_outlined,
-    },
-  ];
+  const AktivitasTerbaruWidget({
+    Key? key,
+    this.onLihatSemua,
+    required this.aktivitasList,
+  }) : super(key: key);
 
   Color _jenisColor(String jenis) {
     switch (jenis) {
@@ -114,6 +34,64 @@ class AktivitasTerbaruWidget extends StatelessWidget {
       case 'pengajuan': return const Color(0xFFE3F2FD);
       default: return AppColors.backgroundLight;
     }
+  }
+
+  Widget _buildAktivitasItem({
+    required String tanggal,
+    required String jam,
+    required String deskripsi,
+    required String jenis,
+    required IconData icon,
+    required bool isLast,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: _jenisBg(jenis),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: _jenisColor(jenis),
+              ),
+            ),
+            if (!isLast)
+              Container(
+                width: 2,
+                height: 32,
+                color: AppColors.borderLight,
+              ),
+          ],
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  deskripsi,
+                  style: AppTextStyles.cardTitle.copyWith(fontSize: 13),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '$tanggal • $jam',
+                  style: AppTextStyles.cardSubtitle.copyWith(fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -138,8 +116,7 @@ class AktivitasTerbaruWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Aktivitas Terbaru',
-                  style: AppTextStyles.sectionTitle),
+              Text('Aktivitas Terbaru', style: AppTextStyles.sectionTitle),
               GestureDetector(
                 onTap: onLihatSemua,
                 child: Text(
@@ -153,60 +130,25 @@ class AktivitasTerbaruWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ...(_aktivitasList.take(5).toList()).asMap().entries.map((entry) {
+          ...aktivitasList.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
-            final isLast = index == 4;
-
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Timeline line + icon
-                Column(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: _jenisBg(item['jenis']),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        item['icon'] as IconData,
-                        size: 18,
-                        color: _jenisColor(item['jenis']),
-                      ),
-                    ),
-                    if (!isLast)
-                      Container(
-                        width: 2,
-                        height: 32,
-                        color: AppColors.borderLight,
-                      ),
-                  ],
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 6, bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item['deskripsi'],
-                          style: AppTextStyles.cardTitle.copyWith(fontSize: 13),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          '${item['tanggal']} • ${item['jam']}',
-                          style: AppTextStyles.cardSubtitle
-                              .copyWith(fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            IconData icon;
+            switch (item.jenis) {
+              case 'absensi': icon = Icons.how_to_reg_outlined; break;
+              case 'jurnal': icon = Icons.menu_book_outlined; break;
+              case 'tugas': icon = Icons.assignment_outlined; break;
+              case 'nilai': icon = Icons.star_border_outlined; break;
+              case 'pengajuan': icon = Icons.mail_outline; break;
+              default: icon = Icons.notifications_outlined; break;
+            }
+            return _buildAktivitasItem(
+              tanggal: item.tanggal,
+              jam: item.jam,
+              deskripsi: item.deskripsi,
+              jenis: item.jenis,
+              icon: icon,
+              isLast: index == aktivitasList.length - 1,
             );
           }).toList(),
         ],

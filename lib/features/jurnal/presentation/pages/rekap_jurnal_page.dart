@@ -3,14 +3,43 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 
-class RekapJurnalPage extends StatefulWidget {
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/entities/jurnal_entity.dart';
+import '../bloc/jurnal_bloc.dart';
+import '../bloc/jurnal_event.dart';
+import '../bloc/jurnal_state.dart';
+import '../../data/datasources/jurnal_local_datasource.dart';
+import '../../data/repositories/jurnal_repository_impl.dart';
+import '../../domain/usecases/get_jurnal_terbaru_usecase.dart';
+import '../../domain/usecases/get_rekap_jurnal_usecase.dart';
+
+class RekapJurnalPage extends StatelessWidget {
   const RekapJurnalPage({Key? key}) : super(key: key);
 
   @override
-  State<RekapJurnalPage> createState() => _RekapJurnalPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) {
+        final ds = JurnalLocalDatasourceImpl();
+        final repo = JurnalRepositoryImpl(localDatasource: ds);
+        return JurnalBloc(
+          getJurnalTerbaruUsecase: GetJurnalTerbaruUsecase(repo),
+          getRekapJurnalUsecase: GetRekapJurnalUsecase(repo),
+        )..add(const LoadRekapJurnalEvent());
+      },
+      child: const _RekapJurnalPageContent(),
+    );
+  }
 }
 
-class _RekapJurnalPageState extends State<RekapJurnalPage> {
+class _RekapJurnalPageContent extends StatefulWidget {
+  const _RekapJurnalPageContent({Key? key}) : super(key: key);
+
+  @override
+  State<_RekapJurnalPageContent> createState() => _RekapJurnalPageContentState();
+}
+
+class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
   String? _selectedFilterKelas;
   DateTime? _selectedFilterTanggal;
 
@@ -19,45 +48,35 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       appBar: const CustomAppBar(title: 'Rekap Jurnal'),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              _buildFilterSection(),
-              const SizedBox(height: 24),
-              _buildRekapCard(
-                className: 'XI-RPL 1',
-                time: 'Senin, 23 Okt 2023 | 08:00 - 09:30',
-                title: 'Materi Drama',
-                description: '"Pemaparan materi mengenai drama"',
+      body: BlocBuilder<JurnalBloc, JurnalState>(
+        builder: (context, state) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  _buildFilterSection(context),
+                  const SizedBox(height: 24),
+                  if (state is JurnalLoading || state is JurnalInitial)
+                    const Center(child: CircularProgressIndicator())
+                  else if (state is JurnalError)
+                    Center(child: Text(state.message))
+                  else if (state is RekapJurnalLoaded) ...[
+                    if (state.rekapList.isEmpty)
+                      const Center(child: Text('Tidak ada jurnal yang ditemukan.'))
+                    else
+                      ...state.rekapList.map((jurnal) => _buildRekapCard(jurnal)),
+                  ]
+                ],
               ),
-              _buildRekapCard(
-                className: 'X-RPL 1',
-                time: 'Jumat, 20 Okt 2023 | 10:00 - 11:30',
-                title: 'Latihan Soal Cerpen',
-                description: '"Latihan soal cerpen pada buku paket halaman 45"',
-              ),
-              _buildRekapCard(
-                className: 'XI-MP 4',
-                time: 'Kamis, 19 Okt 2023 | 13:00 - 14:30',
-                title: 'PPT Drama',
-                description: '"Membuat PPT mengenai materi drama"',
-              ),
-              _buildRekapCard(
-                className: 'XI-MP 4',
-                time: 'Kamis, 19 Okt 2023 | 13:00 - 14:30',
-                title: 'PPT Drama',
-                description: '"Membuat PPT mengenai materi drama"',
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildFilterSection() {
+  Widget _buildFilterSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -85,7 +104,7 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
                       value: _selectedFilterKelas,
                       hint: Text('Kelas', style: AppTextStyles.cardTitle.copyWith(color: AppColors.primaryBlue)),
                       icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.secondaryOrange, size: 20),
-                      items: ['Semua Kelas', 'Kelas XI-RPL 1', 'Kelas X-RPL 1', 'Kelas XI-MP 4'].map((String value) {
+                      items: ['Semua Kelas', 'XII IPA 1', 'XII IPA 2', 'XI IPA 1'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value, style: AppTextStyles.cardTitle.copyWith(fontSize: 12)),
@@ -155,9 +174,13 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
             height: 40,
             child: ElevatedButton(
               onPressed: () {
+                context.read<JurnalBloc>().add(LoadRekapJurnalEvent(
+                  filterKelas: _selectedFilterKelas,
+                  filterTanggal: _selectedFilterTanggal,
+                ));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Filter diterapkan (Simulasi Front-End)'),
+                    content: const Text('Filter diterapkan'),
                     backgroundColor: AppColors.successGreen,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -189,12 +212,7 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
     );
   }
 
-  Widget _buildRekapCard({
-    required String className,
-    required String time,
-    required String title,
-    required String description,
-  }) {
+  Widget _buildRekapCard(JurnalEntity jurnal) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -238,7 +256,7 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            className,
+                            jurnal.className,
                             style: AppTextStyles.labelStyle.copyWith(
                               color: AppColors.primaryBlue,
                               fontSize: 10,
@@ -250,21 +268,21 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
                         const Icon(Icons.access_time, size: 12, color: AppColors.textSecondary),
                         const SizedBox(width: 4),
                         Text(
-                          time,
+                          jurnal.time,
                           style: AppTextStyles.cardSubtitle.copyWith(fontSize: 10),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      title,
+                      jurnal.title,
                       style: AppTextStyles.cardTitle.copyWith(
                         color: AppColors.primaryBlue,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      description,
+                      jurnal.description,
                       style: AppTextStyles.cardSubtitle.copyWith(
                         fontStyle: FontStyle.italic,
                       ),
@@ -274,11 +292,7 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
                       children: [
                         InkWell(
                           onTap: () {
-                            Navigator.pop(context, {
-                              'className': className,
-                              'title': title,
-                              'description': description,
-                            });
+                            Navigator.pop(context, jurnal);
                           },
                           borderRadius: BorderRadius.circular(4),
                           child: const Padding(
@@ -294,7 +308,7 @@ class _RekapJurnalPageState extends State<RekapJurnalPage> {
                               builder: (context) => AlertDialog(
                                 title: Text('Hapus Rekap Jurnal', style: AppTextStyles.sectionTitle),
                                 content: Text(
-                                  'Apakah Anda yakin ingin menghapus jurnal "$title"? Tindakan ini tidak dapat dibatalkan.',
+                                  'Apakah Anda yakin ingin menghapus jurnal "${jurnal.title}"? Tindakan ini tidak dapat dibatalkan.',
                                   style: AppTextStyles.cardSubtitle,
                                 ),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

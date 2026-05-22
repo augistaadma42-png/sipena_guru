@@ -12,7 +12,6 @@ import '../widgets/filter_laporan_card.dart';
 import '../widgets/tugas_card.dart';
 import '../widgets/monthly_summary_card.dart';
 import '../widgets/motivational_banner_card.dart';
-import '../widgets/laporan_bottom_navbar.dart';
 import '../widgets/empty_tugas_widget.dart';
 import '../widgets/loading_tugas_widget.dart';
 
@@ -28,8 +27,7 @@ class _LaporanTugasPageState extends State<LaporanTugasPage> {
   /// BLoC di-provide secara lokal (no global di/provider)
   late final LaporanTugasBloc _bloc;
 
-  int _navIndex = 2; // "Laporan" aktif secara default
-
+  
   @override
   void initState() {
     super.initState();
@@ -93,10 +91,6 @@ class _LaporanTugasPageState extends State<LaporanTugasPage> {
               return _buildBody(context, state);
             },
           ),
-        ),
-        bottomNavigationBar: LaporanBottomNavbar(
-          currentIndex: _navIndex,
-          onTap: (index) => setState(() => _navIndex = index),
         ),
       ),
     );

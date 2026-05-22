@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
-import '../../../jurnal/presentation/pages/jurnal_mengajar_page.dart';
+import '../../../../core/widgets/main_layout.dart';
+import '../bloc/absen_bloc.dart';
+import '../bloc/absen_event.dart';
+import '../bloc/absen_state.dart';
+import '../../domain/entities/student_attendance_entity.dart';
 
 class InputAbsensiTab extends StatefulWidget {
   final String? prefilledKelas;
-  const InputAbsensiTab({Key? key, this.prefilledKelas}) : super(key: key);
+  final String? prefilledSubject;
+  const InputAbsensiTab({Key? key, this.prefilledKelas, this.prefilledSubject}) : super(key: key);
 
   @override
   State<InputAbsensiTab> createState() => _InputAbsensiTabState();
@@ -18,37 +24,24 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
   bool _tandaiSemuaHadir = false;
   int _resetCount = 0;
 
-  final List<String> _kelasList = [
-    'XI-RPL 1',
-    'XI-PSPT 2',
-    'XI-MP 4',
-    'X-RPL 1',
-    'X-TKJ 2',
-    'X-MP 4',
+  final List<Map<String, String>> _kelasList = [
+    {'id': 'XII IPA 1', 'name': 'XII IPA 1 — Matematika Wajib'},
+    {'id': 'XII IPA 2', 'name': 'XII IPA 2 — Matematika Wajib'},
+    {'id': 'XI IPA 1', 'name': 'XI IPA 1 — Matematika Peminatan'},
   ];
 
-  final List<Map<String, dynamic>> _dummyStudents = [
-    {'initials': 'EF', 'name': 'Esa Farelio', 'nisn': '2001001', 'status': 'Hadir'},
-    {'initials': 'AA', 'name': 'Augista A.Z', 'nisn': '2001001', 'status': 'Hadir'},
-    {'initials': 'RS', 'name': 'Feby Shandy I.', 'nisn': '2022002', 'status': 'Hadir'},
-    {'initials': 'GK', 'name': 'Gavin K.H', 'nisn': '2022992', 'status': 'Hadir'},
-    {'initials': 'FA', 'name': 'FarisKha F.A', 'nisn': '2001001', 'status': 'Hadir'},
-    {'initials': 'DA', 'name': 'Devita A.V.P', 'nisn': '2002991', 'status': 'Hadir'},
-    {'initials': 'AF', 'name': 'Anindya F.A', 'nisn': '2001007', 'status': 'Hadir'},
-    {'initials': 'HA', 'name': 'Helmalia A', 'nisn': '2001008', 'status': 'Hadir'},
-    {'initials': 'ER', 'name': 'Eka Rara A.A', 'nisn': '2001009', 'status': 'Hadir'},
-  ];
-
-  // Track per-student status
-  late List<String> _studentStatuses;
+  // Track per-student status by ID
+  Map<String, String> _studentStatusMap = {};
+  List<StudentAttendanceEntity> _currentStudents = [];
 
   @override
   void initState() {
     super.initState();
-    _studentStatuses =
-        _dummyStudents.map((s) => s['status'] as String).toList();
     if (widget.prefilledKelas != null) {
       _selectedKelas = widget.prefilledKelas;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<AbsenBloc>().add(LoadStudentAttendanceEvent(kelas: _selectedKelas!));
+      });
     }
   }
 
@@ -59,8 +52,9 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
     setState(() {
       _tandaiSemuaHadir = val ?? false;
       if (_tandaiSemuaHadir) {
-        _studentStatuses =
-            List.filled(_dummyStudents.length, 'Hadir');
+        for (var s in _currentStudents) {
+          _studentStatusMap[s.id] = 'Hadir';
+        }
       }
       _resetCount++;
     });
@@ -70,11 +64,13 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
     setState(() {
       _selectedKelas = null;
       _tandaiSemuaHadir = false;
-      _studentStatuses =
-          _dummyStudents.map((s) => s['status'] as String).toList();
+      _studentStatusMap.clear();
+      _currentStudents.clear();
       _resetCount++;
     });
   }
+
+  bool _isLoading = false;
 
   void _simpanAbsensi() {
     if (_selectedKelas == null) {
@@ -90,30 +86,42 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
       return;
     }
 
-    // Simpan absensi, lalu arahkan ke jurnal dengan data terisi
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Absensi berhasil disimpan! Mengarahkan ke Jurnal...'),
-        backgroundColor: AppColors.successGreen,
-        behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
-    Future.delayed(const Duration(milliseconds: 800), () {
+    Future.delayed(const Duration(seconds: 1), () {
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => JurnalMengajarPage(
-            initialData: {
-              'className': _selectedKelas ?? '',
-              'subject': 'Bahasa Indonesia',
-            },
-          ),
+      setState(() {
+        _isLoading = false;
+      });
+      // Simpan absensi, lalu arahkan ke jurnal dengan data terisi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Absensi berhasil disimpan! Mengarahkan ke Jurnal...'),
+          backgroundColor: AppColors.successGreen,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
+
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (!mounted) return;
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainLayout(
+              initialIndex: 1, // Index tab Jurnal
+              initialData: {
+                'className': _selectedKelas ?? '',
+                'subject': 'Matematika Wajib',
+              },
+            ),
+          ),
+          (route) => false, // Bersihkan semua rute sebelumnya agar tab bawah kembali normal
+        );
+      });
     });
   }
 
@@ -185,67 +193,154 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
               ),
               const SizedBox(height: 12),
 
-              // Pilih Kelas Dropdown
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.borderLight),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedKelas,
-                    hint: Row(
-                      children: [
-                        const Icon(Icons.apartment_outlined,
-                            size: 18, color: AppColors.primaryBlue),
-                        const SizedBox(width: 10),
-                        Text('Pilih Kelas',
-                            style: AppTextStyles.cardSubtitle
-                                .copyWith(fontSize: 14)),
-                      ],
-                    ),
-                    icon: const Icon(Icons.keyboard_arrow_down,
-                        color: AppColors.secondaryOrange),
-                    isExpanded: true,
-                    items: _kelasList
-                        .map((k) => DropdownMenuItem(
-                              value: k,
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.apartment_outlined,
-                                      size: 18,
-                                      color: AppColors.primaryBlue),
-                                  const SizedBox(width: 10),
-                                  Text(k,
-                                      style: AppTextStyles.cardTitle
-                                          .copyWith(fontSize: 14)),
-                                ],
-                              ),
-                            ))
-                        .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedKelas = val;
-                        _tandaiSemuaHadir = false;
-                        _studentStatuses = _dummyStudents
-                            .map((s) => s['status'] as String)
-                            .toList();
-                        _resetCount++;
-                      });
-                    },
+              if (widget.prefilledKelas == null)
+                // Pilih Kelas Dropdown (hanya tampil jika tidak ada prefilledKelas)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderLight),
                   ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedKelas,
+                      hint: Row(
+                        children: [
+                          const Icon(Icons.apartment_outlined,
+                              size: 18, color: AppColors.primaryBlue),
+                          const SizedBox(width: 10),
+                          Text('Pilih Kelas',
+                              style: AppTextStyles.cardSubtitle
+                                  .copyWith(fontSize: 14)),
+                        ],
+                      ),
+                      icon: const Icon(Icons.keyboard_arrow_down,
+                          color: AppColors.secondaryOrange),
+                      isExpanded: true,
+                      items: _kelasList
+                          .map((k) => DropdownMenuItem(
+                                value: k['id'],
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.apartment_outlined,
+                                        size: 18,
+                                        color: AppColors.primaryBlue),
+                                    const SizedBox(width: 10),
+                                    Text(k['name']!,
+                                        style: AppTextStyles.cardTitle
+                                            .copyWith(fontSize: 14)),
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            _selectedKelas = val;
+                            _tandaiSemuaHadir = false;
+                            _resetCount++;
+                          });
+                          context.read<AbsenBloc>().add(LoadStudentAttendanceEvent(kelas: val));
+                        }
+                      },
+                    ),
+                  ),
+                )
+              else
+                // Tampilan statis kelas yang sudah terdeteksi
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.primaryBlue.withOpacity(0.4)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.apartment_outlined,
+                              size: 18, color: AppColors.primaryBlue),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              _selectedKelas ?? '',
+                              style: AppTextStyles.cardTitle.copyWith(fontSize: 14),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryBlue.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Dari jadwal',
+                              style: AppTextStyles.labelStyle.copyWith(
+                                color: AppColors.primaryBlue,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (widget.prefilledSubject != null) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.borderLight),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.book_outlined,
+                                size: 18, color: AppColors.secondaryOrange),
+                            const SizedBox(width: 10),
+                            Text(
+                              widget.prefilledSubject!,
+                              style: AppTextStyles.cardTitle.copyWith(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ),
               const SizedBox(height: 20),
 
               // Tabel Siswa (muncul setelah kelas dipilih)
               if (_selectedKelas != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
+                BlocConsumer<AbsenBloc, AbsenState>(
+                  listener: (context, state) {
+                    if (state is StudentAttendanceLoaded) {
+                      setState(() {
+                        _currentStudents = state.studentList;
+                        for (var student in state.studentList) {
+                          _studentStatusMap[student.id] = student.status;
+                        }
+                      });
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is AbsenLoading) {
+                      return const Center(
+                          child: Padding(
+                        padding: EdgeInsets.all(40.0),
+                        child: CircularProgressIndicator(),
+                      ));
+                    } else if (state is AbsenError) {
+                      return Center(child: Text(state.message));
+                    } else if (state is StudentAttendanceLoaded) {
+                      final students = state.studentList;
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderLight),
@@ -279,7 +374,7 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  '${_dummyStudents.length} Siswa',
+                                  '${students.length} Siswa',
                                   style: AppTextStyles.cardTitle
                                       .copyWith(color: Colors.white, fontSize: 12),
                                 ),
@@ -355,20 +450,20 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
                       const SizedBox(height: 4),
 
                       // Student List
-                      ..._dummyStudents.asMap().entries.map((entry) {
+                      ...students.asMap().entries.map((entry) {
                         final index = entry.key;
                         final student = entry.value;
                         return _StudentRow(
                           key: ValueKey(
-                              'input_student_${index}_$_resetCount'),
+                              'input_student_${student.id}_$_resetCount'),
                           index: index + 1,
-                          initials: student['initials'],
-                          name: student['name'],
-                          nisn: student['nisn'],
-                          initialStatus: _studentStatuses[index],
+                          initials: student.initials,
+                          name: student.name,
+                          nisn: student.nisn,
+                          initialStatus: _studentStatusMap[student.id] ?? student.status,
                           onStatusChanged: (newStatus) {
                             setState(() {
-                              _studentStatuses[index] = newStatus;
+                              _studentStatusMap[student.id] = newStatus;
                               if (_tandaiSemuaHadir &&
                                   newStatus != 'Hadir') {
                                 _tandaiSemuaHadir = false;
@@ -379,8 +474,12 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
                       }).toList(),
                     ],
                   ),
-                ),
-                const SizedBox(height: 100),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+          const SizedBox(height: 100),
               ] else ...[
                 // Empty state
                 const SizedBox(height: 40),
@@ -463,11 +562,21 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24)),
                       ),
-                      child: Text(
-                        'Simpan Absensi',
-                        style: AppTextStyles.cardTitle
-                            .copyWith(color: Colors.white),
-                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : Text(
+                              'Simpan Absensi',
+                              style: AppTextStyles.cardTitle
+                                  .copyWith(color: Colors.white),
+                            ),
                     ),
                   ),
                 ],

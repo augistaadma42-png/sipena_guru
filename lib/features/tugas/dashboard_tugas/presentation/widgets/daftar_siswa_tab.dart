@@ -9,11 +9,11 @@ class DaftarSiswaTab extends StatelessWidget {
   Widget build(BuildContext context) {
     // Dummy data for students
     final List<Map<String, String>> dummySiswa = [
-      {'absen': '1', 'nisn': '0041234567', 'jk': 'L', 'nama': 'Ahmad Budi Santoso'},
-      {'absen': '2', 'nisn': '0041234568', 'jk': 'P', 'nama': 'Siti Aminah'},
-      {'absen': '3', 'nisn': '0041234569', 'jk': 'L', 'nama': 'Rizky Saputra'},
-      {'absen': '4', 'nisn': '0041234570', 'jk': 'P', 'nama': 'Dewi Lestari'},
-      {'absen': '5', 'nisn': '0041234571', 'jk': 'L', 'nama': 'Bagas Pratama'},
+      {'absen': '1', 'nisn': '0057281', 'jk': 'L', 'nama': 'Ahmad Fauzan'},
+      {'absen': '2', 'nisn': '0057282', 'jk': 'P', 'nama': 'Ananda Aryani'},
+      {'absen': '3', 'nisn': '0057283', 'jk': 'L', 'nama': 'Bagus Akbar'},
+      {'absen': '4', 'nisn': '0057284', 'jk': 'P', 'nama': 'Bunga Pertiwi'},
+      {'absen': '5', 'nisn': '0057285', 'jk': 'L', 'nama': 'Candra Aditama'},
     ];
 
     return Scaffold(

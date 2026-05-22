@@ -88,8 +88,37 @@ class CustomDrawer extends StatelessWidget {
                   title: 'Keluar',
                   isLogout: true,
                   onTap: () {
-                    // TODO: Implement Logout
-                    Navigator.pop(context);
+                    Navigator.pop(context); // Close drawer first
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Keluar'),
+                        content: const Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Batal'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close dialog
+                              // Navigate to a login screen or clear stack
+                              // Since there is no login screen yet, we just show a snackbar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Berhasil keluar.'),
+                                  backgroundColor: AppColors.secondaryOrange,
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Keluar',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 ),
               ],
