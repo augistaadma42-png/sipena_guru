@@ -108,8 +108,7 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
 
       Future.delayed(const Duration(milliseconds: 800), () {
         if (!mounted) return;
-        Navigator.pushAndRemoveUntil(
-          context,
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => MainLayout(
               initialIndex: 1, // Index tab Jurnal
