@@ -6,10 +6,13 @@ import 'package:fitur_guru/core/constants/text_styles.dart';
 class CustomNilaiField extends StatefulWidget {
   final int initialValue;
   final ValueChanged<int> onChanged;
+  final bool readOnly;
+
   const CustomNilaiField({
     super.key,
     required this.initialValue,
     required this.onChanged,
+    this.readOnly = false,
   });
 
   @override
@@ -49,9 +52,16 @@ class _CustomNilaiFieldState extends State<CustomNilaiField> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: widget.readOnly
+            ? AppColors.backgroundLight
+            : AppColors.cardBackground,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderLight, width: 1.5),
+        border: Border.all(
+          color: widget.readOnly
+              ? AppColors.successGreen.withOpacity(0.4)
+              : AppColors.borderLight,
+          width: 1.5,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -60,23 +70,31 @@ class _CustomNilaiFieldState extends State<CustomNilaiField> {
             child: TextField(
               controller: _controller,
               keyboardType: TextInputType.number,
+              readOnly: widget.readOnly,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(3),
               ],
               textAlign: TextAlign.right,
               textAlignVertical: TextAlignVertical.center,
-              onChanged: (v) {
-                final parsed = int.tryParse(v) ?? 0;
-                widget.onChanged(parsed.clamp(0, 100));
-              },
-              style: AppTextStyles.headerTitle.copyWith(fontSize: 48),
-              decoration: const InputDecoration(
+              onChanged: widget.readOnly
+                  ? null
+                  : (v) {
+                      final parsed = int.tryParse(v) ?? 0;
+                      widget.onChanged(parsed.clamp(0, 100));
+                    },
+              style: AppTextStyles.headerTitle.copyWith(
+                fontSize: 48,
+                color: widget.readOnly
+                    ? AppColors.successGreen
+                    : AppColors.textPrimary,
+              ),
+              decoration: InputDecoration(
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
                 hintText: '00',
-                hintStyle: TextStyle(
+                hintStyle: const TextStyle(
                   color: AppColors.secondaryOrange,
                   fontSize: 40,
                   fontWeight: FontWeight.w700,
@@ -85,17 +103,47 @@ class _CustomNilaiFieldState extends State<CustomNilaiField> {
             ),
           ),
           const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              '/100',
-              style: AppTextStyles.headerSubtitle.copyWith(
-                fontSize: 22,
-                color: AppColors.disabledGrey,
-                fontWeight: FontWeight.w500,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  '/100',
+                  style: AppTextStyles.headerSubtitle.copyWith(
+                    fontSize: 22,
+                    color: widget.readOnly
+                        ? AppColors.successGreen.withOpacity(0.6)
+                        : AppColors.disabledGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+              if (widget.readOnly) ...[
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.lock_outline_rounded,
+                      size: 11,
+                      color: AppColors.successGreen.withOpacity(0.7),
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      'Sudah dinilai',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.successGreen.withOpacity(0.8),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
           ),
         ],
       ),

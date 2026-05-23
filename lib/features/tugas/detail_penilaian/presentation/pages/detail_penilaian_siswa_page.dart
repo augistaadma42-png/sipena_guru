@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:fitur_guru/core/constants/colors.dart';
 import '../../data/datasources/detail_penilaian_local_datasource.dart';
 import '../../data/repositories/detail_penilaian_repository_impl.dart';
@@ -16,7 +15,7 @@ import '../widgets/nilai_input_card.dart';
 import '../widgets/simpan_penilaian_button.dart';
 import '../widgets/siswa_profile_card.dart';
 
-// ── Navigation Arguments ─────────────────────────────────────────
+// ── Navigation Arguments 
 class DetailPenilaianArgs {
   final String siswaId;
   final String tugasId;
@@ -49,7 +48,7 @@ class DetailPenilaianSiswaPage extends StatelessWidget {
   }
 }
 
-// ── View dengan BlocConsumer ─────────────────────────────────────
+// ── View dengan BlocConsumer 
 class _DetailPenilaianView extends StatelessWidget {
   const _DetailPenilaianView();
 
@@ -121,7 +120,7 @@ class _DetailPenilaianView extends StatelessWidget {
   }
 }
 
-// ── Body — susunan semua card ────────────────────────────────────
+// ── Body — susunan semua card 
 class _DetailPenilaianBody extends StatelessWidget {
   final DetailPenilaianLoaded loaded;
   final bool isSubmitting;
@@ -159,6 +158,7 @@ class _DetailPenilaianBody extends StatelessWidget {
             NilaiInputCard(
               currentNilai: loaded.currentNilai,
               onNilaiChanged: (v) => bloc.add(UpdateNilaiEvent(v)),
+              readOnly: loaded.entity.currentScore > 0,
             ),
             const SizedBox(height: 16),
             FeedbackInputCard(

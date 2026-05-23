@@ -8,7 +8,7 @@ abstract class NotifikasiLocalDatasource {
 }
 
 class NotifikasiLocalDatasourceImpl implements NotifikasiLocalDatasource {
-  final List<NotifikasiModel> _dummyData = [
+  static final List<NotifikasiModel> _dummyData = [
     NotifikasiModel(
       id: '001',
       judul: 'Absensi belum diisi',
@@ -70,7 +70,7 @@ class NotifikasiLocalDatasourceImpl implements NotifikasiLocalDatasource {
   @override
   Future<List<NotifikasiModel>> getNotifikasi() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return _dummyData;
+    return List.from(_dummyData);
   }
 
   @override
