@@ -8,7 +8,6 @@ abstract class RekapPengumpulanLocalDatasource {
 
 class RekapPengumpulanLocalDatasourceImpl
     implements RekapPengumpulanLocalDatasource {
-
   /// Dummy data berbeda berdasarkan id tugas
   @override
   Future<AssignmentRecapModel> getAssignmentRecap(String tugasId) async {
@@ -81,6 +80,16 @@ class RekapPengumpulanLocalDatasourceImpl
           fileName: 'Candra_Integral.pdf',
           score: 85,
           isSubmitted: true,
+        ),
+        const AssignmentSubmissionModel(
+          id: 's6',
+          studentName: 'Dewi Lestari',
+          avatar: 'https://i.pravatar.cc/150?u=dewi',
+          submittedAt: '26 Okt, 19:45',
+          fileName: 'Dewi_Lestari_Integral.pdf',
+          score: 75,
+          isSubmitted: true,
+          isLate: true,
         ),
       ],
     );

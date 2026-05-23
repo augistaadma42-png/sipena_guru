@@ -25,20 +25,25 @@ class RekapPengumpulanTugasPage extends StatelessWidget {
   final String tugasId;
   final String tugasTitle;
   final String tugasSubtitle;
+  final int lampiranCount;
+  final List<String> lampiranNames;
 
   const RekapPengumpulanTugasPage({
     super.key,
     required this.tugasId,
     required this.tugasTitle,
     required this.tugasSubtitle,
+    required this.lampiranCount,
+    this.lampiranNames = const [],
   });
 
   @override
   Widget build(BuildContext context) {
     // Inisialisasi dependensi secara lokal
     final datasource = RekapPengumpulanLocalDatasourceImpl();
-    final repository =
-        RekapPengumpulanRepositoryImpl(localDatasource: datasource);
+    final repository = RekapPengumpulanRepositoryImpl(
+      localDatasource: datasource,
+    );
 
     return BlocProvider(
       create: (context) => RekapPengumpulanBloc(
@@ -47,6 +52,8 @@ class RekapPengumpulanTugasPage extends StatelessWidget {
       child: RekapPengumpulanTugasView(
         tugasTitle: tugasTitle,
         tugasSubtitle: tugasSubtitle,
+        lampiranCount: lampiranCount,
+        lampiranNames: lampiranNames,
       ),
     );
   }
@@ -56,11 +63,15 @@ class RekapPengumpulanTugasPage extends StatelessWidget {
 class RekapPengumpulanTugasView extends StatelessWidget {
   final String tugasTitle;
   final String tugasSubtitle;
+  final int lampiranCount;
+  final List<String> lampiranNames;
 
   const RekapPengumpulanTugasView({
     super.key,
     required this.tugasTitle,
     required this.tugasSubtitle,
+    required this.lampiranCount,
+    this.lampiranNames = const [],
   });
 
   @override
@@ -99,15 +110,21 @@ class RekapPengumpulanTugasView extends StatelessWidget {
   }
 
   Widget _buildLoadedContent(
-      BuildContext context, RekapPengumpulanLoaded state) {
+    BuildContext context,
+    RekapPengumpulanLoaded state,
+  ) {
     final recap = state.recap;
     final submissions = state.filteredSubmissions;
+    final onTimeSubmissionCount = recap.submissions
+        .where((submission) => submission.isSubmitted && !submission.isLate)
+        .length;
+    final lateSubmissionCount = recap.lateStudentsCount;
 
     return RefreshIndicator(
       onRefresh: () async {
-        context
-            .read<RekapPengumpulanBloc>()
-            .add(LoadRekapPengumpulanEvent(recap.id));
+        context.read<RekapPengumpulanBloc>().add(
+          LoadRekapPengumpulanEvent(recap.id),
+        );
       },
       color: AppColors.secondaryOrange,
       child: CustomScrollView(
@@ -118,27 +135,20 @@ class RekapPengumpulanTugasView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Header judul tugas
-                TugasHeaderSection(
-                  title: tugasTitle,
-                  subtitle: tugasSubtitle,
-                ),
+                TugasHeaderSection(title: tugasTitle, subtitle: tugasSubtitle),
+                const SizedBox(height: 20),
 
-                // 2. Tombol unduh semua
-                DownloadSemuaButton(
-                  onPressed: () {
-                    context
-                        .read<RekapPengumpulanBloc>()
-                        .add(DownloadAllEvent());
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Mengunduh semua file tugas...'),
-                        backgroundColor: AppColors.primaryBlue,
-                      ),
-                    );
-                  },
-                ),
+                // 2. Info lampiran tugas (jika ada)
+                if (lampiranCount > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _LampiranInfoRow(
+                      count: lampiranCount,
+                      lampiranNames: lampiranNames,
+                    ),
+                  ),
 
-                // 3. Kartu statistik pengumpulan
+                // 4. Kartu statistik pengumpulan
                 StatistikPengumpulanCard(
                   totalStudents: recap.totalStudents,
                   submittedCount: recap.submittedCount,
@@ -147,9 +157,26 @@ class RekapPengumpulanTugasView extends StatelessWidget {
                   lateStudentsCount: recap.lateStudentsCount,
                 ),
 
+                // 3. Tombol unduh semua
+                DownloadSemuaButton(
+                  onPressed: () {
+                    context.read<RekapPengumpulanBloc>().add(
+                      DownloadAllEvent(),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Mengunduh semua file tugas...'),
+                        backgroundColor: AppColors.primaryBlue,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+
                 // 4. Filter tab
                 FilterTabWidget(
-                  submittedCount: recap.submittedCount,
+                  submittedCount: onTimeSubmissionCount,
+                  lateCount: lateSubmissionCount,
                   pendingCount: recap.pendingCount,
                 ),
 
@@ -176,26 +203,190 @@ class RekapPengumpulanTugasView extends StatelessWidget {
                     itemCount: submissions.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
+                      final isPending =
+                          state.selectedFilter == RekapSubmissionFilter.pending;
                       return SiswaPengumpulanTile(
                         submission: submissions[index],
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailPenilaianSiswaPage(
-                                args: DetailPenilaianArgs(
-                                  siswaId: submissions[index].id,
-                                  tugasId: recap.id,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                        onTap: isPending
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailPenilaianSiswaPage(
+                                      args: DetailPenilaianArgs(
+                                        siswaId: submissions[index].id,
+                                        tugasId: recap.id,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                       );
                     },
                   ),
                 ),
         ],
+      ),
+    );
+  }
+}
+
+class _LampiranInfoRow extends StatelessWidget {
+  final int count;
+  final List<String> lampiranNames;
+
+  const _LampiranInfoRow({required this.count, this.lampiranNames = const []});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16, // jarak kanan kiri
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.secondaryOrange,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.secondaryOrange.withOpacity(0.18),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header atas
+            Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.attach_file_rounded,
+                    color: AppColors.secondaryOrange,
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                Expanded(
+                  child: Text(
+                    ' $count Lampiran',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            if (lampiranNames.isNotEmpty) ...[
+              const SizedBox(height: 16),
+
+              ...lampiranNames.map(
+                (name) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.insert_drive_file_outlined,
+                            color: AppColors.secondaryOrange,
+                          ),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+
+                              const SizedBox(height: 2),
+
+                              const Text(
+                                'PDF File',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        OutlinedButton(
+                          onPressed: () {},
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.secondaryOrange,
+                            side: const BorderSide(
+                              color: AppColors.secondaryOrange,
+                              width: 1,
+                            ),
+
+                            minimumSize: const Size(58, 28),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 0,
+                            ),
+
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text(
+                            'Preview',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

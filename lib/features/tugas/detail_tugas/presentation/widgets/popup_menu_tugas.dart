@@ -4,14 +4,10 @@ import '../../../../../../core/constants/text_styles.dart';
 
 /// Popup menu tiga titik untuk aksi per siswa
 class PopupMenuTugas extends StatelessWidget {
-  final VoidCallback onLihat;
-  final VoidCallback onUnduh;
   final VoidCallback onBeriNilai;
 
   const PopupMenuTugas({
     super.key,
-    required this.onLihat,
-    required this.onUnduh,
     required this.onBeriNilai,
   });
 
@@ -25,21 +21,11 @@ class PopupMenuTugas extends StatelessWidget {
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: (value) {
-        switch (value) {
-          case 'lihat':
-            onLihat();
-            break;
-          case 'unduh':
-            onUnduh();
-            break;
-          case 'nilai':
-            onBeriNilai();
-            break;
+        if (value == 'nilai') {
+          onBeriNilai();
         }
       },
       itemBuilder: (context) => [
-        _buildItem('lihat', Icons.visibility_rounded, 'Lihat File'),
-        _buildItem('unduh', Icons.download_rounded, 'Unduh File'),
         _buildItem('nilai', Icons.grade_rounded, 'Beri Nilai'),
       ],
     );

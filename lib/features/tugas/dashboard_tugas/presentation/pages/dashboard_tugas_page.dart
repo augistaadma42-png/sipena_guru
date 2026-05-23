@@ -13,7 +13,7 @@ import '../widgets/daftar_tugas_section.dart';
 import '../widgets/floating_add_tugas_button.dart';
 import '../widgets/empty_tugas_widget.dart';
 import '../widgets/loading_dashboard_widget.dart';
-import '../../../../../../core/constants/colors.dart';
+import 'package:fitur_guru/core/constants/colors.dart';
 import '../../../buat_tugas/presentation/pages/buat_tugas_page.dart';
 import '../widgets/daftar_siswa_tab.dart';
 
@@ -39,8 +39,31 @@ class DashboardTugasPage extends StatelessWidget {
   }
 }
 
-class DashboardTugasView extends StatelessWidget {
+class DashboardTugasView extends StatefulWidget {
   const DashboardTugasView({super.key});
+
+  @override
+  State<DashboardTugasView> createState() => _DashboardTugasViewState();
+}
+
+class _DashboardTugasViewState extends State<DashboardTugasView> {
+  String? _selectedMonth;
+
+  List<String> _buildMonthOptions(List<String> monthValues) {
+    final unique = <String>{};
+    for (final month in monthValues) {
+      if (month.isNotEmpty) unique.add(month);
+    }
+    return unique.toList();
+  }
+
+  String _extractMonthFromDeadline(String deadline) {
+    final trimmed = deadline.trim();
+    if (trimmed.isEmpty) return '';
+    final parts = trimmed.split(RegExp(r'\s+'));
+    if (parts.isEmpty) return '';
+    return parts.last;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +121,22 @@ class DashboardTugasView extends StatelessWidget {
         }
 
         if (state is DashboardTugasLoaded) {
+          final allMonths = state.tugasList
+              .map((t) => _extractMonthFromDeadline(t.deadline))
+              .where((month) => month.isNotEmpty)
+              .toList();
+          final monthOptions = _buildMonthOptions(allMonths);
+          final filteredTugas =
+              (_selectedMonth == null || _selectedMonth == 'Semua')
+              ? state.tugasList
+              : state.tugasList
+                    .where(
+                      (t) =>
+                          _extractMonthFromDeadline(t.deadline) ==
+                          _selectedMonth,
+                    )
+                    .toList();
+
           return RefreshIndicator(
             onRefresh: () async {
               context.read<DashboardTugasBloc>().add(RefreshDashboardEvent());
@@ -111,7 +150,16 @@ class DashboardTugasView extends StatelessWidget {
                   const SizedBox(height: 15),
                   MateriTerbaruSection(materiList: state.materiList),
                   const SizedBox(height: 24),
-                  DaftarTugasSection(tugasList: state.tugasList),
+                  DaftarTugasSection(
+                    tugasList: filteredTugas,
+                    monthOptions: monthOptions,
+                    selectedMonth: _selectedMonth,
+                    onMonthSelected: (newMonth) {
+                      setState(() {
+                        _selectedMonth = newMonth == 'Semua' ? null : newMonth;
+                      });
+                    },
+                  ),
                 ],
               ),
             ),

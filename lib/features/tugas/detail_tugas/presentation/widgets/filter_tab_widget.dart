@@ -6,14 +6,16 @@ import '../bloc/rekap_pengumpulan_bloc.dart';
 import '../bloc/rekap_pengumpulan_event.dart';
 import '../bloc/rekap_pengumpulan_state.dart';
 
-/// Tab filter: Diserahkan / Ditugaskan
+/// Tab filter: Diserahkan / Terlambat / Ditugaskan
 class FilterTabWidget extends StatelessWidget {
   final int submittedCount;
+  final int lateCount;
   final int pendingCount;
 
   const FilterTabWidget({
     super.key,
     required this.submittedCount,
+    required this.lateCount,
     required this.pendingCount,
   });
 
@@ -21,8 +23,9 @@ class FilterTabWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<RekapPengumpulanBloc, RekapPengumpulanState>(
       builder: (context, state) {
-        final isSubmittedActive =
-            state is RekapPengumpulanLoaded ? state.showSubmitted : true;
+        final isSubmittedActive = state is RekapPengumpulanLoaded
+            ? state.selectedFilter == RekapSubmissionFilter.submitted
+            : true;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
@@ -39,17 +42,31 @@ class FilterTabWidget extends StatelessWidget {
                   label: 'Diserahkan',
                   count: submittedCount,
                   isActive: isSubmittedActive,
-                  onTap: () => context
-                      .read<RekapPengumpulanBloc>()
-                      .add(const FilterSubmissionEvent(true)),
+                  onTap: () => context.read<RekapPengumpulanBloc>().add(
+                    const FilterSubmissionEvent(
+                      RekapSubmissionFilter.submitted,
+                    ),
+                  ),
+                ),
+                _TabItem(
+                  label: 'Terlambat',
+                  count: lateCount,
+                  isActive:
+                      state is RekapPengumpulanLoaded &&
+                      state.selectedFilter == RekapSubmissionFilter.late,
+                  onTap: () => context.read<RekapPengumpulanBloc>().add(
+                    const FilterSubmissionEvent(RekapSubmissionFilter.late),
+                  ),
                 ),
                 _TabItem(
                   label: 'Ditugaskan',
                   count: pendingCount,
-                  isActive: !isSubmittedActive,
-                  onTap: () => context
-                      .read<RekapPengumpulanBloc>()
-                      .add(const FilterSubmissionEvent(false)),
+                  isActive:
+                      state is RekapPengumpulanLoaded &&
+                      state.selectedFilter == RekapSubmissionFilter.pending,
+                  onTap: () => context.read<RekapPengumpulanBloc>().add(
+                    const FilterSubmissionEvent(RekapSubmissionFilter.pending),
+                  ),
                 ),
               ],
             ),
@@ -90,7 +107,7 @@ class _TabItem extends StatelessWidget {
                       color: Colors.black.withValues(alpha: 0.06),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
-                    )
+                    ),
                   ]
                 : [],
           ),
@@ -100,8 +117,7 @@ class _TabItem extends StatelessWidget {
               Text(
                 label,
                 style: AppTextStyles.labelStyle.copyWith(
-                  fontWeight:
-                      isActive ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                   color: isActive
                       ? AppColors.primaryBlue
                       : AppColors.textSecondary,
@@ -109,8 +125,7 @@ class _TabItem extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
                   color: isActive
                       ? AppColors.primaryBlue

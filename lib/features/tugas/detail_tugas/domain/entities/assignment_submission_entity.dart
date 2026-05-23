@@ -6,9 +6,10 @@ class AssignmentSubmissionEntity extends Equatable {
   final String studentName;
   final String avatar;
   final String? submittedAt; // null jika belum mengumpulkan
-  final String? fileName;   // null jika belum mengumpulkan
-  final int? score;          // null jika belum dinilai
+  final String? fileName; // null jika belum mengumpulkan
+  final int? score; // null jika belum dinilai
   final bool isSubmitted;
+  final bool isLate; // true jika submitted setelah deadline
 
   const AssignmentSubmissionEntity({
     required this.id,
@@ -18,16 +19,18 @@ class AssignmentSubmissionEntity extends Equatable {
     this.fileName,
     this.score,
     required this.isSubmitted,
+    this.isLate = false,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        studentName,
-        avatar,
-        submittedAt,
-        fileName,
-        score,
-        isSubmitted,
-      ];
+    id,
+    studentName,
+    avatar,
+    submittedAt,
+    fileName,
+    score,
+    isSubmitted,
+    isLate,
+  ];
 }

@@ -10,6 +10,7 @@ class AssignmentSubmissionModel extends AssignmentSubmissionEntity {
     super.fileName,
     super.score,
     required super.isSubmitted,
+    super.isLate = false,
   });
 
   factory AssignmentSubmissionModel.fromJson(Map<String, dynamic> json) {
@@ -21,16 +22,18 @@ class AssignmentSubmissionModel extends AssignmentSubmissionEntity {
       fileName: json['fileName'] as String?,
       score: json['score'] as int?,
       isSubmitted: json['isSubmitted'] as bool,
+      isLate: json['isLate'] as bool? ?? false,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'studentName': studentName,
-        'avatar': avatar,
-        'submittedAt': submittedAt,
-        'fileName': fileName,
-        'score': score,
-        'isSubmitted': isSubmitted,
-      };
+    'id': id,
+    'studentName': studentName,
+    'avatar': avatar,
+    'submittedAt': submittedAt,
+    'fileName': fileName,
+    'score': score,
+    'isSubmitted': isSubmitted,
+    'isLate': isLate,
+  };
 }

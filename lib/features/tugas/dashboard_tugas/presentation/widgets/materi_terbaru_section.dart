@@ -2,12 +2,24 @@ import 'package:flutter/material.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../domain/entities/materi_entity.dart';
+import '../pages/daftar_materi_page.dart';
 import 'materi_card.dart';
 
 class MateriTerbaruSection extends StatelessWidget {
   final List<MateriEntity> materiList;
 
   const MateriTerbaruSection({super.key, required this.materiList});
+
+  void _openMateri(BuildContext context, MateriEntity materi) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => DaftarMateriPage(
+          materiList: materiList,
+          initialMateriId: materi.id,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +36,14 @@ class MateriTerbaruSection extends StatelessWidget {
                 style: AppTextStyles.sectionTitle.copyWith(fontSize: 20),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DaftarMateriPage(materiList: materiList),
+                    ),
+                  );
+                },
                 child: Text(
                   'Lihat Semua',
                   style: AppTextStyles.labelStyle.copyWith(
@@ -44,7 +63,11 @@ class MateriTerbaruSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: materiList.length,
             itemBuilder: (context, index) {
-              return MateriCard(materi: materiList[index]);
+              final materi = materiList[index];
+              return MateriCard(
+                materi: materi,
+                onTap: () => _openMateri(context, materi),
+              );
             },
           ),
         ),

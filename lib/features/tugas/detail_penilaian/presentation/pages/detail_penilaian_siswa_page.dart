@@ -34,11 +34,16 @@ class DetailPenilaianSiswaPage extends StatelessWidget {
     final datasource = DetailPenilaianLocalDatasourceImpl();
     final repository = DetailPenilaianRepositoryImpl(datasource);
     return BlocProvider(
-      create: (_) => DetailPenilaianBloc(
-        getDetailPenilaian: GetDetailPenilaianUsecase(repository),
-        submitPenilaian:    SubmitPenilaianUsecase(repository),
-      )..add(LoadDetailPenilaianEvent(
-          siswaId: args.siswaId, tugasId: args.tugasId)),
+      create: (_) =>
+          DetailPenilaianBloc(
+            getDetailPenilaian: GetDetailPenilaianUsecase(repository),
+            submitPenilaian: SubmitPenilaianUsecase(repository),
+          )..add(
+            LoadDetailPenilaianEvent(
+              siswaId: args.siswaId,
+              tugasId: args.tugasId,
+            ),
+          ),
       child: const _DetailPenilaianView(),
     );
   }
@@ -51,6 +56,7 @@ class _DetailPenilaianView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.backgroundLight,
       appBar: const DetailPenilaianAppBar(notifCount: 3),
       body: BlocConsumer<DetailPenilaianBloc, DetailPenilaianState>(
@@ -58,29 +64,36 @@ class _DetailPenilaianView extends StatelessWidget {
           if (state is DetailPenilaianSubmitSuccess) {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(
-                content: Row(children: const [
-                  Icon(Icons.check_circle_rounded, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Penilaian berhasil disimpan!'),
-                ]),
-                backgroundColor: AppColors.successGreen,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(seconds: 2),
-              ));
+              ..showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: const [
+                      Icon(Icons.check_circle_rounded, color: Colors.white),
+                      SizedBox(width: 10),
+                      Text('Penilaian berhasil disimpan!'),
+                    ],
+                  ),
+                  backgroundColor: AppColors.successGreen,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  margin: const EdgeInsets.all(16),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
           }
           if (state is DetailPenilaianError) {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(
-                content: Text('Gagal: ${state.message}'),
-                backgroundColor: Colors.redAccent,
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(16),
-              ));
+              ..showSnackBar(
+                SnackBar(
+                  content: Text('Gagal: ${state.message}'),
+                  backgroundColor: Colors.redAccent,
+                  behavior: SnackBarBehavior.floating,
+                  margin: const EdgeInsets.all(16),
+                ),
+              );
           }
         },
         builder: (context, state) {
@@ -112,7 +125,10 @@ class _DetailPenilaianView extends StatelessWidget {
 class _DetailPenilaianBody extends StatelessWidget {
   final DetailPenilaianLoaded loaded;
   final bool isSubmitting;
-  const _DetailPenilaianBody({required this.loaded, required this.isSubmitting});
+  const _DetailPenilaianBody({
+    required this.loaded,
+    required this.isSubmitting,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +149,8 @@ class _DetailPenilaianBody extends StatelessWidget {
                   content: const Text('Mengunduh file lampiran...'),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   margin: const EdgeInsets.all(16),
                 ),
               ),

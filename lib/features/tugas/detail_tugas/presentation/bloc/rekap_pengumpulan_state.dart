@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/assignment_recap_entity.dart';
 import '../../domain/entities/assignment_submission_entity.dart';
+import 'rekap_pengumpulan_event.dart';
 
 abstract class RekapPengumpulanState extends Equatable {
   const RekapPengumpulanState();
@@ -16,33 +17,37 @@ class RekapPengumpulanLoading extends RekapPengumpulanState {}
 class RekapPengumpulanLoaded extends RekapPengumpulanState {
   final AssignmentRecapEntity recap;
   final List<AssignmentSubmissionEntity> filteredSubmissions;
-  final bool showSubmitted; // filter aktif
+  final RekapSubmissionFilter selectedFilter; // filter aktif
   final String searchQuery;
 
   const RekapPengumpulanLoaded({
     required this.recap,
     required this.filteredSubmissions,
-    this.showSubmitted = true,
+    this.selectedFilter = RekapSubmissionFilter.submitted,
     this.searchQuery = '',
   });
 
   RekapPengumpulanLoaded copyWith({
     AssignmentRecapEntity? recap,
     List<AssignmentSubmissionEntity>? filteredSubmissions,
-    bool? showSubmitted,
+    RekapSubmissionFilter? selectedFilter,
     String? searchQuery,
   }) {
     return RekapPengumpulanLoaded(
       recap: recap ?? this.recap,
       filteredSubmissions: filteredSubmissions ?? this.filteredSubmissions,
-      showSubmitted: showSubmitted ?? this.showSubmitted,
+      selectedFilter: selectedFilter ?? this.selectedFilter,
       searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [recap, filteredSubmissions, showSubmitted, searchQuery];
+  List<Object?> get props => [
+    recap,
+    filteredSubmissions,
+    selectedFilter,
+    searchQuery,
+  ];
 }
 
 class RekapPengumpulanEmpty extends RekapPengumpulanState {}

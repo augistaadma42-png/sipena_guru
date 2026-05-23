@@ -44,7 +44,6 @@ class SiswaPengumpulanTile extends StatelessWidget {
             children: [
               // Avatar
               SiswaAvatar(
-                avatarUrl: submission.avatar,
                 studentName: submission.studentName,
               ),
               const SizedBox(width: 12),
@@ -91,8 +90,6 @@ class SiswaPengumpulanTile extends StatelessWidget {
                     NilaiBadge(score: submission.score!),
                   if (submission.isSubmitted)
                     PopupMenuTugas(
-                      onLihat: () => _showSnackBar(context, 'Membuka file...'),
-                      onUnduh: () => _showSnackBar(context, 'Mengunduh file...'),
                       onBeriNilai: () {
                         if (onTap != null) {
                           onTap!();
