@@ -7,7 +7,7 @@ enum AttendanceStatus { done, pending, locked }
 class AttendanceCard extends StatelessWidget {
   final String time;
   final String className;
-  final String room;
+  final String room;  
   final String subject;
   final AttendanceStatus status;
   final String statusText;
@@ -68,57 +68,48 @@ class AttendanceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.borderLight,
-        ),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           children: [
-
             // Atas
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                // JAM (nggak disentuh)
+                // JAM
                 Container(
-                  width: 58,
+                  width: 73,
                   padding: const EdgeInsets.symmetric(
                     vertical: 16,
-                    horizontal: 4,
+                    horizontal: 5,
                   ),
                   decoration: BoxDecoration(
                     color: getTimeBgColor(),
-                    borderRadius:
-                        BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'JAM',
-                        style: AppTextStyles
-                            .labelStyle
-                            .copyWith(
+                        style: AppTextStyles.labelStyle.copyWith(
                           color: Colors.white,
-                          fontSize: 8,
-                          fontWeight:
-                              FontWeight.bold,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
                         time,
-                        textAlign:
-                            TextAlign.center,
-                        style: AppTextStyles
-                            .labelStyle
-                            .copyWith(
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.labelStyle.copyWith(
                           color: Colors.white,
-                          fontSize: 8,
-                          fontWeight:
-                              FontWeight.bold,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          height: 1.3,
                         ),
                       ),
                     ],
@@ -129,68 +120,45 @@ class AttendanceCard extends StatelessWidget {
 
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       Text(
                         '$className • $room',
                         maxLines: 2,
-                        overflow:
-                            TextOverflow
-                                .ellipsis,
-                        style:
-                            AppTextStyles
-                                .cardTitle,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.cardTitle,
                       ),
 
-                      const SizedBox(
-                          height: 4),
+                      const SizedBox(height: 4),
 
                       Text(
                         'Mapel : $subject',
                         maxLines: 1,
-                        overflow:
-                            TextOverflow
-                                .ellipsis,
-                        style:
-                            AppTextStyles
-                                .cardSubtitle,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.cardSubtitle,
                       ),
 
-                      const SizedBox(
-                          height: 8),
+                      const SizedBox(height: 8),
 
                       Row(
                         children: [
                           Icon(
                             getStatusIcon(),
                             size: 14,
-                            color:
-                                getStatusTextColor(),
+                            color: getStatusTextColor(),
                           ),
 
-                          const SizedBox(
-                              width: 4),
+                          const SizedBox(width: 4),
 
                           Expanded(
                             child: Text(
-                              filledCount !=
-                                          null &&
-                                      totalCount !=
-                                          null
+                              filledCount != null && totalCount != null
                                   ? '$statusText • $filledCount/$totalCount Siswa'
                                   : statusText,
                               maxLines: 1,
-                              overflow:
-                                  TextOverflow
-                                      .ellipsis,
-                              style:
-                                  AppTextStyles
-                                      .labelStyle
-                                      .copyWith(
-                                color:
-                                    getStatusTextColor(),
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.labelStyle.copyWith(
+                                color: getStatusTextColor(),
                               ),
                             ),
                           ),
@@ -208,77 +176,45 @@ class AttendanceCard extends StatelessWidget {
 
               InkWell(
                 onTap: onActionTap,
-                borderRadius:
-                    BorderRadius.circular(
-                        20),
+                borderRadius: BorderRadius.circular(20),
                 child: Container(
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(
-                    vertical: 12,
-                  ),
-                  decoration:
-                      BoxDecoration(
-                    color: AppColors
-                        .primaryBlue
-                        .withOpacity(
-                            0.08),
-                    border:
-                        Border.all(
-                      color:
-                          AppColors
-                              .primaryBlue,
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(
-                            20),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlue.withOpacity(0.08),
+                    border: Border.all(color: AppColors.primaryBlue),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment
-                            .center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        status ==
-                                AttendanceStatus.done
-                            ? 'Lihat'
-                            : 'Absen',
-                        style:
-                            AppTextStyles
-                                .labelStyle
-                                .copyWith(
-                          color:
-                              AppColors
-                                  .primaryBlue,
-                          fontWeight:
-                              FontWeight
-                                  .w700,
+                        status == AttendanceStatus.done ? 'Lihat' : 'Absen',
+                        style: AppTextStyles.labelStyle.copyWith(
+                          color: AppColors.primaryBlue,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
 
-                      const SizedBox(
-                          width: 6),
+                      const SizedBox(width: 6),
 
                       Icon(
-                        status ==
-                                AttendanceStatus.done
-                            ? Icons
-                                .check_circle
-                            : Icons
-                                .arrow_forward,
+                        status == AttendanceStatus.done
+                            ? Icons.check_circle
+                            : Icons.arrow_forward,
                         size: 16,
-                        color:
-                            AppColors
-                                .primaryBlue,
+                        color: AppColors.primaryBlue,
                       ),
                     ],
                   ),
                 ),
-              )
-            ]
+              ),
+            ],
           ],
         ),
       ),
     );
   }
-} 
+}
+
+

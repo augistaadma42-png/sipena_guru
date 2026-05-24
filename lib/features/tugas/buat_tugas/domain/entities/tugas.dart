@@ -10,6 +10,8 @@ class Tugas {
   final DateTime? tenggat;
   final String topik;
   final DateTime createdAt;
+  // [CHANGE 4] Field materi terkait dari dropdown filter
+  final String materiTerkait;
 
   const Tugas({
     required this.id,
@@ -22,5 +24,6 @@ class Tugas {
     this.tenggat,
     required this.topik,
     required this.createdAt,
+    this.materiTerkait = '',
   });
 }

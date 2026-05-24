@@ -8,6 +8,8 @@ import '../widgets/attendance_card.dart';
 import '../widgets/task_summary_card.dart';
 import '../widgets/aktivitas_terbaru_widget.dart';
 import '../../../tugas/dashboard_tugas/presentation/pages/dashboard_tugas_page.dart';
+import '../../../tugas/daftar_kelas/presentation/pages/daftar_kelas_page.dart'; // [CHANGE 3]
+import '../../../laporan/laporan_tugas/presentation/pages/laporan_tugas_page.dart'; // [CHANGE 3]
 import 'aktivitas_semua_page.dart';
 import 'package:intl/intl.dart';
 import '../../../absen/presentation/pages/absensi_dari_jadwal_page.dart';
@@ -136,16 +138,16 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
                     Text(
                       '${getGreeting()},',
                       style: GoogleFonts.inter(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.w400,
                         color: const Color(0xFF002369),
                         height: 1.3,
                       ),
                     ),
                     Text(
-                      'Pak/Bu Umi Kulsum S.Pd.',
+                      'Umi Kulsum S.Pd.',
                       style: GoogleFonts.inter(
-                        fontSize: 22,
+                        fontSize: 29,
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF002369),
                         height: 1.2,
@@ -280,16 +282,18 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
                     // Ringkasan Tugas Section
                     TaskSummarySection(
                       taskSummaryList: state.taskSummaryList,
+                      // [CHANGE 3] Periksa sekarang → Daftar Kelas yang diampu
                       onCheckNowTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const DashboardTugasPage(),
+                          builder: (_) => const DaftarKelasPage(),
                         ),
                       ),
+                      // [CHANGE 3] Lihat Semua → Laporan Tugas
                       onSeeAllTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const DashboardTugasPage(),
+                          builder: (_) => const LaporanTugasPage(),
                         ),
                       ),
                       onTaskTap: (taskName) => Navigator.push(

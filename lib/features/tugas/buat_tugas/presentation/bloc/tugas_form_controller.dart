@@ -12,6 +12,7 @@ class TugasFormController extends ChangeNotifier {
   final ValueNotifier<String> jenisNilai = ValueNotifier('Tugas');
   final ValueNotifier<String> mapel = ValueNotifier('Matematika Wajib');
   final ValueNotifier<String> siswa = ValueNotifier('Semua pelajar');
+  final ValueNotifier<String> selectedMateri = ValueNotifier('Pilih Materi');
   final ValueNotifier<DateTime?> tenggat = ValueNotifier(null);
   final ValueNotifier<bool> isLoading = ValueNotifier(false);
 
@@ -32,6 +33,14 @@ class TugasFormController extends ChangeNotifier {
     'Semua pelajar',
     'Kelompok A',
     'Kelompok B',
+  ];
+
+  static const List<String> materiList = [
+    'Pilih Materi',
+    'Materi Integral Dasar',
+    'Materi Integral Substitusi',
+    'Materi Turunan Fungsi',
+    'Materi Limit Fungsi',
   ];
 
   bool get isValid {
@@ -56,6 +65,8 @@ class TugasFormController extends ChangeNotifier {
       tenggat: tenggat.value,
       topik: '',
       createdAt: DateTime.now(),
+      // [CHANGE 4] Simpan materi terkait yang dipilih
+      materiTerkait: selectedMateri.value == 'Pilih Materi' ? '' : selectedMateri.value,
     );
   }
 
@@ -68,6 +79,7 @@ class TugasFormController extends ChangeNotifier {
     jenisNilai.dispose();
     mapel.dispose();
     siswa.dispose();
+    selectedMateri.dispose();
     tenggat.dispose();
     isLoading.dispose();
     super.dispose();

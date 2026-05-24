@@ -82,6 +82,7 @@ class DashboardTugasLocalDatasourceImpl
         siswa: 'Semua pelajar',
         lampiranCount: 2,
         lampiranNames: ['Soal_Latihan.pdf', 'Kunci_Jawaban.pdf'],
+        judulMateri: 'Integral Tentu dan Tak Tentu',
       ),
       const TugasModel(
         id: '2',
@@ -102,6 +103,7 @@ class DashboardTugasLocalDatasourceImpl
         siswa: 'Semua pelajar',
         lampiranCount: 0,
         lampiranNames: [],
+        judulMateri: 'Integral Substitusi',
       ),
       const TugasModel(
         id: '4',
@@ -122,6 +124,7 @@ class DashboardTugasLocalDatasourceImpl
         siswa: 'Kelompok A',
         lampiranCount: 1,
         lampiranNames: ['Materi_Ikatan_Kimia.pdf'],
+        judulMateri: 'Ikatan Kimia dan Bentuk Molekul',
       ),
     ];
   }

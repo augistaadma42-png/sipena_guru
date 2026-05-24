@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/widgets/dropdown_chip.dart';
 import '../bloc/tugas_form_controller.dart';
 import '../widgets/tugas_header.dart';
-import '../../../../../../core/widgets/dropdown_chip.dart';
 import '../widgets/input_judul.dart';
 import '../widgets/deskripsi_input.dart';
 import '../widgets/tanggal_picker.dart';
@@ -46,6 +47,7 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     _controller.jenisNilai.addListener(() {
       if (_controller.jenisNilai.value == 'Materi') {
         _controller.tenggat.value = null;
+        _controller.selectedMateri.value = 'Pilih Materi';
       }
       setState(() {});
     });
@@ -67,9 +69,7 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
           content: Text(message),
           backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
       return;
@@ -115,7 +115,7 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildChipSection(),
+                    _buildFilterCard(),
                     const SizedBox(height: 16),
 
                     InputJudul(
@@ -160,50 +160,150 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     );
   }
 
-  Widget _buildChipSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ValueListenableBuilder<String>(
-          valueListenable: _controller.kelas,
-          builder: (context, val, child) => DropdownChip(
-            value: val,
-            options: TugasFormController.kelasList,
-            onChanged: (v) => _controller.kelas.value = v!,
+  Widget _buildFilterCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.borderLight),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            ValueListenableBuilder<String>(
-              valueListenable: _controller.jenisNilai,
-              builder: (context, val, child) => DropdownChip(
-                value: val,
-                options: TugasFormController.jenisNilaiList,
-                onChanged: (v) => _controller.jenisNilai.value = v!,
-              ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'filter',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
             ),
-            const SizedBox(width: 8),
-            ValueListenableBuilder<String>(
-              valueListenable: _controller.mapel,
-              builder: (context, val, child) => DropdownChip(
-                value: val,
-                options: TugasFormController.mapelList,
-                onChanged: (v) => _controller.mapel.value = v!,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ValueListenableBuilder<String>(
-          valueListenable: _controller.siswa,
-          builder: (context, val, child) => DropdownChip(
-            value: val,
-            options: TugasFormController.siswaList,
-            onChanged: (v) => _controller.siswa.value = v!,
           ),
-        ),
-      ],
+          const SizedBox(height: 12),
+
+          // Baris 1: Kelas (full width)
+          _buildLabel('Kelas'),
+          const SizedBox(height: 4),
+          ValueListenableBuilder<String>(
+            valueListenable: _controller.kelas,
+            builder: (context, val, _) => DropdownChip(
+              value: val,
+              options: TugasFormController.kelasList,
+              onChanged: (v) => _controller.kelas.value = v!,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Baris 2: Jenis | Mata Pelajaran
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel('Jenis'),
+                    const SizedBox(height: 4),
+                    ValueListenableBuilder<String>(
+                      valueListenable: _controller.jenisNilai,
+                      builder: (context, val, _) => DropdownChip(
+                        value: val,
+                        options: TugasFormController.jenisNilaiList,
+                        onChanged: (v) => _controller.jenisNilai.value = v!,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel('Mata Pelajaran'),
+                    const SizedBox(height: 4),
+                    ValueListenableBuilder<String>(
+                      valueListenable: _controller.mapel,
+                      builder: (context, val, _) => DropdownChip(
+                        value: val,
+                        options: TugasFormController.mapelList,
+                        onChanged: (v) => _controller.mapel.value = v!,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Baris 3: Ditugaskan ke | Materi Terkait
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel('Ditugaskan ke'),
+                    const SizedBox(height: 4),
+                    ValueListenableBuilder<String>(
+                      valueListenable: _controller.siswa,
+                      builder: (context, val, _) => DropdownChip(
+                        value: val,
+                        options: TugasFormController.siswaList,
+                        onChanged: (v) => _controller.siswa.value = v!,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ValueListenableBuilder<String>(
+                  valueListenable: _controller.jenisNilai,
+                  builder: (context, jenisVal, _) {
+                    final isDisabled = jenisVal == 'Materi';
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLabel('Materi Terkait', disabled: isDisabled),
+                        const SizedBox(height: 4),
+                        ValueListenableBuilder<String>(
+                          valueListenable: _controller.selectedMateri,
+                          builder: (context, val, _) => DropdownChip(
+                            value: val,
+                            options: TugasFormController.materiList,
+                            onChanged: (v) =>
+                                _controller.selectedMateri.value = v!,
+                            disabled: isDisabled, // pakai parameter baru di DropdownChip
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text, {bool disabled = false}) {
+    return Text(
+      text,
+      style: GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: disabled ? AppColors.disabledGrey : AppColors.textSecondary,
+      ),
     );
   }
 }

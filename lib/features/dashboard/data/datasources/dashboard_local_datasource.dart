@@ -76,7 +76,7 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
     await Future.delayed(const Duration(milliseconds: 500));
     return const [
       AttendanceOverviewModel(
-        time: '07:00\n-\n08:40',
+        time: '10:40-12:00',
         className: 'XII IPA 1',
         room: 'R.12',
         subject: 'Matematika Wajib',
@@ -86,7 +86,7 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
         totalCount: 30,
       ),
       AttendanceOverviewModel(
-        time: '10:00\n-\n11:40',
+        time: '09:40-10:00',
         className: 'XII IPA 2',
         room: 'R.13',
         subject: 'Matematika Wajib',
@@ -94,7 +94,7 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
         statusText: 'Menunggu',
       ),
       AttendanceOverviewModel(
-        time: '13:00\n-\n14:40',
+        time: '12:00-13:40',
         className: 'XI IPA 1',
         room: 'R.11',
         subject: 'Matematika Peminatan',

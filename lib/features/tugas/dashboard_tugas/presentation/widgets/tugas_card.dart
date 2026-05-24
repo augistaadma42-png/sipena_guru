@@ -84,13 +84,7 @@ class TugasCard extends StatelessWidget {
                         bgColor: statusColor.withOpacity(0.1),
                         textColor: statusColor,
                       ),
-                      const SizedBox(width: 6),
-                      // Badge kelas
-                      _Badge(
-                        label: tugas.kelas,
-                        bgColor: AppColors.lightBlueBg,
-                        textColor: AppColors.primaryBlue,
-                      ),
+                      // [CHANGE 2] Badge kelas dihapus
                       const Spacer(),
                       // Sisa hari
                       _DeadlinePill(
@@ -104,25 +98,24 @@ class TugasCard extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  // ── Judul Materi (hanya jika jenisNilai == Materi)
-                  if (isMateri &&
-                      tugas.judulMateri != null &&
+                  // [CHANGE 5] Info materi tampil di atas judul untuk semua tugas yang punya materi terkait
+                  if (tugas.judulMateri != null &&
                       tugas.judulMateri!.isNotEmpty) ...[
                     Row(
                       children: [
                         const Icon(
                           Icons.menu_book_rounded,
                           size: 13,
-                          color: AppColors.primaryBlue,
+                          color: AppColors.secondaryOrange,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            tugas.judulMateri!,
+                            'Materi: ${tugas.judulMateri!}',
                             style: GoogleFonts.inter(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.primaryBlue,
+                              color: AppColors.secondaryOrange,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

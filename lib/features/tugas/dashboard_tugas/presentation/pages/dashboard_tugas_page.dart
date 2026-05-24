@@ -18,12 +18,16 @@ import '../../../buat_tugas/presentation/pages/buat_tugas_page.dart';
 import '../widgets/daftar_siswa_tab.dart';
 
 class DashboardTugasPage extends StatelessWidget {
-  const DashboardTugasPage({super.key});
+  // [CHANGE 1] Terima namaKelas dari DaftarKelasPage
+  final String namaKelas;
+
+  const DashboardTugasPage({
+    super.key,
+    this.namaKelas = '',
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Inisialisasi dependensi secara lokal (Clean Architecture)
-    // Dalam project nyata, ini biasanya dilakukan melalui Dependency Injection (get_it)
     final datasource = DashboardTugasLocalDatasourceImpl();
     final repository = DashboardTugasRepositoryImpl(
       localDatasource: datasource,
@@ -34,13 +38,19 @@ class DashboardTugasPage extends StatelessWidget {
         getMateriTerbaru: GetMateriTerbaruUsecase(repository),
         getDaftarTugas: GetDaftarTugasUsecase(repository),
       )..add(LoadDashboardTugasEvent()),
-      child: const DashboardTugasView(),
+      child: DashboardTugasView(namaKelas: namaKelas),
     );
   }
 }
 
 class DashboardTugasView extends StatefulWidget {
-  const DashboardTugasView({super.key});
+  // [CHANGE 1] Teruskan namaKelas ke AppBar
+  final String namaKelas;
+
+  const DashboardTugasView({
+    super.key,
+    required this.namaKelas,
+  });
 
   @override
   State<DashboardTugasView> createState() => _DashboardTugasViewState();
@@ -63,8 +73,10 @@ class _DashboardTugasViewState extends State<DashboardTugasView> {
       length: 2,
       child: Scaffold(
         backgroundColor: AppColors.backgroundLight,
-        appBar: const DashboardTugasAppBar(
-          bottom: TabBar(
+        // [CHANGE 1] Pass namaKelas ke AppBar
+        appBar: DashboardTugasAppBar(
+          namaKelas: widget.namaKelas,
+          bottom: const TabBar(
             indicatorColor: AppColors.primaryBlue,
             labelColor: AppColors.primaryBlue,
             unselectedLabelColor: AppColors.textSecondary,
@@ -94,7 +106,6 @@ class _DashboardTugasViewState extends State<DashboardTugasView> {
   Widget _buildTugasTab(BuildContext context) {
     return BlocBuilder<DashboardTugasBloc, DashboardTugasState>(
       builder: (context, state) {
-        // Debug log untuk membantu troubleshooting
         debugPrint('[DashboardTugasView] Current State: $state');
 
         if (state is DashboardTugasInitial || state is DashboardTugasLoading) {

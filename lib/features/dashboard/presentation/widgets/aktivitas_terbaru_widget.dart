@@ -133,21 +133,12 @@ class AktivitasTerbaruWidget extends StatelessWidget {
           ...aktivitasList.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
-            IconData icon;
-            switch (item.jenis) {
-              case 'absensi': icon = Icons.how_to_reg_outlined; break;
-              case 'jurnal': icon = Icons.menu_book_outlined; break;
-              case 'tugas': icon = Icons.assignment_outlined; break;
-              case 'nilai': icon = Icons.star_border_outlined; break;
-              case 'pengajuan': icon = Icons.mail_outline; break;
-              default: icon = Icons.notifications_outlined; break;
-            }
             return _buildAktivitasItem(
               tanggal: item.tanggal,
               jam: item.jam,
               deskripsi: item.deskripsi,
               jenis: item.jenis,
-              icon: icon,
+              icon: item.icon,
               isLast: index == aktivitasList.length - 1,
             );
           }).toList(),
