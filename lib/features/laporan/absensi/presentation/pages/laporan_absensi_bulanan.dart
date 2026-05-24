@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitur_guru/core/constants/colors.dart';
+import 'package:fitur_guru/core/widgets/custom_drawer.dart';
 
 import '../bloc/laporan_absensi_bloc.dart';
 import '../bloc/laporan_absensi_event.dart';
@@ -60,6 +61,7 @@ class _LaporanAbsensiBulananPageState extends State<LaporanAbsensiBulananPage> {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       appBar: const LaporanAbsensiAppBar(),
+      drawer: const CustomDrawer(),
       body: SafeArea(
         child: BlocBuilder<LaporanAbsensiBloc, LaporanAbsensiState>(
           builder: (context, state) {

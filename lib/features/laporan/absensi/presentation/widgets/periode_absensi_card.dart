@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:fitur_guru/core/constants/colors.dart';
 import 'package:fitur_guru/core/constants/text_styles.dart';
@@ -59,19 +60,25 @@ class PeriodeAbsensiCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.backgroundLight,
+                    color: const Color(0xFFE2E8F0),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderLight),
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.calendar_month_rounded,
                         size: 18,
-                        color: AppColors.primaryBlue,
+                        color: Color(0xFF0F172A),
                       ),
                       const SizedBox(width: 6),
-                      Text('Ubah Bulan', style: AppTextStyles.cardTitle),
+                      Text(
+                        'Ubah Bulan',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF0F172A),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -101,12 +108,19 @@ class _PillLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(999),
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(text, style: AppTextStyles.cardTitle),
+      child: Text(
+        text,
+        style: GoogleFonts.inter(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFF475569),
+        ),
+      ),
     );
   }
 }

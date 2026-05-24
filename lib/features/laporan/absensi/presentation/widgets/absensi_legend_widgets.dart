@@ -10,35 +10,40 @@ class AbsensiLegendWidget extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: [
-          const CustomStatusBadge(
+        children: const [
+          CustomStatusBadge(
             code: 'H',
             label: 'Hadir',
-            bgColor: Color(0xFFD1FAE5),
+            bgColor: Color(0xFFE6F4EA),
+            textColor: Color(0xFF137333),
           ),
-          const SizedBox(width: 8),
-          const CustomStatusBadge(
+          SizedBox(width: 14),
+          CustomStatusBadge(
             code: 'I',
             label: 'Izin',
-            bgColor: Color(0xFFE0E7FF),
+            bgColor: Color(0xFFE8F0FE),
+            textColor: Color(0xFF1A73E8),
           ),
-          const SizedBox(width: 8),
-          const CustomStatusBadge(
+          SizedBox(width: 14),
+          CustomStatusBadge(
             code: 'S',
             label: 'Sakit',
-            bgColor: Color(0xFFFEF3C7),
+            bgColor: Color(0xFFFEF7E0),
+            textColor: Color(0xFFB06000),
           ),
-          const SizedBox(width: 8),
-          const CustomStatusBadge(
+          SizedBox(width: 14),
+          CustomStatusBadge(
             code: 'D',
             label: 'Disp.',
-            bgColor: Color(0xFFEDE9FE),
+            bgColor: Color(0xFFF3E8FF),
+            textColor: Color(0xFF7C3AED),
           ),
-          const SizedBox(width: 8),
-          const CustomStatusBadge(
+          SizedBox(width: 14),
+          CustomStatusBadge(
             code: 'A',
             label: 'Alfa',
-            bgColor: Color(0xFFFEE2E2),
+            bgColor: Color(0xFFFCE8E6),
+            textColor: Color(0xFFC5221F),
           ),
         ],
       ),

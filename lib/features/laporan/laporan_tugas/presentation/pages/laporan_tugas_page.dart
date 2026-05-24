@@ -8,7 +8,6 @@ import '../bloc/laporan_tugas_bloc.dart';
 import '../bloc/laporan_tugas_event.dart';
 import '../bloc/laporan_tugas_state.dart';
 import '../widgets/laporan_tugas_app_bar.dart';
-import '../widgets/filter_laporan_card.dart';
 import '../widgets/tugas_card.dart';
 import '../widgets/monthly_summary_card.dart';
 import '../widgets/motivational_banner_card.dart';
@@ -100,11 +99,7 @@ class _LaporanTugasPageState extends State<LaporanTugasPage> {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        // ── Filter Card ──
-        const SliverToBoxAdapter(
-          child: FilterLaporanCard(),
-        ),
-
+        
         // ── Konten utama sesuai state ──
         if (state is LaporanTugasLoading)
           const SliverToBoxAdapter(child: LoadingTugasWidget()),

@@ -11,7 +11,7 @@ class LaporanAbsensiAppBar extends StatelessWidget implements PreferredSizeWidge
   Widget build(BuildContext context) {
     return const CustomAppBar(
       title: 'Laporan Absensi',
-      showBackButton: true,
+      showBackButton: false,
     );
   }
 }

@@ -13,6 +13,58 @@ abstract class LaporanAbsensiLocalDatasource {
 /// Datasource lokal dengan dummy data per bulan.
 class LaporanAbsensiLocalDatasourceImpl implements LaporanAbsensiLocalDatasource {
   static const Map<String, List<StudentAttendanceModel>> _monthlyData = {
+    '2023-10': [
+      StudentAttendanceModel(
+        id: '1',
+        nama: 'Aditya Pratama',
+        nis: '1209321',
+        hadir: 18,
+        izin: 2,
+        sakit: 1,
+        dispensasi: 0,
+        alfa: 0,
+      ),
+      StudentAttendanceModel(
+        id: '2',
+        nama: 'Bunga Citra Lestari',
+        nis: '1209322',
+        hadir: 20,
+        izin: 0,
+        sakit: 1,
+        dispensasi: 0,
+        alfa: 0,
+      ),
+      StudentAttendanceModel(
+        id: '3',
+        nama: 'Deni Kurniawan',
+        nis: '1209323',
+        hadir: 15,
+        izin: 0,
+        sakit: 2,
+        dispensasi: 1,
+        alfa: 3,
+      ),
+      StudentAttendanceModel(
+        id: '4',
+        nama: 'Eka Putri Maharani',
+        nis: '1209324',
+        hadir: 19,
+        izin: 1,
+        sakit: 0,
+        dispensasi: 1,
+        alfa: 0,
+      ),
+      StudentAttendanceModel(
+        id: '5',
+        nama: 'Fajar Ramadhan',
+        nis: '1209325',
+        hadir: 17,
+        izin: 2,
+        sakit: 2,
+        dispensasi: 0,
+        alfa: 0,
+      ),
+    ],
     '2026-05': [
       StudentAttendanceModel(
         id: '1',

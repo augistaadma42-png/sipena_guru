@@ -23,8 +23,8 @@ class AbsensiStudentRow extends StatelessWidget {
                   student.nama,
                   style: AppTextStyles.cardTitle.copyWith(
                     color: AppColors.primaryBlue,
-                    fontSize: 20,
-                    height: 1.1,
+                    fontSize: 14,
+                    height: 1.2,
                   ),
                 ),
                 const SizedBox(height: 2),
