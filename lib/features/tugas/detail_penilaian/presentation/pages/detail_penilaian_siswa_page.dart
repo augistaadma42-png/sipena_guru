@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:fitur_guru/core/constants/colors.dart';
 import '../../data/datasources/detail_penilaian_local_datasource.dart';
 import '../../data/repositories/detail_penilaian_repository_impl.dart';
@@ -16,7 +15,7 @@ import '../widgets/nilai_input_card.dart';
 import '../widgets/simpan_penilaian_button.dart';
 import '../widgets/siswa_profile_card.dart';
 
-// ── Navigation Arguments ─────────────────────────────────────────
+// ── Navigation Arguments 
 class DetailPenilaianArgs {
   final String siswaId;
   final String tugasId;
@@ -34,23 +33,29 @@ class DetailPenilaianSiswaPage extends StatelessWidget {
     final datasource = DetailPenilaianLocalDatasourceImpl();
     final repository = DetailPenilaianRepositoryImpl(datasource);
     return BlocProvider(
-      create: (_) => DetailPenilaianBloc(
-        getDetailPenilaian: GetDetailPenilaianUsecase(repository),
-        submitPenilaian:    SubmitPenilaianUsecase(repository),
-      )..add(LoadDetailPenilaianEvent(
-          siswaId: args.siswaId, tugasId: args.tugasId)),
+      create: (_) =>
+          DetailPenilaianBloc(
+            getDetailPenilaian: GetDetailPenilaianUsecase(repository),
+            submitPenilaian: SubmitPenilaianUsecase(repository),
+          )..add(
+            LoadDetailPenilaianEvent(
+              siswaId: args.siswaId,
+              tugasId: args.tugasId,
+            ),
+          ),
       child: const _DetailPenilaianView(),
     );
   }
 }
 
-// ── View dengan BlocConsumer ─────────────────────────────────────
+// ── View dengan BlocConsumer 
 class _DetailPenilaianView extends StatelessWidget {
   const _DetailPenilaianView();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.backgroundLight,
       appBar: const DetailPenilaianAppBar(notifCount: 3),
       body: BlocConsumer<DetailPenilaianBloc, DetailPenilaianState>(
@@ -58,29 +63,36 @@ class _DetailPenilaianView extends StatelessWidget {
           if (state is DetailPenilaianSubmitSuccess) {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(
-                content: Row(children: const [
-                  Icon(Icons.check_circle_rounded, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Penilaian berhasil disimpan!'),
-                ]),
-                backgroundColor: AppColors.successGreen,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(seconds: 2),
-              ));
+              ..showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: const [
+                      Icon(Icons.check_circle_rounded, color: Colors.white),
+                      SizedBox(width: 10),
+                      Text('Penilaian berhasil disimpan!'),
+                    ],
+                  ),
+                  backgroundColor: AppColors.successGreen,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  margin: const EdgeInsets.all(16),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
           }
           if (state is DetailPenilaianError) {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(
-                content: Text('Gagal: ${state.message}'),
-                backgroundColor: Colors.redAccent,
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(16),
-              ));
+              ..showSnackBar(
+                SnackBar(
+                  content: Text('Gagal: ${state.message}'),
+                  backgroundColor: Colors.redAccent,
+                  behavior: SnackBarBehavior.floating,
+                  margin: const EdgeInsets.all(16),
+                ),
+              );
           }
         },
         builder: (context, state) {
@@ -108,11 +120,14 @@ class _DetailPenilaianView extends StatelessWidget {
   }
 }
 
-// ── Body — susunan semua card ────────────────────────────────────
+// ── Body — susunan semua card 
 class _DetailPenilaianBody extends StatelessWidget {
   final DetailPenilaianLoaded loaded;
   final bool isSubmitting;
-  const _DetailPenilaianBody({required this.loaded, required this.isSubmitting});
+  const _DetailPenilaianBody({
+    required this.loaded,
+    required this.isSubmitting,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +148,8 @@ class _DetailPenilaianBody extends StatelessWidget {
                   content: const Text('Mengunduh file lampiran...'),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   margin: const EdgeInsets.all(16),
                 ),
               ),
@@ -142,6 +158,7 @@ class _DetailPenilaianBody extends StatelessWidget {
             NilaiInputCard(
               currentNilai: loaded.currentNilai,
               onNilaiChanged: (v) => bloc.add(UpdateNilaiEvent(v)),
+              readOnly: loaded.entity.currentScore > 0,
             ),
             const SizedBox(height: 16),
             FeedbackInputCard(

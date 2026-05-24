@@ -4,11 +4,17 @@ import '../../../../../../core/constants/colors.dart';
 
 class TanggalPicker extends StatelessWidget {
   final ValueNotifier<DateTime?> tenggatNotifier;
+  final bool enabled;
 
-  const TanggalPicker({super.key, required this.tenggatNotifier});
+  const TanggalPicker({
+    super.key,
+    required this.tenggatNotifier,
+    this.enabled = true,
+  });
 
-  Future<void> _pickDate(BuildContext context) async {
-    final picked = await showDatePicker(
+  Future<void> _pickDateTime(BuildContext context) async {
+    // Pick date first
+    final pickedDate = await showDatePicker(
       context: context,
       initialDate: tenggatNotifier.value ?? DateTime.now(),
       firstDate: DateTime.now(),
@@ -25,25 +31,72 @@ class TanggalPicker extends StatelessWidget {
         );
       },
     );
-    if (picked != null) {
-      tenggatNotifier.value = picked;
-    }
+
+    if (pickedDate == null) return;
+
+    // Then pick time
+    if (!context.mounted) return;
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: tenggatNotifier.value != null
+          ? TimeOfDay.fromDateTime(tenggatNotifier.value!)
+          : const TimeOfDay(hour: 23, minute: 59),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primaryBlue,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedTime == null) return;
+
+    tenggatNotifier.value = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
+    );
+  }
+
+  String _disabledLabel() {
+    return 'Deadline tidak tersedia untuk Materi';
+  }
+
+  String _formatDateTime(DateTime dt) {
+    final tgl =
+        '${dt.day.toString().padLeft(2, '0')}/'
+        '${dt.month.toString().padLeft(2, '0')}/'
+        '${dt.year}';
+    final jam =
+        '${dt.hour.toString().padLeft(2, '0')}:'
+        '${dt.minute.toString().padLeft(2, '0')}';
+    return '$tgl  $jam';
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: enabled ? Colors.white : AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderLight),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(
+          color: enabled ? AppColors.borderLight : AppColors.disabledGrey,
+        ),
+        boxShadow: enabled
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : [],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
@@ -63,27 +116,31 @@ class TanggalPicker extends StatelessWidget {
             builder: (_, value, __) {
               final label = value == null
                   ? 'Tak ada batas waktu'
-                  : '${value.day}/${value.month}/${value.year}';
+                  : _formatDateTime(value);
               return InkWell(
-                onTap: () => _pickDate(context),
+                onTap: enabled ? () => _pickDateTime(context) : null,
                 borderRadius: BorderRadius.circular(8),
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        label,
+                        enabled ? label : _disabledLabel(),
                         style: GoogleFonts.inter(
                           fontSize: 14,
-                          color: value == null
-                              ? AppColors.disabledGrey
-                              : AppColors.textPrimary,
+                          color: enabled
+                              ? (value == null
+                                    ? AppColors.disabledGrey
+                                    : AppColors.textPrimary)
+                              : AppColors.disabledGrey,
                         ),
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.calendar_today_outlined,
                       size: 18,
-                      color: AppColors.textSecondary,
+                      color: enabled
+                          ? AppColors.textSecondary
+                          : AppColors.disabledGrey,
                     ),
                   ],
                 ),

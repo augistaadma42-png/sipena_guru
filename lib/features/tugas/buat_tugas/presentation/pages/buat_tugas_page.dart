@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../bloc/tugas_form_controller.dart';
-import '../widgets/tugas_header.dart';     
+import '../widgets/tugas_header.dart';
 import '../../../../../../core/widgets/dropdown_chip.dart';
 import '../widgets/input_judul.dart';
 import '../widgets/deskripsi_input.dart';
 import '../widgets/tanggal_picker.dart';
-import '../widgets/topik_dropdown.dart';
 import '../widgets/lampiran_section.dart';
 import '../widgets/engagement_card.dart';
 import '../../../dashboard_tugas/domain/entities/tugas_entity.dart';
@@ -29,17 +28,27 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
   void initState() {
     super.initState();
     _controller = TugasFormController();
-    
+
     if (widget.tugasToEdit != null) {
-      _controller.judulController.text = widget.tugasToEdit!.title;
-      _controller.deskripsiController.text = widget.tugasToEdit!.subtitle;
-      if (TugasFormController.kelasList.contains(widget.tugasToEdit!.kelas)) {
-        _controller.kelas.value = widget.tugasToEdit!.kelas;
+      final edit = widget.tugasToEdit!;
+      _controller.jenisNilai.value = edit.jenisNilai;
+      _controller.mapel.value = edit.mapel;
+      _controller.siswa.value = edit.siswa;
+      _controller.judulController.text = edit.title;
+      _controller.deskripsiController.text = edit.subtitle;
+      _controller.judulMateriController.text = edit.judulMateri ?? '';
+      if (TugasFormController.kelasList.contains(edit.kelas)) {
+        _controller.kelas.value = edit.kelas;
       }
     }
 
-    // rebuild tombol simpan saat judul berubah
     _controller.judulController.addListener(() => setState(() {}));
+    _controller.jenisNilai.addListener(() {
+      if (_controller.jenisNilai.value == 'Materi') {
+        _controller.tenggat.value = null;
+      }
+      setState(() {});
+    });
   }
 
   @override
@@ -50,19 +59,23 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
 
   void _onSimpan() {
     if (!_controller.isValid) {
+      final message = _controller.jenisNilai.value == 'Materi'
+          ? 'Judul materi wajib diisi!'
+          : 'Judul tugas wajib diisi!';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Judul tugas wajib diisi!'),
+          content: Text(message),
           backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
     }
 
     final tugas = _controller.buildEntity();
-    // Simulate saving task through usecase
     final repo = TugasRepositoryImpl();
     final createTugas = CreateTugas(repo);
     createTugas(tugas);
@@ -70,9 +83,9 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          widget.tugasToEdit != null 
-              ? 'Tugas "${tugas.judul}" berhasil diperbarui!' 
-              : 'Tugas "${tugas.judul}" berhasil disimpan!'
+          widget.tugasToEdit != null
+              ? 'Tugas "${tugas.judul}" berhasil diperbarui!'
+              : 'Tugas "${tugas.judul}" berhasil disimpan!',
         ),
         backgroundColor: AppColors.successGreen,
         behavior: SnackBarBehavior.floating,
@@ -85,62 +98,56 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMateri = _controller.jenisNilai.value == 'Materi';
+
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
-            // Header custom (bukan AppBar)
             TugasHeader(
               onClose: () => Navigator.of(context).pop(),
               onSimpan: _onSimpan,
             ),
-
-            // Konten scrollable
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Row chips dropdown
                     _buildChipSection(),
                     const SizedBox(height: 16),
 
-                    // Input Judul Materi (Opsional)
                     InputJudul(
                       controller: _controller.judulMateriController,
                       label: 'Judul Materi',
-                      hintText: 'Judul Materi / Referensi (Opsional)',
+                      hintText: 'Materi tentang.....',
                       isRequired: false,
+                      enabled: isMateri,
                     ),
                     const SizedBox(height: 12),
 
-                    // Input Judul Tugas
                     InputJudul(
                       controller: _controller.judulController,
                       label: 'Judul Tugas',
+                      hintText: 'Judul tugas...',
+                      enabled: !isMateri,
+                      isRequired: !isMateri,
                     ),
                     const SizedBox(height: 12),
 
-                    // Deskripsi + Toolbar
                     DeskripsiInput(controller: _controller.deskripsiController),
                     const SizedBox(height: 12),
 
-                    // Tanggal & Topik
-                    TanggalPicker(tenggatNotifier: _controller.tenggat),
-                    const SizedBox(height: 8),
-                    TopikDropdown(
-                      topikNotifier: _controller.topik,
-                      options: TugasFormController.topikList,
+                    TanggalPicker(
+                      tenggatNotifier: _controller.tenggat,
+                      enabled: !isMateri,
                     ),
                     const SizedBox(height: 12),
 
-                    // Lampiran
                     const LampiranSection(),
                     const SizedBox(height: 12),
 
-                    // Engagement
                     const EngagementCard(),
                     const SizedBox(height: 24),
                   ],
@@ -157,7 +164,6 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Kelas — full width chip
         ValueListenableBuilder<String>(
           valueListenable: _controller.kelas,
           builder: (context, val, child) => DropdownChip(
@@ -169,7 +175,6 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
         const SizedBox(height: 8),
         Row(
           children: [
-            // Jenis Nilai
             ValueListenableBuilder<String>(
               valueListenable: _controller.jenisNilai,
               builder: (context, val, child) => DropdownChip(
@@ -179,7 +184,6 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
               ),
             ),
             const SizedBox(width: 8),
-            // Mapel
             ValueListenableBuilder<String>(
               valueListenable: _controller.mapel,
               builder: (context, val, child) => DropdownChip(
@@ -191,7 +195,6 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
           ],
         ),
         const SizedBox(height: 8),
-        // Siswa
         ValueListenableBuilder<String>(
           valueListenable: _controller.siswa,
           builder: (context, val, child) => DropdownChip(

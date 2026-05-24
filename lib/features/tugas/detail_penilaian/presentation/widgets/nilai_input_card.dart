@@ -6,8 +6,14 @@ import 'custom_nilai_field.dart';
 class NilaiInputCard extends StatelessWidget {
   final int currentNilai;
   final ValueChanged<int> onNilaiChanged;
-  const NilaiInputCard({super.key, required this.currentNilai,
-      required this.onNilaiChanged});
+  final bool readOnly;
+
+  const NilaiInputCard({
+    super.key,
+    required this.currentNilai,
+    required this.onNilaiChanged,
+    this.readOnly = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +21,53 @@ class NilaiInputCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [BoxShadow(
-          color: Color(0x0D000000), blurRadius: 16, offset: Offset(0, 4))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0D000000),
+            blurRadius: 16,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Beri Nilai (0 - 100)', style: AppTextStyles.sectionTitle),
+          Row(
+            children: [
+              Text(
+                readOnly ? 'Nilai' : 'Beri Nilai (0 - 100)',
+                style: AppTextStyles.sectionTitle,
+              ),
+              if (readOnly) ...[
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.successGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Sudah dinilai',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.successGreen,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
           const SizedBox(height: 14),
-          CustomNilaiField(initialValue: currentNilai, onChanged: onNilaiChanged),
+          CustomNilaiField(
+            initialValue: currentNilai,
+            onChanged: onNilaiChanged,
+            readOnly: readOnly,
+          ),
         ],
       ),
     );

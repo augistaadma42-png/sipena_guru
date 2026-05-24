@@ -5,18 +5,22 @@ import '../../../../../../core/constants/text_styles.dart';
 class AnggotaAvatarGroup extends StatelessWidget {
   final int totalAnggota;
 
-  const AnggotaAvatarGroup({super.key, required this.totalAnggota});
+  const AnggotaAvatarGroup({
+    super.key,
+    required this.totalAnggota,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 32,
-      width: 90,
+      width: 100,
       child: Stack(
         children: [
-          _buildAvatar(0, 'https://i.pravatar.cc/150?u=1'),
-          _buildAvatar(18, 'https://i.pravatar.cc/150?u=2'),
-          _buildAvatar(36, 'https://i.pravatar.cc/150?u=3'),
+          _buildAvatar(0, 'AF'),
+          _buildAvatar(18, 'AA'),
+          _buildAvatar(36, 'BP'),
+
           Positioned(
             left: 54,
             child: Container(
@@ -25,13 +29,16 @@ class AnggotaAvatarGroup extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.backgroundLight,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
               ),
               alignment: Alignment.center,
               child: Text(
                 '+$totalAnggota',
                 style: AppTextStyles.labelStyle.copyWith(
-                  fontSize: 10,
+                  fontSize: 9,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                 ),
@@ -43,18 +50,30 @@ class AnggotaAvatarGroup extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(double left, String url) {
+  Widget _buildAvatar(
+    double left,
+    String initials,
+  ) {
     return Positioned(
       left: left,
       child: Container(
         height: 28,
         width: 28,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
+          color: AppColors.primaryBlue.withOpacity(.15),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2),
-          image: DecorationImage(
-            image: NetworkImage(url),
-            fit: BoxFit.cover,
+          border: Border.all(
+            color: Colors.white,
+            width: 2,
+          ),
+        ),
+        child: Text(
+          initials,
+          style: AppTextStyles.labelStyle.copyWith(
+            fontSize: 9,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryBlue,
           ),
         ),
       ),

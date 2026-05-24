@@ -10,7 +10,7 @@ class RekapPengumpulanBloc
   final GetAssignmentRecapUsecase getAssignmentRecap;
 
   RekapPengumpulanBloc({required this.getAssignmentRecap})
-      : super(RekapPengumpulanInitial()) {
+    : super(RekapPengumpulanInitial()) {
     on<LoadRekapPengumpulanEvent>(_onLoad);
     on<FilterSubmissionEvent>(_onFilter);
     on<SearchStudentEvent>(_onSearch);
@@ -30,16 +30,20 @@ class RekapPengumpulanBloc
         return;
       }
 
-      // Default tampilkan siswa yang sudah mengumpulkan
-      final filtered = recap.submissions
-          .where((s) => s.isSubmitted)
-          .toList();
+      // Default tampilkan siswa yang mengumpulkan tepat waktu
+      final filtered = _applyFilter(
+        recap.submissions,
+        selectedFilter: RekapSubmissionFilter.submitted,
+        query: '',
+      );
 
-      emit(RekapPengumpulanLoaded(
-        recap: recap,
-        filteredSubmissions: filtered,
-        showSubmitted: true,
-      ));
+      emit(
+        RekapPengumpulanLoaded(
+          recap: recap,
+          filteredSubmissions: filtered,
+          selectedFilter: RekapSubmissionFilter.submitted,
+        ),
+      );
     } catch (e) {
       emit(RekapPengumpulanError(e.toString()));
     }
@@ -54,14 +58,16 @@ class RekapPengumpulanBloc
 
     final filtered = _applyFilter(
       current.recap.submissions,
-      showSubmitted: event.showSubmitted,
+      selectedFilter: event.selectedFilter,
       query: current.searchQuery,
     );
 
-    emit(current.copyWith(
-      filteredSubmissions: filtered,
-      showSubmitted: event.showSubmitted,
-    ));
+    emit(
+      current.copyWith(
+        filteredSubmissions: filtered,
+        selectedFilter: event.selectedFilter,
+      ),
+    );
   }
 
   void _onSearch(
@@ -73,14 +79,13 @@ class RekapPengumpulanBloc
 
     final filtered = _applyFilter(
       current.recap.submissions,
-      showSubmitted: current.showSubmitted,
+      selectedFilter: current.selectedFilter,
       query: event.query,
     );
 
-    emit(current.copyWith(
-      filteredSubmissions: filtered,
-      searchQuery: event.query,
-    ));
+    emit(
+      current.copyWith(filteredSubmissions: filtered, searchQuery: event.query),
+    );
   }
 
   Future<void> _onDownloadAll(
@@ -94,12 +99,26 @@ class RekapPengumpulanBloc
   /// Helper: terapkan filter tab + search sekaligus
   List<AssignmentSubmissionEntity> _applyFilter(
     List<AssignmentSubmissionEntity> all, {
-    required bool showSubmitted,
+    required RekapSubmissionFilter selectedFilter,
     required String query,
   }) {
     return all.where((s) {
-      final matchTab = s.isSubmitted == showSubmitted;
-      final matchQuery = query.isEmpty ||
+      late final bool matchTab;
+
+      switch (selectedFilter) {
+        case RekapSubmissionFilter.submitted:
+          matchTab = s.isSubmitted && !s.isLate;
+          break;
+        case RekapSubmissionFilter.late:
+          matchTab = s.isSubmitted && s.isLate;
+          break;
+        case RekapSubmissionFilter.pending:
+          matchTab = !s.isSubmitted;
+          break;
+      }
+
+      final matchQuery =
+          query.isEmpty ||
           s.studentName.toLowerCase().contains(query.toLowerCase());
       return matchTab && matchQuery;
     }).toList();

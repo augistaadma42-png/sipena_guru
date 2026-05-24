@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
 
+/// Tipe filter tab pada rekap pengumpulan tugas
+enum RekapSubmissionFilter { submitted, late, pending }
+
 abstract class RekapPengumpulanEvent extends Equatable {
   const RekapPengumpulanEvent();
 
@@ -16,13 +19,13 @@ class LoadRekapPengumpulanEvent extends RekapPengumpulanEvent {
   List<Object?> get props => [tugasId];
 }
 
-/// Event untuk filter tab (Diserahkan / Ditugaskan)
+/// Event untuk filter tab (Diserahkan / Terlambat / Ditugaskan)
 class FilterSubmissionEvent extends RekapPengumpulanEvent {
-  final bool showSubmitted; // true = diserahkan, false = ditugaskan
-  const FilterSubmissionEvent(this.showSubmitted);
+  final RekapSubmissionFilter selectedFilter;
+  const FilterSubmissionEvent(this.selectedFilter);
 
   @override
-  List<Object?> get props => [showSubmitted];
+  List<Object?> get props => [selectedFilter];
 }
 
 /// Event untuk pencarian siswa

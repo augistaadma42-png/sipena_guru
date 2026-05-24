@@ -132,144 +132,196 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-              // Greeting Section
-              Text(
-                '${getGreeting()},',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF002369),
-                  height: 1.3,
-                ),
-              ),
-              Text(
-                'Pak/Bu Umi Kulsum S.Pd.',
-                style: GoogleFonts.inter(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF002369),
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                getFormattedDate(),
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF002369).withOpacity(0.7),
-                ),
-              ),
-              const SizedBox(height: 24),
+                    // Greeting Section
+                    Text(
+                      '${getGreeting()},',
+                      style: GoogleFonts.inter(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF002369),
+                        height: 1.3,
+                      ),
+                    ),
+                    Text(
+                      'Pak/Bu Umi Kulsum S.Pd.',
+                      style: GoogleFonts.inter(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF002369),
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      getFormattedDate(),
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF002369).withOpacity(0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
-              // Absensi Hari Ini Section
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF4F6F9),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.borderLight),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Absensi Hari ini', style: AppTextStyles.sectionTitle),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 350,
-                      child: RawScrollbar(
-                        controller: _attendanceScrollController,
-                        thumbColor: AppColors.primaryBlue,
-                        radius: const Radius.circular(8),
-                        thickness: 6,
-                        thumbVisibility: true,
-                        child: ListView(
-                          controller: _attendanceScrollController,
-                          padding: const EdgeInsets.only(right: 16),
-                          children: state.attendanceOverviewList.map((item) {
-                            return AttendanceCard(
-                              time: item.time,
-                              className: item.className,
-                              room: item.room,
-                              subject: item.subject,
-                              status: item.status == AttendanceOverviewStatus.done
-                                  ? AttendanceStatus.done
-                                  : item.status == AttendanceOverviewStatus.pending
-                                      ? AttendanceStatus.pending
-                                      : AttendanceStatus.locked,
-                              statusText: item.statusText,
-                              filledCount: item.filledCount,
-                              totalCount: item.totalCount,
-                              onActionTap: item.status == AttendanceOverviewStatus.done
-                                  ? () => _navigateToDetailAbsensi(
-                                        className: item.className,
-                                        subject: item.subject,
-                                        time: item.time,
-                                        jamKe: 'Jam ke-1 & 2',
-                                      )
-                                  : item.status == AttendanceOverviewStatus.pending
-                                      ? () => _navigateToInputAbsensi(
-                                            className: item.className,
-                                            subject: item.subject,
-                                            time: item.time,
-                                            jamKe: 'Jam ke-3 & 4',
-                                          )
-                                      : null,
-                            );
-                          }).toList(),
+                    // ABSENSI HARI INI
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF4F6F9),
+
+                        borderRadius: BorderRadius.circular(16),
+
+                        border: Border.all(color: AppColors.borderLight),
+                      ),
+
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+
+                        children: [
+                          // HEADER
+                          Container(
+                            width: double.infinity,
+
+                            padding: const EdgeInsets.all(20),
+
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: AppColors.borderLight,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+
+                            child: Text(
+                              'Absensi Hari Ini',
+                              style: AppTextStyles.sectionTitle,
+                            ),
+                          ),
+
+                          // LIST
+                          SizedBox(
+                            height: 350,
+
+                            child: RawScrollbar(
+                              controller: _attendanceScrollController,
+
+                              thumbColor: AppColors.primaryBlue,
+
+                              radius: const Radius.circular(8),
+
+                              thickness: 6,
+
+                              thumbVisibility: true,
+
+                              child: ListView(
+                                controller: _attendanceScrollController,
+
+                                padding: const EdgeInsets.all(20),
+
+                                children: state.attendanceOverviewList.map((
+                                  item,
+                                ) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+
+                                    child: AttendanceCard(
+                                      time: item.time,
+
+                                      className: item.className,
+
+                                      room: item.room,
+
+                                      subject: item.subject,
+
+                                      status:
+                                          item.status ==
+                                              AttendanceOverviewStatus.done
+                                          ? AttendanceStatus.done
+                                          : item.status ==
+                                                AttendanceOverviewStatus.pending
+                                          ? AttendanceStatus.pending
+                                          : AttendanceStatus.locked,
+
+                                      statusText: item.statusText,
+
+                                      filledCount: item.filledCount,
+
+                                      totalCount: item.totalCount,
+
+                                      onActionTap:
+                                          item.status ==
+                                              AttendanceOverviewStatus.done
+                                          ? () => _navigateToDetailAbsensi(
+                                              className: item.className,
+                                              subject: item.subject,
+                                              time: item.time,
+                                              jamKe: 'Jam ke-1 & 2',
+                                            )
+                                          : item.status ==
+                                                AttendanceOverviewStatus.pending
+                                          ? () => _navigateToInputAbsensi(
+                                              className: item.className,
+                                              subject: item.subject,
+                                              time: item.time,
+                                              jamKe: 'Jam ke-3 & 4',
+                                            )
+                                          : null,
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Ringkasan Tugas Section
+                    TaskSummarySection(
+                      taskSummaryList: state.taskSummaryList,
+                      onCheckNowTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DashboardTugasPage(),
+                        ),
+                      ),
+                      onSeeAllTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DashboardTugasPage(),
+                        ),
+                      ),
+                      onTaskTap: (taskName) => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DashboardTugasPage(),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 24),
+
+                    // Aktivitas Terbaru Section
+                    AktivitasTerbaruWidget(
+                      aktivitasList: state.aktivitasList,
+                      onLihatSemua: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AktivitasSemua(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 80),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-
-              // Ringkasan Tugas Section
-              TaskSummarySection(
-                taskSummaryList: state.taskSummaryList,
-                onCheckNowTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const DashboardTugasPage(),
-                  ),
-                ),
-                onSeeAllTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const DashboardTugasPage(),
-                  ),
-                ),
-                onTaskTap: (taskName) => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const DashboardTugasPage(),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Aktivitas Terbaru Section
-              AktivitasTerbaruWidget(
-                aktivitasList: state.aktivitasList,
-                onLihatSemua: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AktivitasSemua(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 80),
-            ],
-          ),
-        ),
-      );
-        }
-        return const SizedBox.shrink();
-      },
-    ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 }

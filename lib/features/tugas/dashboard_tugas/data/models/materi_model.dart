@@ -7,6 +7,10 @@ class MateriModel extends MateriEntity {
     required super.category,
     required super.totalMateri,
     required super.tanggal,
+    super.kelas,
+    super.lampiranCount,
+    super.deskripsi,
+    super.lampiranNames,
   });
 
   factory MateriModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +20,12 @@ class MateriModel extends MateriEntity {
       category: json['category'] as String,
       totalMateri: json['totalMateri'] as int,
       tanggal: json['tanggal'] as String,
+      kelas: json['kelas'] as String? ?? '',
+      lampiranCount: json['lampiranCount'] as int? ?? 0,
+      deskripsi: json['deskripsi'] as String? ?? '',
+      lampiranNames: List<String>.from(
+        (json['lampiranNames'] as List<dynamic>?) ?? [],
+      ),
     );
   }
 
@@ -26,6 +36,10 @@ class MateriModel extends MateriEntity {
       'category': category,
       'totalMateri': totalMateri,
       'tanggal': tanggal,
+      'kelas': kelas,
+      'lampiranCount': lampiranCount,
+      'deskripsi': deskripsi,
+      'lampiranNames': lampiranNames,
     };
   }
 }

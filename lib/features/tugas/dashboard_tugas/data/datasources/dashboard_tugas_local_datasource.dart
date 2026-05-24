@@ -8,11 +8,11 @@ abstract class DashboardTugasLocalDatasource {
   Future<List<Map<String, String>>> getDaftarSiswa(String kelasId);
 }
 
-class DashboardTugasLocalDatasourceImpl implements DashboardTugasLocalDatasource {
+class DashboardTugasLocalDatasourceImpl
+    implements DashboardTugasLocalDatasource {
   @override
   Future<List<MateriModel>> getMateriTerbaru() async {
     debugPrint('[LocalDatasource] Fetching Materi...');
-    // Simulasi delay network
     await Future.delayed(const Duration(milliseconds: 500));
     return [
       const MateriModel(
@@ -21,6 +21,11 @@ class DashboardTugasLocalDatasourceImpl implements DashboardTugasLocalDatasource
         category: 'Matematika Wajib',
         totalMateri: 4,
         tanggal: 'Okt 2026',
+        kelas: 'XII IPA 1',
+        lampiranCount: 2,
+        deskripsi:
+            'Pembahasan lengkap tentang integral tentu dan tak tentu, termasuk metode substitusi, parsial, dan penggunaan tabel integral.',
+        lampiranNames: ['Ringkasan_Integral.pdf', 'Contoh_Soal.docx'],
       ),
       const MateriModel(
         id: '2',
@@ -28,6 +33,27 @@ class DashboardTugasLocalDatasourceImpl implements DashboardTugasLocalDatasource
         category: 'Matematika Wajib',
         totalMateri: 3,
         tanggal: 'Nov 2026',
+        kelas: 'XII IPA 2',
+        lampiranCount: 1,
+        deskripsi:
+            'Fokus pada teknik substitusi dalam menyelesaikan integral kompleks dengan berbagai contoh kasus nyata.',
+        lampiranNames: ['Video_Tutorial.mp4'],
+      ),
+      const MateriModel(
+        id: '3',
+        title: 'Kinematika Gerak Lurus',
+        category: 'Fisika',
+        totalMateri: 2,
+        tanggal: 'Okt 2026',
+        kelas: 'XI IPA 1',
+        lampiranCount: 3,
+        deskripsi:
+            'Konsep dasar gerak lurus beraturan dan gerak lurus berubah beraturan, analisis grafik, dan persamaan kinematika.',
+        lampiranNames: [
+          'Teori_Kinematika.pdf',
+          'Grafik_Contoh.xlsx',
+          'Simulasi_Gerak.zip',
+        ],
       ),
     ];
   }
@@ -35,28 +61,67 @@ class DashboardTugasLocalDatasourceImpl implements DashboardTugasLocalDatasource
   @override
   Future<List<TugasModel>> getDaftarTugas() async {
     debugPrint('[LocalDatasource] Fetching Tugas...');
-    // Simulasi delay network
     await Future.delayed(const Duration(milliseconds: 500));
     return [
       const TugasModel(
         id: '1',
         kelas: 'XII IPA 1',
         title: 'Latihan Integral',
-        subtitle: 'Latihan soal dan penjelasan mengenai integral tentu dan tak tentu',
+        subtitle:
+            'Kerjakan soal-soal integral tentu dan tak tentu pada buku paket hal. 45–50. Tunjukkan langkah penyelesaian secara lengkap.',
         deadline: '25 Okt',
+        totalAnggota: 38,
+        submittedCount: 30,
+        gradedCount: 32,
+        createdAt: '20 Okt',
         sisaHari: '2 Hari lagi',
-        totalAnggota: 30,
         isUrgent: true,
+        isGraded: true,
+        jenisNilai: 'Tugas',
+        mapel: 'Matematika Wajib',
+        siswa: 'Semua pelajar',
+        lampiranCount: 2,
+        lampiranNames: ['Soal_Latihan.pdf', 'Kunci_Jawaban.pdf'],
       ),
       const TugasModel(
         id: '2',
         kelas: 'XII IPA 2',
         title: 'Quiz Integral Substitusi',
-        subtitle: 'Membahas metode substitusi pada integral',
+        subtitle:
+            'Quiz online membahas metode substitusi pada integral. Dikerjakan mandiri tanpa membuka catatan.',
         deadline: '28 Okt',
-        sisaHari: '5 Hari lagi',
         totalAnggota: 30,
+        submittedCount: 18,
+        gradedCount: 24,
+        createdAt: '22 Okt',
+        sisaHari: '5 Hari lagi',
         isUrgent: false,
+        isGraded: false,
+        jenisNilai: 'Tugas',
+        mapel: 'Matematika Wajib',
+        siswa: 'Semua pelajar',
+        lampiranCount: 0,
+        lampiranNames: [],
+      ),
+      const TugasModel(
+        id: '4',
+        kelas: 'XII IPA 1',
+        title: 'Ulangan Harian Kimia',
+        subtitle:
+            'Ulangan harian materi ikatan kimia dan bentuk molekul. Siapkan alat tulis.',
+        deadline: '1 Nov',
+        totalAnggota: 15,
+        submittedCount: 8,
+        gradedCount: 13,
+        createdAt: '28 Okt',
+        sisaHari: '9 Hari lagi',
+        isUrgent: false,
+        isGraded: true,
+        jenisNilai: 'Tugas',
+        mapel: 'Kimia',
+        siswa: 'Kelompok A',
+        lampiranCount: 1,
+        lampiranNames: ['Materi_Ikatan_Kimia.pdf'],
       ),
     ];
   }

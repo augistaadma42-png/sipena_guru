@@ -87,7 +87,9 @@ class _NotifikasiPageContentState extends State<_NotifikasiPageContent> {
     }
 
     return Container(
-      color: notif.dibaca ? Colors.white : AppColors.primaryBlue.withOpacity(0.05),
+      color: notif.dibaca
+          ? Colors.white
+          : AppColors.primaryBlue.withOpacity(0.05),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -170,10 +172,15 @@ class _NotifikasiPageContentState extends State<_NotifikasiPageContent> {
     );
   }
 
-  void _tampilkanBottomSheetNotif(BuildContext context, NotifikasiEntity notif) {
+  void _tampilkanBottomSheetNotif(
+    BuildContext context,
+    NotifikasiEntity notif,
+  ) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => Container(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -211,11 +218,16 @@ class _NotifikasiPageContentState extends State<_NotifikasiPageContent> {
             return Center(child: Text(state.message));
           }
           if (state is NotifikasiLoaded) {
-            final unreadCount = state.notifikasiList.where((n) => !n.dibaca).length;
+            final unreadCount = state.notifikasiList
+                .where((n) => !n.dibaca)
+                .length;
             return Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -234,7 +246,9 @@ class _NotifikasiPageContentState extends State<_NotifikasiPageContent> {
                           borderRadius: BorderRadius.circular(8),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             child: Text(
                               'Tandai semua dibaca',
                               style: AppTextStyles.labelStyle.copyWith(
@@ -249,24 +263,36 @@ class _NotifikasiPageContentState extends State<_NotifikasiPageContent> {
                 ),
                 Expanded(
                   child: state.notifikasiList.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.notifications_none_outlined, size: 72, color: AppColors.textSecondary.withOpacity(0.3)),
-                          const SizedBox(height: 16),
-                          Text('Tidak ada notifikasi', style: AppTextStyles.sectionTitle.copyWith(color: AppColors.textSecondary)),
-                        ],
-                      ),
-                    )
-                  : ListView.separated(
-                    itemCount: state.notifikasiList.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.borderLight),
-                    itemBuilder: (context, index) {
-                      final notif = state.notifikasiList[index];
-                      return _buildNotifItem(context, notif);
-                    },
-                  ),
+                      ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.notifications_none_outlined,
+                                size: 72,
+                                color: AppColors.textSecondary.withOpacity(0.3),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Tidak ada notifikasi',
+                                style: AppTextStyles.sectionTitle.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.separated(
+                          itemCount: state.notifikasiList.length,
+                          separatorBuilder: (_, __) => const Divider(
+                            height: 1,
+                            color: AppColors.borderLight,
+                          ),
+                          itemBuilder: (context, index) {
+                            final notif = state.notifikasiList[index];
+                            return _buildNotifItem(context, notif);
+                          },
+                        ),
                 ),
               ],
             );
