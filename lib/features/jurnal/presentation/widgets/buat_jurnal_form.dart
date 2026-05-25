@@ -225,7 +225,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                     ),
                   ),
                   child: Text(
-                    widget.isEditMode ? 'Batalkan Edit' : 'Batalkan',
+                    widget.isEditMode ? 'Batalkan' : 'Batalkan',
                     style: AppTextStyles.cardTitle.copyWith(
                       color: AppColors.primaryBlue,
                     ),
@@ -264,7 +264,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: AppColors.secondaryOrange,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -276,16 +276,20 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                     children: [
                       const Icon(
                         Icons.save_outlined,
-                        size: 18,
+                        size: 14,
                         color: Colors.white,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        widget.isEditMode
-                            ? 'Simpan Perubahan'
-                            : 'Simpan Jurnal',
-                        style: AppTextStyles.cardTitle.copyWith(
-                          color: Colors.white,
+                      const SizedBox(width: 3),
+                      Flexible(
+                        child: Text(
+                          widget.isEditMode
+                              ? 'Simpan Perubahan'
+                              : 'Simpan Jurnal',
+                          style: AppTextStyles.cardTitle.copyWith(
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
                     ],

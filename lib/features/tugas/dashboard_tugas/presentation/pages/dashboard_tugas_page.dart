@@ -59,6 +59,11 @@ class DashboardTugasView extends StatefulWidget {
 class _DashboardTugasViewState extends State<DashboardTugasView> {
   String? _selectedMonth;
 
+  static const List<String> _allMonths = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
+
   String _extractMonthFromDeadline(String deadline) {
     final trimmed = deadline.trim();
     if (trimmed.isEmpty) return '';
@@ -124,6 +129,7 @@ class _DashboardTugasViewState extends State<DashboardTugasView> {
         }
 
         if (state is DashboardTugasLoaded) {
+          final filteredTugasList =
               (_selectedMonth == null || _selectedMonth == 'Semua')
               ? state.tugasList
               : state.tugasList
@@ -147,7 +153,16 @@ class _DashboardTugasViewState extends State<DashboardTugasView> {
                   const SizedBox(height: 15),
                   MateriTerbaruSection(materiList: state.materiList),
                   const SizedBox(height: 24),
-                  DaftarTugasSection(tugasList: state.tugasList),
+                  DaftarTugasSection(
+                    tugasList: filteredTugasList,
+                    monthOptions: _allMonths,
+                    selectedMonth: _selectedMonth ?? 'Semua',
+                    onMonthSelected: (value) {
+                      setState(() {
+                        _selectedMonth = value == 'Semua' ? null : value;
+                      });
+                    },
+                  ),
                 ],
               ),
             ),

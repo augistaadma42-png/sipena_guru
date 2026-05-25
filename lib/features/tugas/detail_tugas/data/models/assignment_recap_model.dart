@@ -13,6 +13,7 @@ class AssignmentRecapModel extends AssignmentRecapEntity {
     required super.completionPercentage,
     required super.lateStudentsCount,
     required super.submissions,
+    super.isExpired = false,
   });
 
   factory AssignmentRecapModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +32,7 @@ class AssignmentRecapModel extends AssignmentRecapEntity {
       completionPercentage: (json['completionPercentage'] as num).toDouble(),
       lateStudentsCount: json['lateStudentsCount'] as int,
       submissions: submissionList,
+      isExpired: json['isExpired'] as bool? ?? false,
     );
   }
 }

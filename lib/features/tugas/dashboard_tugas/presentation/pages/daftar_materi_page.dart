@@ -24,6 +24,11 @@ class _DaftarMateriPageState extends State<DaftarMateriPage> {
   bool _hasOpenedInitialDialog = false;
   String? _selectedMonth;
 
+  static const List<String> _allMonths = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -66,12 +71,8 @@ class _DaftarMateriPageState extends State<DaftarMateriPage> {
     );
   }
 
-  List<String> _buildMonthOptions(List<String> monthValues) {
-    final unique = <String>{};
-    for (final month in monthValues) {
-      if (month.isNotEmpty) unique.add(month);
-    }
-    return unique.toList();
+  List<String> _buildMonthOptions() {
+    return _allMonths;
   }
 
   String _extractMonthFromDate(String dateText) {
@@ -308,7 +309,7 @@ class _DaftarMateriPageState extends State<DaftarMateriPage> {
               .map((m) => _extractMonthFromDate(m.tanggal))
               .where((month) => month.isNotEmpty)
               .toList();
-          final filterOptions = _buildMonthOptions(allMonths);
+          final filterOptions = _buildMonthOptions();
           final filteredMateri =
               (_selectedMonth == null || _selectedMonth == 'Semua')
               ? widget.materiList
@@ -332,7 +333,8 @@ class _DaftarMateriPageState extends State<DaftarMateriPage> {
           return ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             itemCount:
-                filteredMateri.length + (filterOptions.isNotEmpty ? 1 : 0),
+                (filterOptions.isNotEmpty ? 1 : 0) +
+                (filteredMateri.isEmpty ? 1 : filteredMateri.length),
             separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               if (filterOptions.isNotEmpty && index == 0) {
@@ -402,6 +404,40 @@ class _DaftarMateriPageState extends State<DaftarMateriPage> {
               }
 
               final itemIndex = index - (filterOptions.isNotEmpty ? 1 : 0);
+
+              if (filteredMateri.isEmpty) {
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.borderLight),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.menu_book_outlined,
+                        size: 48,
+                        color: AppColors.disabledGrey,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _selectedMonth != null && _selectedMonth != 'Semua'
+                            ? 'Tidak ada materi di bulan $_selectedMonth'
+                            : 'Belum ada materi yang tersedia',
+                        style: AppTextStyles.cardSubtitle.copyWith(
+                          color: AppColors.disabledGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               final materi = filteredMateri[itemIndex];
               return MateriCard(
                 materi: materi,

@@ -40,7 +40,7 @@ class _RekapJurnalPageContent extends StatefulWidget {
 }
 
 class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
-  String? _selectedFilterKelas;
+  String _selectedFilterKelas = 'Semua Kelas';
   DateTime? _selectedFilterTanggal;
 
   @override
@@ -112,7 +112,7 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedFilterKelas = value;
+                          _selectedFilterKelas = value ?? 'Semua Kelas';
                         });
                       },
                     ),
@@ -169,43 +169,74 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
             ],
           ),
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                context.read<JurnalBloc>().add(LoadRekapJurnalEvent(
-                  filterKelas: _selectedFilterKelas,
-                  filterTanggal: _selectedFilterTanggal,
-                ));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Filter diterapkan'),
-                    backgroundColor: AppColors.successGreen,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 40,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedFilterKelas = 'Semua Kelas';
+                        _selectedFilterTanggal = null;
+                      });
+                      context.read<JurnalBloc>().add(const LoadRekapJurnalEvent());
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.borderLight),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      'Reset',
+                      style: AppTextStyles.cardTitle.copyWith(color: AppColors.textSecondary),
+                    ),
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondaryOrange,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.filter_list, size: 18, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Terapkan',
-                    style: AppTextStyles.cardTitle.copyWith(color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: SizedBox(
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<JurnalBloc>().add(LoadRekapJurnalEvent(
+                        filterKelas: _selectedFilterKelas == 'Semua Kelas' ? null : _selectedFilterKelas,
+                        filterTanggal: _selectedFilterTanggal,
+                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Filter diterapkan'),
+                          backgroundColor: AppColors.successGreen,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryOrange,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.filter_list, size: 18, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Terapkan',
+                          style: AppTextStyles.cardTitle.copyWith(color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
@@ -295,9 +326,22 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
                             Navigator.pop(context, jurnal);
                           },
                           borderRadius: BorderRadius.circular(4),
-                          child: const Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Icon(Icons.edit_outlined, size: 16, color: AppColors.textSecondary),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.edit_outlined, size: 16, color: AppColors.textSecondary),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Edit',
+                                  style: AppTextStyles.labelStyle.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -343,7 +387,6 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
                           borderRadius: BorderRadius.circular(4),
                           child: Padding(
                             padding: const EdgeInsets.all(4.0),
-                            child: Icon(Icons.delete_outline, size: 16, color: Colors.red.withOpacity(0.8)),
                           ),
                         ),
                       ],

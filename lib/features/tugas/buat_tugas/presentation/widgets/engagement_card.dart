@@ -32,17 +32,7 @@ class EngagementCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tingkatkan\nEngagement',
-                  style: GoogleFonts.inter(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Gunakan rubrik penilaian untuk memberikan transparansi kriteria evaluasi kepada siswa Anda.',
+                  'Pastikan anda telah memeriksa semua data tugas/materi dengan benar sebelum klik simpan.',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: Colors.white.withOpacity(0.85),
@@ -58,7 +48,6 @@ class EngagementCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             padding: const EdgeInsets.all(8),
-            child: const Icon(Icons.add, color: Colors.white, size: 24),
           ),
         ],
       ),

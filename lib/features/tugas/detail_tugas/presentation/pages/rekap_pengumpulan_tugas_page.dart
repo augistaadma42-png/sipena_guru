@@ -207,6 +207,7 @@ class RekapPengumpulanTugasView extends StatelessWidget {
                           state.selectedFilter == RekapSubmissionFilter.pending;
                       return SiswaPengumpulanTile(
                         submission: submissions[index],
+                        isTaskExpired: recap.isExpired,
                         onTap: isPending
                             ? null
                             : () {

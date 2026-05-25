@@ -10,7 +10,6 @@ class TugasModel extends Tugas {
     required super.mapel,
     required super.siswa,
     super.tenggat,
-    required super.topik,
     required super.createdAt,
   });
 
@@ -26,7 +25,6 @@ class TugasModel extends Tugas {
       tenggat: json['tenggat'] != null
           ? DateTime.parse(json['tenggat'] as String)
           : null,
-      topik: json['topik'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
@@ -41,7 +39,6 @@ class TugasModel extends Tugas {
       'mapel': mapel,
       'siswa': siswa,
       'tenggat': tenggat?.toIso8601String(),
-      'topik': topik,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -56,7 +53,6 @@ class TugasModel extends Tugas {
       mapel: tugas.mapel,
       siswa: tugas.siswa,
       tenggat: tugas.tenggat,
-      topik: tugas.topik,
       createdAt: tugas.createdAt,
     );
   }

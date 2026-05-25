@@ -50,14 +50,14 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
                 ),
                 const SizedBox(width: 8),
                 _StatChip(
-                  label: 'L',
+                  label: 'Laki-laki',
                   value: '$lCount',
                   icon: Icons.male_rounded,
                   color: AppColors.primaryBlue,
                 ),
                 const SizedBox(width: 8),
                 _StatChip(
-                  label: 'P',
+                  label: 'Perempuan',
                   value: '$pCount',
                   icon: Icons.female_rounded,
                   color: AppColors.secondaryOrange,
@@ -112,8 +112,8 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -160,9 +160,9 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
                         horizontal: 16, vertical: 14),
                     child: Row(
                       children: [
-                        _HeaderCell('No', width: 36),
-                        _HeaderCell('NISN', width: 100),
-                        _HeaderCell('L/P', width: 52),
+                        _HeaderCell('No', width: 40),
+                        _HeaderCell('NISN', width: 90),
+                        _HeaderCell('L/P', width: 60),
                         const Expanded(child: _HeaderCell('Nama Lengkap')),
                       ],
                     ),
@@ -193,6 +193,9 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
                       final isEven = i % 2 == 0;
                       final isLast = i == filtered.length - 1;
                       final isL = siswa['jk'] == 'L';
+                      final badgeColor = isL
+                          ? AppColors.primaryBlue
+                          : AppColors.secondaryOrange;
 
                       return Column(
                         children: [
@@ -201,34 +204,38 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
                                 ? Colors.white
                                 : AppColors.backgroundLight,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
+                                horizontal: 16, vertical: 13),
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                // No
+                                // No absen
                                 SizedBox(
-                                  width: 36,
-                                  child: Container(
-                                    width: 26,
-                                    height: 26,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryBlue
-                                          .withOpacity(0.08),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      siswa['absen']!,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.primaryBlue,
+                                  width: 40,
+                                  child: Center(
+                                    child: Container(
+                                      width: 28,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryBlue
+                                            .withOpacity(0.08),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        siswa['absen']!,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.primaryBlue,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
+
                                 // NISN
                                 SizedBox(
-                                  width: 100,
+                                  width: 90,
                                   child: Text(
                                     siswa['nisn']!,
                                     style: GoogleFonts.inter(
@@ -238,35 +245,32 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
                                     ),
                                   ),
                                 ),
-                                // L/P badge
+
+                                // L/P badge — lebar fixed 60, badge center di dalamnya
                                 SizedBox(
-                                  width: 52,
-                                  child: Container(
-                                    width: 24,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: isL
-                                          ? AppColors.primaryBlue
-                                              .withOpacity(0.08)
-                                          : AppColors.secondaryOrange
-                                              .withOpacity(0.08),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Text(
-                                      siswa['jk']!,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                        color: isL
-                                            ? AppColors.primaryBlue
-                                            : AppColors.secondaryOrange,
+                                  width: 60,
+                                  child: Center(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: badgeColor.withOpacity(0.10),
+                                        borderRadius:
+                                            BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        siswa['jk']!,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: badgeColor,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                // Nama
+
+                                // Nama — pakai Expanded supaya tidak mepet
                                 Expanded(
                                   child: Text(
                                     siswa['nama']!,
@@ -299,7 +303,7 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
   }
 }
 
-// ── Sub-widgets ───────────────────────────────────────────────────
+// ── Sub-widgets ─────────────────────────────────────────────────────────────
 
 class _StatChip extends StatelessWidget {
   final String label;

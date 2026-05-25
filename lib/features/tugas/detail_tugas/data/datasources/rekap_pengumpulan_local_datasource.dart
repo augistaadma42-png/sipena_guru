@@ -30,7 +30,7 @@ class RekapPengumpulanLocalDatasourceImpl
       id: '1',
       title: 'Latihan Integral',
       subtitle: 'Latihan soal integral tentu dan tak tentu - XII IPA 1',
-      totalStudents: 30,
+      totalStudents: 38,
       submittedCount: 24,
       pendingCount: 6,
       completionPercentage: 80.0,
@@ -39,7 +39,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's1',
           studentName: 'Ahmad Fauzan',
-          avatar: 'https://i.pravatar.cc/150?u=ahmad',
+          avatar: '',
           submittedAt: '24 Okt, 08:30',
           fileName: 'Ahmad_Fauzan_Integral.pdf',
           score: 95,
@@ -48,7 +48,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's2',
           studentName: 'Ananda Aryani',
-          avatar: 'https://i.pravatar.cc/150?u=ananda',
+          avatar: '',
           submittedAt: '23 Okt, 14:15',
           fileName: 'Ananda_Integral.pdf',
           score: 90,
@@ -57,7 +57,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's3',
           studentName: 'Bagus Akbar',
-          avatar: 'https://i.pravatar.cc/150?u=bagus',
+          avatar: '',
           submittedAt: null,
           fileName: null,
           score: null,
@@ -66,7 +66,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's4',
           studentName: 'Bunga Pertiwi',
-          avatar: 'https://i.pravatar.cc/150?u=bunga',
+          avatar: '',
           submittedAt: '23 Okt, 14:15',
           fileName: 'Bunga_Integral.pdf',
           score: null,
@@ -75,7 +75,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's5',
           studentName: 'Candra Aditama',
-          avatar: 'https://i.pravatar.cc/150?u=candra',
+          avatar: '',
           submittedAt: '22 Okt, 09:00',
           fileName: 'Candra_Integral.pdf',
           score: 85,
@@ -84,7 +84,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's6',
           studentName: 'Dewi Lestari',
-          avatar: 'https://i.pravatar.cc/150?u=dewi',
+          avatar: '',
           submittedAt: '26 Okt, 19:45',
           fileName: 'Dewi_Lestari_Integral.pdf',
           score: 75,
@@ -102,15 +102,16 @@ class RekapPengumpulanLocalDatasourceImpl
       title: 'Quiz Integral Substitusi',
       subtitle: 'Membahas metode substitusi pada integral - XII IPA 2',
       totalStudents: 30,
-      submittedCount: 18,
-      pendingCount: 12,
-      completionPercentage: 60.0,
-      lateStudentsCount: 3,
+      submittedCount: 30,
+      pendingCount: 0,
+      completionPercentage: 100.0,
+      lateStudentsCount: 2,
+      isExpired: true,
       submissions: [
         const AssignmentSubmissionModel(
           id: 's1',
           studentName: 'Daffa Rizaldi',
-          avatar: 'https://i.pravatar.cc/150?u=daffa',
+          avatar: '',
           submittedAt: '28 Okt, 10:15',
           fileName: 'Daffa_SubstitusiIntegral.pdf',
           score: 95,
@@ -119,7 +120,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's2',
           studentName: 'Eka Putri Sari',
-          avatar: 'https://i.pravatar.cc/150?u=eka',
+          avatar: '',
           submittedAt: '27 Okt, 16:00',
           fileName: 'Eka_Integral.pdf',
           score: 88,
@@ -128,7 +129,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's3',
           studentName: 'Fajar Nugroho',
-          avatar: 'https://i.pravatar.cc/150?u=fajar',
+          avatar: '',
           submittedAt: null,
           fileName: null,
           score: null,
@@ -137,7 +138,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's4',
           studentName: 'Gita Maharani',
-          avatar: 'https://i.pravatar.cc/150?u=gita',
+          avatar: '',
           submittedAt: null,
           fileName: null,
           score: null,
@@ -146,7 +147,7 @@ class RekapPengumpulanLocalDatasourceImpl
         const AssignmentSubmissionModel(
           id: 's5',
           studentName: 'Hendra Wijaya',
-          avatar: 'https://i.pravatar.cc/150?u=hendra',
+          avatar: '',
           submittedAt: '28 Okt, 08:45',
           fileName: 'Hendra_Substitusi.pdf',
           score: 78,

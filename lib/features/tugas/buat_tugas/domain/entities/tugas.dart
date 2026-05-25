@@ -8,7 +8,6 @@ class Tugas {
   final String mapel;
   final String siswa;
   final DateTime? tenggat;
-  final String topik;
   final DateTime createdAt;
   // [CHANGE 4] Field materi terkait dari dropdown filter
   final String materiTerkait;
@@ -22,7 +21,6 @@ class Tugas {
     required this.mapel,
     required this.siswa,
     this.tenggat,
-    required this.topik,
     required this.createdAt,
     this.materiTerkait = '',
   });

@@ -10,11 +10,13 @@ import 'popup_menu_tugas.dart';
 /// Tile satu baris siswa dalam list pengumpulan tugas
 class SiswaPengumpulanTile extends StatelessWidget {
   final AssignmentSubmissionEntity submission;
+  final bool isTaskExpired;
   final VoidCallback? onTap;
 
   const SiswaPengumpulanTile({
     super.key,
     required this.submission,
+    this.isTaskExpired = false,
     this.onTap,
   });
 
@@ -23,7 +25,6 @@ class SiswaPengumpulanTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
           padding: const EdgeInsets.all(14),
@@ -60,17 +61,28 @@ class SiswaPengumpulanTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    // Status submit
+                    // Status submit — 
                     if (submission.isSubmitted && submission.submittedAt != null)
                       Text(
-                        'Dikumpulkan: ${submission.submittedAt}',
-                        style: AppTextStyles.cardSubtitle,
+                        submission.isLate
+                            ? 'Terlambat: ${submission.submittedAt}'
+                            : 'Dikumpulkan: ${submission.submittedAt}',
+                        style: AppTextStyles.cardSubtitle.copyWith(
+                          color: submission.isLate ? Colors.orange : null,
+                          fontWeight: submission.isLate
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                        ),
                       )
                     else
                       Text(
-                        'Belum Mengumpulkan',
+                        isTaskExpired
+                            ? 'Tenggat Terlewati'
+                            : 'Belum Mengumpulkan',
                         style: AppTextStyles.cardSubtitle.copyWith(
-                          color: Colors.red,
+                          color: isTaskExpired
+                              ? Colors.red.shade800
+                              : Colors.red,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

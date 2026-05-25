@@ -219,56 +219,30 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
                         onTap: onEdit ?? () {
                           print('Edit Jurnal: $title');
                         },
-                        borderRadius: BorderRadius.circular(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Icon(Icons.edit_outlined, size: 16, color: Colors.grey[700]),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      InkWell(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text('Hapus Jurnal', style: AppTextStyles.sectionTitle),
-                              content: Text(
-                                'Apakah Anda yakin ingin menghapus jurnal "$title"? Tindakan ini tidak dapat dibatalkan.',
-                                style: AppTextStyles.cardSubtitle,
-                              ),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('Batal', style: AppTextStyles.cardTitle.copyWith(color: AppColors.textSecondary)),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context); // Tutup dialog
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text('Jurnal berhasil dihapus'),
-                                        backgroundColor: AppColors.primaryBlue,
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red.withOpacity(0.9),
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.edit_outlined, size: 16, color: AppColors.textSecondary),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Edit',
+                                  style: AppTextStyles.labelStyle.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 12,
                                   ),
-                                  child: const Text('Hapus', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                 ),
                               ],
                             ),
-                          );
-                        },
+                          ),
+                        ),
+                      const SizedBox(width: 8),
+                      InkWell(
                         borderRadius: BorderRadius.circular(4),
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: Icon(Icons.delete_outline, size: 16, color: Colors.red.withOpacity(0.8)),
                         ),
                       ),
                     ],

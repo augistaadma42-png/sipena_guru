@@ -86,13 +86,36 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
   Future<List<JurnalModel>> getRekapJurnal(String? filterKelas, DateTime? filterTanggal) async {
     await Future.delayed(const Duration(milliseconds: 300));
     var results = _rekapJurnalData;
-    
+
     if (filterKelas != null && filterKelas != 'Semua Kelas') {
       results = results.where((j) => j.className == filterKelas).toList();
     }
-    
-    // Asumsikan time memiliki format tanggal yang bisa diparse jika filterTanggal != null
-    // Untuk dummy ini, kita filter sederhana.
+
+    if (filterTanggal != null) {
+      // format time: 'Senin, 04 Mei 2026 | 07:00 - 08:30'
+      // ambil bagian tanggal sebelum ' | '
+      const bulanMap = {
+        'Januari': 1, 'Februari': 2, 'Maret': 3, 'April': 4,
+        'Mei': 5, 'Juni': 6, 'Juli': 7, 'Agustus': 8,
+        'September': 9, 'Oktober': 10, 'November': 11, 'Desember': 12,
+      };
+      results = results.where((j) {
+        try {
+          final bagianTanggal = j.time.split(' | ').first; // 'Senin, 04 Mei 2026'
+          final parts = bagianTanggal.split(', ').last.trim().split(' '); // ['04', 'Mei', '2026']
+          if (parts.length < 3) return false;
+          final tgl = int.parse(parts[0]);
+          final bln = bulanMap[parts[1]] ?? 0;
+          final thn = int.parse(parts[2]);
+          return tgl == filterTanggal.day &&
+              bln == filterTanggal.month &&
+              thn == filterTanggal.year;
+        } catch (_) {
+          return false;
+        }
+      }).toList();
+    }
+
     return results;
   }
 

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import 'pengaturan_notifikasi_page.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/notifikasi_entity.dart';
@@ -240,24 +241,48 @@ class _NotifikasiPageContentState extends State<_NotifikasiPageContent> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      if (unreadCount > 0)
-                        InkWell(
-                          onTap: () => _tandaiSemuaDibaca(context),
-                          borderRadius: BorderRadius.circular(8),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                      Row(
+                        children: [
+                          if (unreadCount > 0)
+                            InkWell(
+                              onTap: () => _tandaiSemuaDibaca(context),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                child: Text(
+                                  'Tandai semua dibaca',
+                                  style: AppTextStyles.labelStyle.copyWith(
+                                    color: AppColors.primaryBlue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: Text(
-                              'Tandai semua dibaca',
-                              style: AppTextStyles.labelStyle.copyWith(
-                                color: AppColors.primaryBlue,
-                                fontWeight: FontWeight.w600,
+                          const SizedBox(width: 4),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const PengaturanNotifikasiPage(),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                Icons.settings_outlined,
+                                size: 20,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

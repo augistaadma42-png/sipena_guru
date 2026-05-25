@@ -12,6 +12,7 @@ class AssignmentRecapEntity extends Equatable {
   final double completionPercentage;
   final int lateStudentsCount;
   final List<AssignmentSubmissionEntity> submissions;
+  final bool isExpired;
 
   const AssignmentRecapEntity({
     required this.id,
@@ -23,6 +24,7 @@ class AssignmentRecapEntity extends Equatable {
     required this.completionPercentage,
     required this.lateStudentsCount,
     required this.submissions,
+    this.isExpired = false,
   });
 
   @override
@@ -36,5 +38,6 @@ class AssignmentRecapEntity extends Equatable {
         completionPercentage,
         lateStudentsCount,
         submissions,
+        isExpired,
       ];
 }

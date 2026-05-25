@@ -31,8 +31,6 @@ class TugasFormController extends ChangeNotifier {
 
   static const List<String> siswaList = [
     'Semua pelajar',
-    'Kelompok A',
-    'Kelompok B',
   ];
 
   static const List<String> materiList = [
@@ -63,7 +61,6 @@ class TugasFormController extends ChangeNotifier {
       mapel: mapel.value,
       siswa: siswa.value,
       tenggat: tenggat.value,
-      topik: '',
       createdAt: DateTime.now(),
       // [CHANGE 4] Simpan materi terkait yang dipilih
       materiTerkait: selectedMateri.value == 'Pilih Materi' ? '' : selectedMateri.value,

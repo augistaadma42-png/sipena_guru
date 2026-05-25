@@ -124,17 +124,49 @@ class DaftarTugasSection extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 16),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: tugasList.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: TugasCard(tugas: tugasList[index]),
-              );
-            },
-          ),
+          if (tugasList.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.borderLight),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.assignment_outlined,
+                    size: 48,
+                    color: AppColors.disabledGrey,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    selectedMonth != null && selectedMonth != 'Semua'
+                        ? 'Tidak ada tugas di bulan $selectedMonth'
+                        : 'Belum ada tugas yang tersedia',
+                    style: AppTextStyles.labelStyle.copyWith(
+                      color: AppColors.disabledGrey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: tugasList.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: TugasCard(tugas: tugasList[index]),
+                );
+              },
+            ),
           const SizedBox(height: 80), // Space for FAB
         ],
       ),
