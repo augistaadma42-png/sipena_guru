@@ -75,7 +75,7 @@ class TaskItem extends StatelessWidget {
 class TaskSummarySection extends StatelessWidget {
   final VoidCallback? onCheckNowTap;
   final VoidCallback? onSeeAllTap;
-  final Function(String taskName)? onTaskTap;
+  final Function(TaskSummaryEntity task)? onTaskTap;
   final List<TaskSummaryEntity> taskSummaryList;
 
   const TaskSummarySection({
@@ -236,7 +236,7 @@ class TaskSummarySection extends StatelessWidget {
                         countText: task.countText,
                         dateText: task.dateText,
                         countColor: AppColors.secondaryOrange,
-                        onTap: () => onTaskTap?.call(task.title),
+                        onTap: () => onTaskTap?.call(task),
                       ),
                       const Divider(color: AppColors.borderLight, height: 1),
                     ],

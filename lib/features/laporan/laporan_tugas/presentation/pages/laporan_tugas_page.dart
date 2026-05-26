@@ -16,7 +16,17 @@ import '../widgets/loading_tugas_widget.dart';
 
 /// Halaman utama Laporan Tugas — entry point fitur
 class LaporanTugasPage extends StatefulWidget {
-  const LaporanTugasPage({super.key});
+  /// Filter awal yang bisa dioper dari halaman lain (misal: dashboard)
+  final String? initialKelas;
+  final String? initialMataPelajaran;
+  final String? initialBulan;
+
+  const LaporanTugasPage({
+    super.key,
+    this.initialKelas,
+    this.initialMataPelajaran,
+    this.initialBulan,
+  });
 
   @override
   State<LaporanTugasPage> createState() => _LaporanTugasPageState();
@@ -30,17 +40,18 @@ class _LaporanTugasPageState extends State<LaporanTugasPage> {
   @override
   void initState() {
     super.initState();
-    // Wiring dependency secara manual (bisa diganti dengan get_it / injectable)
+    // Wiring dependency 
     _bloc = LaporanTugasBloc(
       getAssignmentReportUsecase: GetAssignmentReportUsecase(
         LaporanTugasRepositoryImpl(
           localDatasource: LaporanTugasLocalDatasource(),
         ),
       ),
-    )..add(const LoadAssignmentReportEvent(
-        bulan: LaporanTugasBloc.defaultBulan,
-        kelas: LaporanTugasBloc.defaultKelas,
-        mataPelajaran: LaporanTugasBloc.defaultMapel,
+    )..add(LoadAssignmentReportEvent(
+        bulan: widget.initialBulan ?? LaporanTugasBloc.defaultBulan,
+        kelas: widget.initialKelas ?? LaporanTugasBloc.defaultKelas,
+        mataPelajaran:
+            widget.initialMataPelajaran ?? LaporanTugasBloc.defaultMapel,
       ));
   }
 
@@ -176,7 +187,7 @@ class _LaporanTugasPageState extends State<LaporanTugasPage> {
           ),
         ],
 
-        // ── Motivational Banner (selalu tampil) ──
+        // ── Motivational Banner 
         if (state is! LaporanTugasLoading)
           const SliverToBoxAdapter(
             child: MotivationalBannerCard(),

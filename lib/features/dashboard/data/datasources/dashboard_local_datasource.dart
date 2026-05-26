@@ -55,18 +55,24 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
         subtitle: 'XII IPA 1',
         countText: '30/30 Siswa',
         dateText: '10 Mei 2026',
+        kelas: 'XII IPA 1',
+        mataPelajaran: 'Matematika Wajib',
       ),
       TaskSummaryModel(
         title: 'Latihan Integral',
         subtitle: 'XII IPA 1',
         countText: '25/30 Siswa',
         dateText: '12 Mei 2026',
+        kelas: 'XII IPA 1',
+        mataPelajaran: 'Matematika Wajib',
       ),
       TaskSummaryModel(
         title: 'Quiz Substitusi',
         subtitle: 'XII IPA 2',
         countText: '12/30 Siswa',
         dateText: '15 Mei 2026',
+        kelas: 'XII IPA 2',
+        mataPelajaran: 'Matematika Wajib',
       ),
     ];
   }

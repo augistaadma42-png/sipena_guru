@@ -316,10 +316,13 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
                           ),
                         ),
 
-                        onTaskTap: (taskName) => Navigator.push(
+                        onTaskTap: (task) => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const DashboardTugasPage(),
+                            builder: (_) => LaporanTugasPage(
+                              initialKelas: task.kelas,
+                              initialMataPelajaran: task.mataPelajaran,
+                            ),
                           ),
                         ),
                       ),

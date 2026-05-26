@@ -33,9 +33,26 @@ class _FilterLaporanCardState extends State<FilterLaporanCard> {
     'Fisika',
   ];
 
-  String _selectedBulan = 'Oktober 2023';
-  String _selectedKelas = 'XII IPA 1';
-  String _selectedMapel = 'Matematika Wajib';
+  String _selectedBulan = LaporanTugasBloc.defaultBulan;
+  String _selectedKelas = LaporanTugasBloc.defaultKelas;
+  String _selectedMapel = LaporanTugasBloc.defaultMapel;
+
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      // Sync dengan state awal bloc (bisa sudah di-set dari dashboard)
+      final state = context.read<LaporanTugasBloc>().state;
+      if (state is LaporanTugasLoaded) {
+        _selectedBulan = state.selectedBulan;
+        _selectedKelas = state.selectedKelas;
+        _selectedMapel = state.selectedMataPelajaran;
+      }
+    }
+  }
 
   void _applyFilter() {
     context.read<LaporanTugasBloc>().add(FilterAssignmentEvent(

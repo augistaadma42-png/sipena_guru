@@ -6,5 +6,7 @@ class TaskSummaryModel extends TaskSummaryEntity {
     required super.subtitle,
     required super.countText,
     required super.dateText,
+    required super.kelas,
+    required super.mataPelajaran,
   });
 }

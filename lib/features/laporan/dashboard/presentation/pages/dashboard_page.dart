@@ -47,7 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               // Title: Report Hub
               Text(
-                'Report Hub',
+                'Laporan Tugas',
                 style: GoogleFonts.inter(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
