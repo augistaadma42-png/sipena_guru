@@ -128,201 +128,226 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
           } else if (state is DashboardError) {
             return Center(child: Text(state.message));
           } else if (state is DashboardLoaded) {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Greeting Section
-                    Text(
-                      '${getGreeting()},',
-                      style: GoogleFonts.inter(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF002369),
-                        height: 1.3,
-                      ),
-                    ),
-                    Text(
-                      'Umi Kulsum S.Pd.',
-                      style: GoogleFonts.inter(
-                        fontSize: 29,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF002369),
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      getFormattedDate(),
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF002369).withOpacity(0.7),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+            return RefreshIndicator(
+              color: AppColors.secondaryOrange,
 
-                    // ABSENSI HARI INI
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF4F6F9),
+              onRefresh: () async {
+                context.read<DashboardBloc>().add(LoadDashboardDataEvent());
+              },
 
-                        borderRadius: BorderRadius.circular(16),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
 
-                        border: Border.all(color: AppColors.borderLight),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
+                      // Greeting Section
+                      Text(
+                        '${getGreeting()},',
+                        style: GoogleFonts.inter(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF002369),
+                          height: 1.3,
+                        ),
                       ),
 
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Text(
+                        'Umi Kulsum S.Pd.',
+                        style: GoogleFonts.inter(
+                          fontSize: 29,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF002369),
+                          height: 1.2,
+                        ),
+                      ),
 
-                        children: [
-                          // HEADER
-                          Container(
-                            width: double.infinity,
+                      const SizedBox(height: 8),
 
-                            padding: const EdgeInsets.all(20),
+                      Text(
+                        getFormattedDate(),
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF002369).withOpacity(0.7),
+                        ),
+                      ),
 
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: AppColors.borderLight,
-                                  width: 1,
+                      const SizedBox(height: 24),
+
+                      // ABSENSI HARI INI
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF4F6F9),
+
+                          borderRadius: BorderRadius.circular(16),
+
+                          border: Border.all(color: AppColors.borderLight),
+                        ),
+
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                          children: [
+                            // HEADER
+                            Container(
+                              width: double.infinity,
+
+                              padding: const EdgeInsets.all(20),
+
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: AppColors.borderLight,
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+
+                              child: Text(
+                                'Absensi Hari Ini',
+                                style: AppTextStyles.sectionTitle,
+                              ),
+                            ),
+
+                            // LIST
+                            SizedBox(
+                              height: 350,
+
+                              child: RawScrollbar(
+                                controller: _attendanceScrollController,
+
+                                thumbColor: AppColors.primaryBlue,
+
+                                radius: const Radius.circular(8),
+
+                                thickness: 6,
+
+                                thumbVisibility: true,
+
+                                child: ListView(
+                                  controller: _attendanceScrollController,
+
+                                  padding: const EdgeInsets.all(20),
+
+                                  children: state.attendanceOverviewList.map((
+                                    item,
+                                  ) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 16,
+                                      ),
+
+                                      child: AttendanceCard(
+                                        time: item.time,
+
+                                        className: item.className,
+
+                                        room: item.room,
+
+                                        subject: item.subject,
+
+                                        status:
+                                            item.status ==
+                                                AttendanceOverviewStatus.done
+                                            ? AttendanceStatus.done
+                                            : item.status ==
+                                                  AttendanceOverviewStatus
+                                                      .pending
+                                            ? AttendanceStatus.pending
+                                            : AttendanceStatus.locked,
+
+                                        statusText: item.statusText,
+
+                                        filledCount: item.filledCount,
+
+                                        totalCount: item.totalCount,
+
+                                        onActionTap:
+                                            item.status ==
+                                                AttendanceOverviewStatus.done
+                                            ? () => _navigateToDetailAbsensi(
+                                                className: item.className,
+                                                subject: item.subject,
+                                                time: item.time,
+                                                jamKe: 'Jam ke-1 & 2',
+                                              )
+                                            : item.status ==
+                                                  AttendanceOverviewStatus
+                                                      .pending
+                                            ? () => _navigateToInputAbsensi(
+                                                className: item.className,
+                                                subject: item.subject,
+                                                time: item.time,
+                                                jamKe: 'Jam ke-3 & 4',
+                                              )
+                                            : null,
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
                               ),
                             ),
-
-                            child: Text(
-                              'Absensi Hari Ini',
-                              style: AppTextStyles.sectionTitle,
-                            ),
-                          ),
-
-                          // LIST
-                          SizedBox(
-                            height: 350,
-
-                            child: RawScrollbar(
-                              controller: _attendanceScrollController,
-
-                              thumbColor: AppColors.primaryBlue,
-
-                              radius: const Radius.circular(8),
-
-                              thickness: 6,
-
-                              thumbVisibility: true,
-
-                              child: ListView(
-                                controller: _attendanceScrollController,
-
-                                padding: const EdgeInsets.all(20),
-
-                                children: state.attendanceOverviewList.map((
-                                  item,
-                                ) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
-
-                                    child: AttendanceCard(
-                                      time: item.time,
-
-                                      className: item.className,
-
-                                      room: item.room,
-
-                                      subject: item.subject,
-
-                                      status:
-                                          item.status ==
-                                              AttendanceOverviewStatus.done
-                                          ? AttendanceStatus.done
-                                          : item.status ==
-                                                AttendanceOverviewStatus.pending
-                                          ? AttendanceStatus.pending
-                                          : AttendanceStatus.locked,
-
-                                      statusText: item.statusText,
-
-                                      filledCount: item.filledCount,
-
-                                      totalCount: item.totalCount,
-
-                                      onActionTap:
-                                          item.status ==
-                                              AttendanceOverviewStatus.done
-                                          ? () => _navigateToDetailAbsensi(
-                                              className: item.className,
-                                              subject: item.subject,
-                                              time: item.time,
-                                              jamKe: 'Jam ke-1 & 2',
-                                            )
-                                          : item.status ==
-                                                AttendanceOverviewStatus.pending
-                                          ? () => _navigateToInputAbsensi(
-                                              className: item.className,
-                                              subject: item.subject,
-                                              time: item.time,
-                                              jamKe: 'Jam ke-3 & 4',
-                                            )
-                                          : null,
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Ringkasan Tugas Section
-                    TaskSummarySection(
-                      taskSummaryList: state.taskSummaryList,
-                      // [CHANGE 3] Periksa sekarang → Daftar Kelas yang diampu
-                      onCheckNowTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const DaftarKelasPage(),
+                          ],
                         ),
                       ),
-                      // [CHANGE 3] Lihat Semua → Laporan Tugas
-                      onSeeAllTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LaporanTugasPage(),
-                        ),
-                      ),
-                      onTaskTap: (taskName) => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const DashboardTugasPage(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
 
-                    // Aktivitas Terbaru Section
-                    AktivitasTerbaruWidget(
-                      aktivitasList: state.aktivitasList,
-                      onLihatSemua: () {
-                        Navigator.push(
+                      const SizedBox(height: 24),
+
+                      // Ringkasan Tugas Section
+                      TaskSummarySection(
+                        taskSummaryList: state.taskSummaryList,
+
+                        onCheckNowTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const AktivitasSemua(),
+                            builder: (_) => const DaftarKelasPage(),
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 80),
-                  ],
+                        ),
+
+                        onSeeAllTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LaporanTugasPage(),
+                          ),
+                        ),
+
+                        onTaskTap: (taskName) => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DashboardTugasPage(),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Aktivitas Terbaru Section
+                      AktivitasTerbaruWidget(
+                        aktivitasList: state.aktivitasList,
+
+                        onLihatSemua: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AktivitasSemua(),
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 80),
+                    ],
+                  ),
                 ),
               ),
             );
           }
+
           return const SizedBox.shrink();
         },
       ),

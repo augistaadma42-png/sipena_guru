@@ -59,7 +59,7 @@ class DaftarKelasView extends StatelessWidget {
               onRefresh: () async {
                 context.read<DaftarKelasBloc>().add(LoadDaftarKelasEvent());
               },
-              color: AppColors.primaryBlue,
+              color: AppColors.secondaryOrange,
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: state.kelasList.length,

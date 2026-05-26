@@ -20,10 +20,7 @@ import '../../domain/usecases/get_rekap_jurnal_usecase.dart';
 class JurnalMengajarPage extends StatelessWidget {
   final Map<String, String>? initialData;
 
-  const JurnalMengajarPage({
-    Key? key,
-    this.initialData,
-  }) : super(key: key);
+  const JurnalMengajarPage({Key? key, this.initialData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,19 +39,18 @@ class JurnalMengajarPage extends StatelessWidget {
 }
 
 class _JurnalMengajarPageContent extends StatefulWidget {
-
   final Map<String, String>? initialData;
 
-  const _JurnalMengajarPageContent({
-    Key? key,
-    this.initialData,
-  }) : super(key: key);
+  const _JurnalMengajarPageContent({Key? key, this.initialData})
+    : super(key: key);
 
   @override
   State<_JurnalMengajarPageContent> createState() =>
       _JurnalMengajarPageContentState();
 }
-class _JurnalMengajarPageContentState extends State<_JurnalMengajarPageContent> {
+
+class _JurnalMengajarPageContentState
+    extends State<_JurnalMengajarPageContent> {
   final ScrollController _scrollController = ScrollController();
   Map<String, String>? _editingJurnalMap;
   Map<String, String>? _autoFillData;
@@ -99,53 +95,58 @@ class _JurnalMengajarPageContentState extends State<_JurnalMengajarPageContent> 
       backgroundColor: AppColors.backgroundLight,
       appBar: const CustomAppBar(title: 'Jurnal Mengajar'),
       drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const PanduanJurnalCard(),
-              const SizedBox(height: 20),
-              BuatJurnalForm(
-                initialData:
-                  _editingJurnalMap ??
-                  _autoFillData,
-                onCancelEdit: _cancelEdit,
-                isEditMode: _editingJurnalMap != null,
-              ),
-              const SizedBox(height: 20),
-              BlocBuilder<JurnalBloc, JurnalState>(
-                builder: (context, state) {
-                  if (state is JurnalLoading || state is JurnalInitial) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is JurnalError) {
-                    return Center(child: Text(state.message));
-                  } else if (state is JurnalTerbaruLoaded) {
-                    return JurnalTerbaruTimeline(
-                      jurnalList: state.jurnalList,
-                      onEditTap: _handleEditJurnal,
-                onLihatRekapTap: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RekapJurnalPage(),
-                    ),
-                  );
+      body: RefreshIndicator(
+        color: AppColors.secondaryOrange,
 
-                  // Jika kembali dari Rekap Jurnal dengan membawa data (artinya tombol Edit ditekan)
-                  if (result != null && result is JurnalEntity) {
-                    _handleEditJurnal(result);
-                  }
-                },
-              );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-              const SizedBox(height: 80), // Padding for bottom nav bar
-            ],
+        onRefresh: () async {
+          context.read<JurnalBloc>().add(LoadJurnalTerbaruEvent());
+        },
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const PanduanJurnalCard(),
+                const SizedBox(height: 20),
+                BuatJurnalForm(
+                  initialData: _editingJurnalMap ?? _autoFillData,
+                  onCancelEdit: _cancelEdit,
+                  isEditMode: _editingJurnalMap != null,
+                ),
+                const SizedBox(height: 20),
+                BlocBuilder<JurnalBloc, JurnalState>(
+                  builder: (context, state) {
+                    if (state is JurnalLoading || state is JurnalInitial) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is JurnalError) {
+                      return Center(child: Text(state.message));
+                    } else if (state is JurnalTerbaruLoaded) {
+                      return JurnalTerbaruTimeline(
+                        jurnalList: state.jurnalList,
+                        onEditTap: _handleEditJurnal,
+                        onLihatRekapTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RekapJurnalPage(),
+                            ),
+                          );
+
+                          // Jika kembali dari Rekap Jurnal dengan membawa data (artinya tombol Edit ditekan)
+                          if (result != null && result is JurnalEntity) {
+                            _handleEditJurnal(result);
+                          }
+                        },
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+                const SizedBox(height: 80), // Padding for bottom nav bar
+              ],
+            ),
           ),
         ),
       ),

@@ -28,7 +28,9 @@ class AbsensiPage extends StatelessWidget {
           getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
           getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
           getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
-          updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(repo),
+          updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(
+            repo,
+          ),
         );
       },
       child: const _AbsensiPageContent(),
@@ -76,8 +78,9 @@ class _AbsensiPageContentState extends State<_AbsensiPageContent>
               indicatorColor: AppColors.secondaryOrange,
               indicatorWeight: 3,
               labelStyle: AppTextStyles.cardTitle.copyWith(fontSize: 13),
-              unselectedLabelStyle:
-                  AppTextStyles.cardSubtitle.copyWith(fontSize: 13),
+              unselectedLabelStyle: AppTextStyles.cardSubtitle.copyWith(
+                fontSize: 13,
+              ),
               tabs: const [
                 Tab(text: 'Input Absensi'),
                 Tab(text: 'Riwayat'),
@@ -87,10 +90,7 @@ class _AbsensiPageContentState extends State<_AbsensiPageContent>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [
-                InputAbsensiTab(),
-                RiwayatAbsensiTab(),
-              ],
+              children: const [InputAbsensiTab(), RiwayatAbsensiTab()],
             ),
           ),
         ],

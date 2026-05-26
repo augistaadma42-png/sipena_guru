@@ -13,6 +13,7 @@ class TugasCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final isMateri = tugas.jenisNilai == 'Materi';
     final isExpired = _isTaskExpired(tugas.deadline);
     final statusLabel = isExpired ? 'Kadaluarsa' : 'Aktif';
