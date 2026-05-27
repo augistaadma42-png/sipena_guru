@@ -22,17 +22,17 @@ class JurnalTerbaruTimeline extends StatefulWidget {
 class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
   final ScrollController _scrollController = ScrollController();
   int _activeIndex = 0;
-  final double _itemHeight = 130.0;
+  final double _itemHeight = 150.0;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      // Menghitung indeks mana yang sedang berada di atas berdasarkan scroll
       int newIndex = (_scrollController.offset / _itemHeight).round();
       if (newIndex < 0) newIndex = 0;
-      if (newIndex >= widget.jurnalList.length) newIndex = widget.jurnalList.length - 1;
-
+      if (newIndex >= widget.jurnalList.length) {
+        newIndex = widget.jurnalList.length - 1;
+      }
       if (_activeIndex != newIndex) {
         setState(() {
           _activeIndex = newIndex;
@@ -52,7 +52,7 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F6F9), // Warna sangat terang persis seperti desain
+        color: const Color(0xFFF4F6F9),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.borderLight),
       ),
@@ -65,7 +65,7 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 280,
+            height: 300,
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.only(right: 16),
@@ -73,10 +73,7 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
               itemBuilder: (context, index) {
                 final jurnal = widget.jurnalList[index];
                 return _buildTimelineItem(
-                  time: jurnal.time,
-                  className: jurnal.className,
-                  title: jurnal.title,
-                  description: jurnal.description,
+                  jurnal: jurnal,
                   isLast: index == widget.jurnalList.length - 1,
                   isActive: index == _activeIndex,
                   onEdit: () {
@@ -97,7 +94,8 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
             child: ElevatedButton(
               onPressed: widget.onLihatRekapTap,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 backgroundColor: AppColors.secondaryOrange,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -109,10 +107,12 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
                 children: [
                   Text(
                     'Lihat Rekap Jurnal',
-                    style: AppTextStyles.cardTitle.copyWith(color: Colors.white),
+                    style:
+                        AppTextStyles.cardTitle.copyWith(color: Colors.white),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, size: 16, color: Colors.white),
+                  const Icon(Icons.arrow_forward,
+                      size: 16, color: Colors.white),
                 ],
               ),
             ),
@@ -123,10 +123,7 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
   }
 
   Widget _buildTimelineItem({
-    required String time,
-    required String className,
-    required String title,
-    required String description,
+    required JurnalEntity jurnal,
     required bool isLast,
     required bool isActive,
     VoidCallback? onEdit,
@@ -135,6 +132,7 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Timeline dot + line
           SizedBox(
             width: 24,
             child: Column(
@@ -146,8 +144,10 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isActive ? AppColors.primaryBlue : Colors.grey[350]!,
-                      width: isActive ? 4 : 4,
+                      color: isActive
+                          ? AppColors.primaryBlue
+                          : Colors.grey[350]!,
+                      width: 4,
                     ),
                     color: Colors.white,
                   ),
@@ -163,33 +163,45 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
             ),
           ),
           const SizedBox(width: 8),
+
+          // Content card
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Row: jam + kelas
                   Row(
                     children: [
                       Text(
-                        time,
+                        jurnal.time,
                         style: AppTextStyles.labelStyle.copyWith(
-                          color: isActive ? AppColors.primaryBlue : AppColors.textSecondary,
-                          fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                          color: isActive
+                              ? AppColors.primaryBlue
+                              : AppColors.textSecondary,
+                          fontWeight: isActive
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                           fontSize: 10,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: isActive ? AppColors.primaryBlue.withOpacity(0.1) : AppColors.backgroundLight,
+                          color: isActive
+                              ? AppColors.primaryBlue.withOpacity(0.1)
+                              : AppColors.backgroundLight,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          className,
+                          jurnal.className,
                           style: AppTextStyles.labelStyle.copyWith(
-                            color: isActive ? AppColors.primaryBlue : AppColors.textSecondary,
+                            color: isActive
+                                ? AppColors.primaryBlue
+                                : AppColors.textSecondary,
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                           ),
@@ -198,54 +210,82 @@ class _JurnalTerbaruTimelineState extends State<JurnalTerbaruTimeline> {
                     ],
                   ),
                   const SizedBox(height: 4),
+
+                  // Mapel badge (NEW)
+                  if (jurnal.mapel.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryOrange.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.menu_book_outlined,
+                            size: 11,
+                            color: AppColors.secondaryOrange,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            jurnal.mapel,
+                            style: AppTextStyles.labelStyle.copyWith(
+                              color: AppColors.secondaryOrange,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // Judul
                   Text(
-                    title,
+                    jurnal.title,
                     style: AppTextStyles.cardTitle.copyWith(
                       fontSize: 14,
-                      color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
+                      color: isActive
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
+
+                  // Deskripsi
                   Text(
-                    description,
-                    style: AppTextStyles.cardSubtitle.copyWith(fontSize: 12, color: Colors.grey[600]),
+                    jurnal.description,
+                    style: AppTextStyles.cardSubtitle
+                        .copyWith(fontSize: 12, color: Colors.grey[600]),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: onEdit ?? () {
-                          print('Edit Jurnal: $title');
-                        },
-                          borderRadius: BorderRadius.circular(4),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.edit_outlined, size: 16, color: AppColors.textSecondary),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Edit',
-                                  style: AppTextStyles.labelStyle.copyWith(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
+
+                  // Tombol Edit
+                  InkWell(
+                    onTap: onEdit,
+                    borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.edit_outlined,
+                              size: 16, color: AppColors.textSecondary),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Edit',
+                            style: AppTextStyles.labelStyle.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
                             ),
                           ),
-                        ),
-                      const SizedBox(width: 8),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -265,7 +305,8 @@ class _DashedLinePainter extends CustomPainter {
       ..color = Colors.grey[300]!
       ..strokeWidth = 1;
     while (startX < size.width) {
-      canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
+      canvas.drawLine(
+          Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
       startX += dashWidth + dashSpace;
     }
   }

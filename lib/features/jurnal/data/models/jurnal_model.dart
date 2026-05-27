@@ -5,6 +5,8 @@ class JurnalModel extends JurnalEntity {
     required super.id,
     required super.className,
     required super.time,
+    required super.tanggal,
+    required super.mapel,
     required super.title,
     required super.description,
   });
@@ -14,6 +16,8 @@ class JurnalModel extends JurnalEntity {
       'id': id,
       'className': className,
       'time': time,
+      'tanggal': tanggal,
+      'mapel': mapel,
       'title': title,
       'description': description,
     };

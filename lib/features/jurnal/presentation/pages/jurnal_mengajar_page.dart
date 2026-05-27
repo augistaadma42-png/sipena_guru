@@ -42,7 +42,7 @@ class _JurnalMengajarPageContent extends StatefulWidget {
   final Map<String, String>? initialData;
 
   const _JurnalMengajarPageContent({Key? key, this.initialData})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<_JurnalMengajarPageContent> createState() =>
@@ -61,15 +61,21 @@ class _JurnalMengajarPageContentState
     _autoFillData = widget.initialData;
   }
 
+  /// Dipanggil saat tombol Edit ditekan di timeline atau rekap.
+  /// Mengisi form dengan seluruh data jurnal termasuk mapel & tanggal.
   void _handleEditJurnal(JurnalEntity data) {
     setState(() {
       _editingJurnalMap = {
         'title': data.title,
         'className': data.className,
         'description': data.description,
+        'mapel': data.mapel,
+        'tanggal': data.tanggal,
+        // Sertakan time agar info tambahan tetap tampil jika diperlukan
+        'time': data.time,
       };
     });
-    // Menggulir perlahan ke bagian atas tempat form berada
+    // Scroll ke form di bagian atas
     _scrollController.animateTo(
       0.0,
       duration: const Duration(milliseconds: 500),
@@ -97,7 +103,6 @@ class _JurnalMengajarPageContentState
       drawer: const CustomDrawer(),
       body: RefreshIndicator(
         color: AppColors.secondaryOrange,
-
         onRefresh: () async {
           context.read<JurnalBloc>().add(LoadJurnalTerbaruEvent());
         },
@@ -119,7 +124,8 @@ class _JurnalMengajarPageContentState
                 BlocBuilder<JurnalBloc, JurnalState>(
                   builder: (context, state) {
                     if (state is JurnalLoading || state is JurnalInitial) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                          child: CircularProgressIndicator());
                     } else if (state is JurnalError) {
                       return Center(child: Text(state.message));
                     } else if (state is JurnalTerbaruLoaded) {
@@ -130,11 +136,12 @@ class _JurnalMengajarPageContentState
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const RekapJurnalPage(),
+                              builder: (context) =>
+                                  const RekapJurnalPage(),
                             ),
                           );
 
-                          // Jika kembali dari Rekap Jurnal dengan membawa data (artinya tombol Edit ditekan)
+                          // Jika kembali dari rekap dengan data entity (Edit)
                           if (result != null && result is JurnalEntity) {
                             _handleEditJurnal(result);
                           }
@@ -144,7 +151,7 @@ class _JurnalMengajarPageContentState
                     return const SizedBox.shrink();
                   },
                 ),
-                const SizedBox(height: 80), // Padding for bottom nav bar
+                const SizedBox(height: 80),
               ],
             ),
           ),

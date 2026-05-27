@@ -6,7 +6,8 @@ class GetRekapJurnalUsecase {
 
   GetRekapJurnalUsecase(this.repository);
 
-  Future<List<JurnalEntity>> call(String? filterKelas, DateTime? filterTanggal) async {
-    return await repository.getRekapJurnal(filterKelas, filterTanggal);
+  Future<List<JurnalEntity>> call(
+      String? filterKelas, int? filterBulan, int? filterTahun) async {
+    return await repository.getRekapJurnal(filterKelas, filterBulan, filterTahun);
   }
 }

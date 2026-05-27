@@ -14,8 +14,10 @@ class JurnalRepositoryImpl implements JurnalRepository {
   }
 
   @override
-  Future<List<JurnalEntity>> getRekapJurnal(String? filterKelas, DateTime? filterTanggal) async {
-    return await localDatasource.getRekapJurnal(filterKelas, filterTanggal);
+  Future<List<JurnalEntity>> getRekapJurnal(
+      String? filterKelas, int? filterBulan, int? filterTahun) async {
+    return await localDatasource.getRekapJurnal(
+        filterKelas, filterBulan, filterTahun);
   }
 
   @override

@@ -1,7 +1,9 @@
 class JurnalEntity {
   final String id;
   final String className;
-  final String time; // e.g. "Senin, 04 Mei 2026 | 07:00 - 08:30" or "07:00 - 08:00"
+  final String time; 
+  final String tanggal; 
+  final String mapel; 
   final String title;
   final String description;
 
@@ -9,6 +11,8 @@ class JurnalEntity {
     required this.id,
     required this.className,
     required this.time,
+    required this.tanggal,
+    required this.mapel,
     required this.title,
     required this.description,
   });

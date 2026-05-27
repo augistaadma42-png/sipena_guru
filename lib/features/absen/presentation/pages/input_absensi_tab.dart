@@ -25,10 +25,20 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
   int _resetCount = 0;
 
   final List<Map<String, String>> _kelasList = [
-    {'id': 'XII IPA 1', 'name': 'XII IPA 1 — Matematika Wajib'},
-    {'id': 'XII IPA 2', 'name': 'XII IPA 2 — Matematika Wajib'},
-    {'id': 'XI IPA 1', 'name': 'XI IPA 1 — Matematika Peminatan'},
+    {'id': 'XII IPA 1', 'name': 'XII IPA 1 — Matematika Wajib',    'subject': 'Matematika Wajib'},
+    {'id': 'XII IPA 2', 'name': 'XII IPA 2 — Matematika Wajib',    'subject': 'Matematika Wajib'},
+    {'id': 'XI IPA 1',  'name': 'XI IPA 1 — Matematika Peminatan', 'subject': 'Matematika Peminatan'},
   ];
+
+  /// Mapel aktif: dari jadwal (prefilledSubject) atau dari dropdown pilihan kelas.
+  String get _activeSubject {
+    if (widget.prefilledSubject != null) return widget.prefilledSubject!;
+    final match = _kelasList.firstWhere(
+      (k) => k['id'] == _selectedKelas,
+      orElse: () => {},
+    );
+    return match['subject'] ?? '';
+  }
 
   // Track per-student status by ID
   Map<String, String> _studentStatusMap = {};
@@ -108,14 +118,13 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
 
       Future.delayed(const Duration(milliseconds: 800), () {
         if (!mounted) return;
-        Navigator.pushAndRemoveUntil(
-          context,
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => MainLayout(
               initialIndex: 1, // Index tab Jurnal
               initialData: {
                 'className': _selectedKelas ?? '',
-                'subject': 'Matematika Wajib',
+                'mapel': _activeSubject,
               },
             ),
           ),

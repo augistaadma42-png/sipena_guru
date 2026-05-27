@@ -22,14 +22,35 @@ class BuatJurnalForm extends StatefulWidget {
 class _BuatJurnalFormState extends State<BuatJurnalForm> {
   final quill.QuillController _quillController = quill.QuillController.basic();
   final TextEditingController _materiController = TextEditingController();
-  String? _selectedKelas;
-  String? _subject;
-  String? _jam;
 
+  String? _selectedKelas;
+  String? _selectedMapel;
+  DateTime _selectedTanggal = DateTime.now();
+
+  // Daftar kelas yang tersedia
+  static const List<String> _kelasList = [
+    'XII IPA 1',
+    'XII IPA 2',
+    'XI IPA 1',
+    'XI IPA 2',
+    'X IPA 1',
+    'X IPA 2',
+  ];
+
+  // Daftar mata pelajaran yang tersedia
+  static const List<String> _mapelList = [
+    'Matematika Wajib',
+    'Matematika Peminatan',
+    'Fisika',
+    'Kimia',
+    'Biologi',
+    'Bahasa Indonesia',
+    'Bahasa Inggris',
+  ];
 
   @override
   void initState() {
-   super.initState();
+    super.initState();
     _initData();
   }
 
@@ -43,47 +64,82 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
 
   void _initData() {
     if (widget.initialData != null) {
+      final data = widget.initialData!;
 
-      _selectedKelas =
-          widget.initialData!['className'];
+      _selectedKelas = data['className'];
+      _selectedMapel = data['mapel'];
 
-      _subject =
-          widget.initialData!['subject'];
+      // Parse tanggal dari string "dd/MM/yyyy"
+      final tanggalStr = data['tanggal'];
+      if (tanggalStr != null && tanggalStr.isNotEmpty) {
+        try {
+          final parts = tanggalStr.split('/');
+          if (parts.length == 3) {
+            _selectedTanggal = DateTime(
+              int.parse(parts[2]),
+              int.parse(parts[1]),
+              int.parse(parts[0]),
+            );
+          }
+        } catch (_) {
+          _selectedTanggal = DateTime.now();
+        }
+      } else {
+        _selectedTanggal = DateTime.now();
+      }
 
-      _jam =
-          widget.initialData!['time'];
+      _materiController.text = data['title'] ?? '';
 
-      _materiController.text =
-          widget.initialData!['title'] ?? '';
-
-      final description =
-          widget.initialData!['description'] ?? '';
-
-      final cleanDesc =
-          description.replaceAll('"', '');
-
+      final description = data['description'] ?? '';
+      final cleanDesc = description.replaceAll('"', '');
       _quillController.document =
-          quill.Document()
-            ..insert(0, '$cleanDesc\n');
-
+          quill.Document()..insert(0, '$cleanDesc\n');
     } else {
-
       _clearForm();
     }
   }
 
   void _clearForm() {
-  setState(() {
-    _selectedKelas = null;
-    _subject = null;
-    _jam = null;
-  });
+    setState(() {
+      _selectedKelas = null;
+      _selectedMapel = null;
+      _selectedTanggal = DateTime.now();
+    });
 
-  _materiController.clear();
+    _materiController.clear();
+    _quillController.document = quill.Document()..insert(0, '\n');
+  }
 
-  _quillController.document =
-      quill.Document()..insert(0, '\n');
-}
+  String _formatTanggal(DateTime dt) {
+    const hariMap = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    const bulanMap = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    // weekday: 1=Mon ... 7=Sun
+    final hari = hariMap[dt.weekday - 1];
+    final bulan = bulanMap[dt.month - 1];
+    return '$hari, ${dt.day.toString().padLeft(2, '0')} $bulan ${dt.year}';
+  }
+
+  String _tanggalToStorage(DateTime dt) {
+    return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+  }
+
+  Future<void> _pickTanggal() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedTanggal,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      locale: const Locale('id', 'ID'),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedTanggal = picked;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -94,10 +150,6 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final formattedDate =
-        '${now.day.toString().padLeft(2, '0')} / ${now.month.toString().padLeft(2, '0')} / ${now.year}';
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -121,79 +173,50 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
           ),
           const SizedBox(height: 4),
           Text(
-            widget.initialData != null
-                ? widget.isEditMode ? 'Ubah detail kegiatan jurnal yang telah dibuat.' : 'Isi detail kegiatan jurnal mengajar hari ini.'
+            widget.isEditMode
+                ? 'Ubah detail kegiatan jurnal yang telah dibuat.'
                 : 'Catat kegiatan belajar mengajar hari ini.',
             style: AppTextStyles.cardSubtitle,
           ),
           const SizedBox(height: 20),
+
+          // ── Tanggal (editable, date picker) ──────────────────────────
           _buildLabel('Tanggal'),
           const SizedBox(height: 8),
-          _buildTextField(initialValue: formattedDate, isReadOnly: true),
+          _buildDatePickerField(),
           const SizedBox(height: 16),
+
+          // ── Kelas ─────────────────────────────────────────────────────
           _buildLabel('Kelas'),
           const SizedBox(height: 8),
-          _buildDropdown(),
-          if (_subject != null || _jam != null) ...[
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-
-                  if (_subject != null)
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.menu_book_outlined,
-                          size: 18,
-                          color: AppColors.primaryBlue,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _subject!,
-                            style: AppTextStyles.cardTitle.copyWith(
-                              color: AppColors.primaryBlue,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                  if (_subject != null &&
-                      _jam != null)
-                    const SizedBox(height: 10),
-
-                  if (_jam != null)
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.access_time,
-                          size: 18,
-                          color: AppColors.primaryBlue,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _jam!,
-                          style: AppTextStyles.cardSubtitle.copyWith(
-                            color: AppColors.primaryBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-          ],
+          _buildDropdown<String>(
+            value: _selectedKelas,
+            items: _kelasList,
+            hint: 'Pilih Kelas',
+            onChanged: (value) {
+              setState(() {
+                _selectedKelas = value;
+              });
+            },
+          ),
           const SizedBox(height: 16),
+
+          // ── Mata Pelajaran (NEW) ────────────────────────────────────
+          _buildLabel('Mata Pelajaran'),
+          const SizedBox(height: 8),
+          _buildDropdown<String>(
+            value: _selectedMapel,
+            items: _mapelList,
+            hint: 'Pilih Mata Pelajaran',
+            onChanged: (value) {
+              setState(() {
+                _selectedMapel = value;
+              });
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // ── Materi ────────────────────────────────────────────────────
           _buildLabel('Materi Yang Diajarkan'),
           const SizedBox(height: 8),
           _buildTextField(
@@ -201,10 +224,14 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
             hintText: 'Contoh : Bab 6 Cerpen',
           ),
           const SizedBox(height: 16),
+
+          // ── Catatan Guru ──────────────────────────────────────────────
           _buildLabel('Catatan Guru'),
           const SizedBox(height: 8),
           _buildRichTextEditor(),
           const SizedBox(height: 24),
+
+          // ── Tombol Aksi ───────────────────────────────────────────────
           Row(
             children: [
               Expanded(
@@ -225,7 +252,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                     ),
                   ),
                   child: Text(
-                    widget.isEditMode ? 'Batalkan' : 'Batalkan',
+                    'Batalkan',
                     style: AppTextStyles.cardTitle.copyWith(
                       color: AppColors.primaryBlue,
                     ),
@@ -235,34 +262,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
               const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-
-                    // kirim data balik
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          widget.isEditMode
-                              ? 'Jurnal berhasil diperbarui'
-                              : 'Jurnal berhasil disimpan',
-                        ),
-                        backgroundColor:
-                            AppColors.successGreen,
-                        behavior:
-                            SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(8),
-                        ),
-                      ),
-                    );
-
-                    _clearForm();
-
-                    if (widget.onCancelEdit != null &&
-                        widget.initialData != null) {
-                      widget.onCancelEdit!();
-                    }
-                  },
+                  onPressed: _simpanJurnal,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: AppColors.secondaryOrange,
@@ -282,9 +282,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
                       const SizedBox(width: 3),
                       Flexible(
                         child: Text(
-                          widget.isEditMode
-                              ? 'Simpan Perubahan'
-                              : 'Simpan Jurnal',
+                          widget.isEditMode ? 'Simpan Perubahan' : 'Simpan Jurnal',
                           style: AppTextStyles.cardTitle.copyWith(
                             color: Colors.white,
                           ),
@@ -303,14 +301,70 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
     );
   }
 
+  void _simpanJurnal() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          widget.isEditMode
+              ? 'Jurnal berhasil diperbarui'
+              : 'Jurnal berhasil disimpan',
+        ),
+        backgroundColor: AppColors.successGreen,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+
+    _clearForm();
+
+    if (widget.onCancelEdit != null && widget.initialData != null) {
+      widget.onCancelEdit!();
+    }
+  }
+
   Widget _buildLabel(String text) {
     return Text(text, style: AppTextStyles.cardTitle.copyWith(fontSize: 12));
+  }
+
+  // ── Date Picker Field ──────────────────────────────────────────────
+  Widget _buildDatePickerField() {
+    return InkWell(
+      onTap: _pickTanggal,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.borderLight),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 18,
+              color: AppColors.primaryBlue,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                _formatTanggal(_selectedTanggal),
+                style: AppTextStyles.cardTitle.copyWith(
+                  color: AppColors.primaryBlue,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildTextField({
     TextEditingController? controller,
     String? hintText,
-    String? initialValue,
     bool isReadOnly = false,
   }) {
     return Container(
@@ -321,7 +375,6 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
       ),
       child: TextFormField(
         controller: controller,
-        initialValue: initialValue,
         readOnly: isReadOnly,
         style: AppTextStyles.cardTitle.copyWith(
           color: isReadOnly ? AppColors.textSecondary : AppColors.primaryBlue,
@@ -339,13 +392,12 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
     );
   }
 
-  Widget _buildDropdown() {
-    final Map<String, String> classSubjectMap = {
-      'XII IPA 1': 'Matematika Wajib',
-      'XII IPA 2': 'Matematika Wajib',
-      'XI IPA 1': 'Matematika Peminatan',
-    };
-
+  Widget _buildDropdown<T>({
+    required T? value,
+    required List<T> items,
+    required String hint,
+    required ValueChanged<T?> onChanged,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -354,27 +406,21 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
+        child: DropdownButton<T>(
           isExpanded: true,
-          value: _selectedKelas,
-          hint: Text('Pilih Kelas', style: AppTextStyles.cardSubtitle),
+          value: value,
+          hint: Text(hint, style: AppTextStyles.cardSubtitle),
           icon: const Icon(
             Icons.keyboard_arrow_down,
             color: AppColors.secondaryOrange,
           ),
-          items:
-              classSubjectMap.keys.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value, style: AppTextStyles.cardTitle),
-                );
-              }).toList(),
-          onChanged: (value) {
-            setState(() {
-              _selectedKelas = value;
-              _subject = classSubjectMap[value];
-            });
-          },
+          items: items.map((T item) {
+            return DropdownMenuItem<T>(
+              value: item,
+              child: Text(item.toString(), style: AppTextStyles.cardTitle),
+            );
+          }).toList(),
+          onChanged: onChanged,
         ),
       ),
     );
@@ -397,8 +443,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
             child: quill.QuillSimpleToolbar(
               controller: _quillController,
               config: const quill.QuillSimpleToolbarConfig(
-                multiRowsDisplay:
-                    false, // Membuatnya bisa di-scroll ke samping di HP
+                multiRowsDisplay: false,
                 showFontFamily: false,
                 showFontSize: false,
                 showColorButton: false,

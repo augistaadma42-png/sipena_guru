@@ -25,7 +25,8 @@ class JurnalBloc extends Bloc<JurnalEvent, JurnalState> {
     on<LoadRekapJurnalEvent>((event, emit) async {
       emit(JurnalLoading());
       try {
-        final data = await getRekapJurnalUsecase(event.filterKelas, event.filterTanggal);
+        final data = await getRekapJurnalUsecase(
+            event.filterKelas, event.filterBulan, event.filterTahun);
         emit(RekapJurnalLoaded(rekapList: data));
       } catch (e) {
         emit(JurnalError(message: e.toString()));

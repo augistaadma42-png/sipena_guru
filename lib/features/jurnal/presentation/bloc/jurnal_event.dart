@@ -11,10 +11,15 @@ class LoadJurnalTerbaruEvent extends JurnalEvent {}
 
 class LoadRekapJurnalEvent extends JurnalEvent {
   final String? filterKelas;
-  final DateTime? filterTanggal;
+  final int? filterBulan;
+  final int? filterTahun;
 
-  const LoadRekapJurnalEvent({this.filterKelas, this.filterTanggal});
+  const LoadRekapJurnalEvent({
+    this.filterKelas,
+    this.filterBulan,
+    this.filterTahun,
+  });
 
   @override
-  List<Object?> get props => [filterKelas, filterTanggal];
+  List<Object?> get props => [filterKelas, filterBulan, filterTahun];
 }
