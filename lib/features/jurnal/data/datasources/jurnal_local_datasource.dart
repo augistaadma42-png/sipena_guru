@@ -8,7 +8,7 @@ abstract class JurnalLocalDatasource {
 }
 
 class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
-  // Data dummy jurnal terbaru (tanpa tanggal penuh, hanya jam hari ini)
+  // Data dummy jurnal terbaru
   final List<JurnalModel> _jurnalTerbaruData = [
     const JurnalModel(
       id: 'j1',
@@ -17,7 +17,7 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
       tanggal: '27/05/2026',
       mapel: 'Matematika Wajib',
       title: 'Integral Tentu dan Tak Tentu',
-      description: 'Latihan soal dan penjelasan mengenai integral tentu dan tak tentu...',
+      description: 'Latihan soal and penjelasan mengenai integral tentu dan tak tentu...',
     ),
     const JurnalModel(
       id: 'j2',
@@ -34,30 +34,30 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
       time: '08:00 - 09:30',
       tanggal: '27/05/2026',
       mapel: 'Matematika Peminatan',
-      title: 'Trigonometri Dasar',
-      description: 'Diskusi kelompok mengenai perbandingan trigonometri...',
+      title: 'Polinomial dan Suku Banyak',
+      description: 'Diskusi kelompok mengenai pembagian polinomial...',
     ),
     const JurnalModel(
       id: 'j4',
       className: 'XII IPA 1',
       time: '07:00 - 08:00',
       tanggal: '26/05/2026',
-      mapel: 'Fisika',
-      title: 'Quiz Integral',
-      description: 'Evaluasi pemahaman siswa tentang integral...',
+      mapel: 'Matematika Wajib',
+      title: 'Turunan Fungsi Aljabar',
+      description: 'Evaluasi pemahaman siswa tentang turunan fungsi...',
     ),
     const JurnalModel(
       id: 'j5',
-      className: 'XI IPA 2',
+      className: 'XI IPA 1',
       time: '06:30 - 07:00',
       tanggal: '26/05/2026',
-      mapel: 'Kimia',
-      title: 'Reaksi Reduksi-Oksidasi',
-      description: 'Penjelasan dan latihan soal reaksi redoks...',
+      mapel: 'Matematika Peminatan',
+      title: 'Teorema Sisa Polinomial',
+      description: 'Penjelasan dan latihan soal teorema sisa...',
     ),
   ];
 
-  // Data dummy rekap jurnal (multi-bulan untuk keperluan filter)
+  // Data dummy rekap jurnal
   final List<JurnalModel> _rekapJurnalData = [
     // Mei 2026
     const JurnalModel(
@@ -84,25 +84,25 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
       time: 'Rabu, 06 Mei 2026 | 13:00 - 14:30',
       tanggal: '06/05/2026',
       mapel: 'Matematika Peminatan',
-      title: 'Trigonometri Dasar',
-      description: 'Diskusi kelompok mengenai perbandingan trigonometri',
+      title: 'Polinomial dan Suku Banyak',
+      description: 'Diskusi kelompok mengenai konsep suku banyak',
     ),
     const JurnalModel(
       id: 'r4',
       className: 'XII IPA 1',
       time: 'Kamis, 07 Mei 2026 | 08:00 - 09:30',
       tanggal: '07/05/2026',
-      mapel: 'Fisika',
-      title: 'Quiz Integral',
-      description: 'Evaluasi pemahaman siswa tentang integral',
+      mapel: 'Matematika Wajib',
+      title: 'Turunan Fungsi Aljabar',
+      description: 'Evaluasi pemahaman siswa tentang turunan fungsi',
     ),
     const JurnalModel(
       id: 'r5',
-      className: 'XI IPA 2',
+      className: 'XI IPA 1',
       time: 'Jumat, 08 Mei 2026 | 09:00 - 10:30',
       tanggal: '08/05/2026',
-      mapel: 'Kimia',
-      title: 'Reaksi Reduksi-Oksidasi',
+      mapel: 'Matematika Peminatan',
+      title: 'Teorema Sisa Polinomial',
       description: 'Penjelasan dan latihan soal reaksi redoks',
     ),
     const JurnalModel(
@@ -119,9 +119,9 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
       className: 'XI IPA 1',
       time: 'Rabu, 20 Mei 2026 | 13:00 - 14:30',
       tanggal: '20/05/2026',
-      mapel: 'Biologi',
-      title: 'Sistem Pencernaan',
-      description: 'Penjelasan organ dan proses pencernaan manusia',
+      mapel: 'Matematika Peminatan',
+      title: 'Limit Fungsi Aljabar',
+      description: 'Penjelasan limit fungsi aljabar mendekati nilai tertentu',
     ),
     // April 2026
     const JurnalModel(
@@ -129,27 +129,27 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
       className: 'XII IPA 2',
       time: 'Senin, 06 April 2026 | 10:00 - 11:30',
       tanggal: '06/04/2026',
-      mapel: 'Bahasa Indonesia',
-      title: 'Menulis Teks Eksposisi',
-      description: 'Latihan menyusun paragraf eksposisi yang efektif',
+      mapel: 'Matematika Wajib',
+      title: 'Integral Parsial',
+      description: 'Latihan menyusun integral parsial yang kompleks',
     ),
     const JurnalModel(
       id: 'r9',
       className: 'XI IPA 1',
       time: 'Selasa, 14 April 2026 | 08:00 - 09:30',
       tanggal: '14/04/2026',
-      mapel: 'Bahasa Inggris',
-      title: 'Reading Comprehension',
-      description: 'Latihan membaca dan memahami teks berbahasa Inggris',
+      mapel: 'Matematika Peminatan',
+      title: 'Persamaan Trigonometri',
+      description: 'Latihan penyelesaian persamaan trigonometri dasar',
     ),
     const JurnalModel(
       id: 'r10',
       className: 'XII IPA 1',
       time: 'Kamis, 23 April 2026 | 07:00 - 08:30',
       tanggal: '23/04/2026',
-      mapel: 'Fisika',
-      title: 'Hukum Newton',
-      description: 'Pembahasan hukum Newton I, II, dan III beserta aplikasinya',
+      mapel: 'Matematika Wajib',
+      title: 'Limit Fungsi Trigonometri',
+      description: 'Pembahasan limit fungsi trigonometri beserta aplikasinya',
     ),
     // Juni 2026
     const JurnalModel(
@@ -163,12 +163,12 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
     ),
     const JurnalModel(
       id: 'r12',
-      className: 'XI IPA 2',
+      className: 'XI IPA 1',
       time: 'Rabu, 10 Juni 2026 | 09:00 - 10:30',
       tanggal: '10/06/2026',
-      mapel: 'Kimia',
-      title: 'Kesetimbangan Kimia',
-      description: 'Membahas konsep kesetimbangan kimia dan konstanta kesetimbangan',
+      mapel: 'Matematika Peminatan',
+      title: 'Kesetimbangan Polinomial',
+      description: 'Membahas konsep pemfaktoran suku banyak secara menyeluruh',
     ),
   ];
 
@@ -191,11 +191,9 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
     if (filterBulan != null) {
       results = results.where((j) {
         try {
-          // tanggal format: 'dd/MM/yyyy'
           final parts = j.tanggal.split('/');
           if (parts.length < 3) return false;
           final bln = int.parse(parts[1]);
-          final thn = int.parse(parts[2]);
           return bln == filterBulan;
         } catch (_) {
           return false;
@@ -209,6 +207,5 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
   @override
   Future<void> simpanJurnal(JurnalModel jurnal) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    // Simulasi simpan data
   }
 }

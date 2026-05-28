@@ -8,15 +8,22 @@ import '../widgets/input_judul.dart';
 import '../widgets/deskripsi_input.dart';
 import '../widgets/tanggal_picker.dart';
 import '../widgets/lampiran_section.dart';
-import '../widgets/engagement_card.dart';
 import '../../../dashboard_tugas/domain/entities/tugas_entity.dart';
 import '../../data/repositories/tugas_repository_impl.dart';
 import '../../domain/usecases/create_tugas.dart';
+import '../../../dashboard_tugas/data/datasources/dashboard_tugas_local_datasource.dart';
 
 class BuatTugasPage extends StatefulWidget {
+  final String namaKelas;
+  final String namaMapel;
   final TugasEntity? tugasToEdit;
 
-  const BuatTugasPage({super.key, this.tugasToEdit});
+  const BuatTugasPage({
+    super.key,
+    required this.namaKelas,
+    required this.namaMapel,
+    this.tugasToEdit,
+  });
 
   @override
   State<BuatTugasPage> createState() => _BuatTugasPageState();
@@ -24,33 +31,31 @@ class BuatTugasPage extends StatefulWidget {
 
 class _BuatTugasPageState extends State<BuatTugasPage> {
   late final TugasFormController _controller;
+  bool _showErrors = false;
 
   @override
   void initState() {
     super.initState();
     _controller = TugasFormController();
 
+    // Prefill metadata in the background
+    _controller.kelas.value = widget.namaKelas;
+    _controller.mapel.value = widget.namaMapel;
+    _controller.jenisNilai.value = 'Tugas';
+    _controller.siswa.value = 'Semua pelajar';
+
     if (widget.tugasToEdit != null) {
       final edit = widget.tugasToEdit!;
-      _controller.jenisNilai.value = edit.jenisNilai;
-      _controller.mapel.value = edit.mapel;
-      _controller.siswa.value = edit.siswa;
       _controller.judulController.text = edit.title;
       _controller.deskripsiController.text = edit.subtitle;
-      _controller.judulMateriController.text = edit.judulMateri ?? '';
-      if (TugasFormController.kelasList.contains(edit.kelas)) {
-        _controller.kelas.value = edit.kelas;
-      }
+      _controller.selectedMateri.value = edit.judulMateri ?? 'Pilih Materi';
+      _controller.lampiranNames.value = edit.lampiranNames;
     }
 
     _controller.judulController.addListener(() => setState(() {}));
-    _controller.jenisNilai.addListener(() {
-      if (_controller.jenisNilai.value == 'Materi') {
-        _controller.tenggat.value = null;
-        _controller.selectedMateri.value = 'Pilih Materi';
-      }
-      setState(() {});
-    });
+    _controller.deskripsiController.addListener(() => setState(() {}));
+    _controller.selectedMateri.addListener(() => setState(() {}));
+    _controller.tenggat.addListener(() => setState(() {}));
   }
 
   @override
@@ -59,14 +64,36 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     super.dispose();
   }
 
+  List<String> getDropdownMateriOptions() {
+    final list = ['Pilih Materi'];
+    final matching = DashboardTugasLocalDatasourceImpl.getMateriListSync()
+        .where((m) => m.kelas == widget.namaKelas && m.category == widget.namaMapel)
+        .map((m) => m.title)
+        .toList();
+    list.addAll(matching);
+    return list;
+  }
+
   void _onSimpan() {
-    if (!_controller.isValid) {
-      final message = _controller.jenisNilai.value == 'Materi'
-          ? 'Judul materi wajib diisi!'
-          : 'Judul tugas wajib diisi!';
+    final isJudulValid = _controller.judulController.text.trim().isNotEmpty;
+    final isMateriValid = _controller.selectedMateri.value != 'Pilih Materi';
+    final isDeskripsiValid = _controller.deskripsiController.text.trim().isNotEmpty;
+    final isTenggatValid = _controller.tenggat.value != null;
+
+    if (!isJudulValid || !isMateriValid || !isDeskripsiValid || !isTenggatValid) {
+      setState(() {
+        _showErrors = true;
+      });
+
+      final List<String> missingFields = [];
+      if (!isJudulValid) missingFields.add('Judul Tugas');
+      if (!isMateriValid) missingFields.add('Materi Terkait');
+      if (!isDeskripsiValid) missingFields.add('Deskripsi');
+      if (!isTenggatValid) missingFields.add('Tenggat');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text('Gagal menyimpan! Field berikut wajib diisi: ${missingFields.join(", ")}'),
           backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -98,8 +125,6 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isMateri = _controller.jenisNilai.value == 'Materi';
-
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
@@ -115,40 +140,67 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildFilterCard(),
-                    const SizedBox(height: 16),
-
-                    InputJudul(
-                      controller: _controller.judulMateriController,
-                      label: 'Judul Materi',
-                      hintText: 'Materi tentang.....',
-                      isRequired: false,
-                      enabled: isMateri,
-                    ),
-                    const SizedBox(height: 12),
-
                     InputJudul(
                       controller: _controller.judulController,
                       label: 'Judul Tugas',
-                      hintText: 'Judul tugas...',
-                      enabled: !isMateri,
-                      isRequired: !isMateri,
+                      hintText: 'Masukkan judul tugas...',
+                      enabled: true,
+                      isRequired: true,
+                      hasError: _showErrors && _controller.judulController.text.trim().isEmpty,
+                      errorText: '* Judul tugas wajib diisi!',
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
-                    DeskripsiInput(controller: _controller.deskripsiController),
-                    const SizedBox(height: 12),
+                    _buildLabel('Materi Terkait'),
+                    const SizedBox(height: 6),
+                    ValueListenableBuilder<String>(
+                      valueListenable: _controller.selectedMateri,
+                      builder: (context, val, _) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DropdownChip(
+                            value: val,
+                            options: getDropdownMateriOptions(),
+                            onChanged: (v) => _controller.selectedMateri.value = v!,
+                            disabled: false,
+                            hasError: _showErrors && val == 'Pilih Materi',
+                          ),
+                          if (_showErrors && val == 'Pilih Materi') ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              '* Silakan pilih materi terkait!',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.red.shade400,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    _buildLabel('Deskripsi'),
+                    const SizedBox(height: 6),
+                    DeskripsiInput(
+                      controller: _controller.deskripsiController,
+                      hasError: _showErrors && _controller.deskripsiController.text.trim().isEmpty,
+                      errorText: '* Deskripsi wajib diisi!',
+                    ),
+                    const SizedBox(height: 16),
 
                     TanggalPicker(
                       tenggatNotifier: _controller.tenggat,
-                      enabled: !isMateri,
+                      enabled: true,
+                      hasError: _showErrors && _controller.tenggat.value == null,
+                      errorText: '* Tenggat wajib dipilih!',
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
-                    const LampiranSection(),
-                    const SizedBox(height: 12),
-
-                    const EngagementCard(),
+                    LampiranSection(
+                      lampiranNamesNotifier: _controller.lampiranNames,
+                    ),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -160,149 +212,13 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     );
   }
 
-  Widget _buildFilterCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderLight),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'filter',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Baris 1: Kelas (full width)
-          _buildLabel('Kelas'),
-          const SizedBox(height: 4),
-          ValueListenableBuilder<String>(
-            valueListenable: _controller.kelas,
-            builder: (context, val, _) => DropdownChip(
-              value: val,
-              options: TugasFormController.kelasList,
-              onChanged: (v) => _controller.kelas.value = v!,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Baris 2: Jenis | Mata Pelajaran
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLabel('Jenis'),
-                    const SizedBox(height: 4),
-                    ValueListenableBuilder<String>(
-                      valueListenable: _controller.jenisNilai,
-                      builder: (context, val, _) => DropdownChip(
-                        value: val,
-                        options: TugasFormController.jenisNilaiList,
-                        onChanged: (v) => _controller.jenisNilai.value = v!,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLabel('Mata Pelajaran'),
-                    const SizedBox(height: 4),
-                    ValueListenableBuilder<String>(
-                      valueListenable: _controller.mapel,
-                      builder: (context, val, _) => DropdownChip(
-                        value: val,
-                        options: TugasFormController.mapelList,
-                        onChanged: (v) => _controller.mapel.value = v!,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Baris 3: Ditugaskan ke | Materi Terkait
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLabel('Ditugaskan ke'),
-                    const SizedBox(height: 4),
-                    ValueListenableBuilder<String>(
-                      valueListenable: _controller.siswa,
-                      builder: (context, val, _) => DropdownChip(
-                        value: val,
-                        options: TugasFormController.siswaList,
-                        onChanged: (v) => _controller.siswa.value = v!,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ValueListenableBuilder<String>(
-                  valueListenable: _controller.jenisNilai,
-                  builder: (context, jenisVal, _) {
-                    final isDisabled = jenisVal == 'Materi';
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLabel('Materi Terkait', disabled: isDisabled),
-                        const SizedBox(height: 4),
-                        ValueListenableBuilder<String>(
-                          valueListenable: _controller.selectedMateri,
-                          builder: (context, val, _) => DropdownChip(
-                            value: val,
-                            options: TugasFormController.materiList,
-                            onChanged: (v) =>
-                                _controller.selectedMateri.value = v!,
-                            disabled: isDisabled, // pakai parameter baru di DropdownChip
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLabel(String text, {bool disabled = false}) {
+  Widget _buildLabel(String text) {
     return Text(
       text,
       style: GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: disabled ? AppColors.disabledGrey : AppColors.textSecondary,
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
       ),
     );
   }

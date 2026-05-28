@@ -126,7 +126,7 @@ class _JadwalPelajaranPageContent extends StatelessWidget {
       width: totalWidth,
       child: Column(
         children: [
-          // ── HEADER BARIS 1
+          // HEADER BARIS 1
           SizedBox(
             height: _headerH1,
             child: Row(
@@ -137,7 +137,7 @@ class _JadwalPelajaranPageContent extends StatelessWidget {
               ],
             ),
           ),
-          // ── HEADER BARIS 2
+          // HEADER BARIS 2
           SizedBox(
             height: _headerH2,
             child: Row(
@@ -150,7 +150,8 @@ class _JadwalPelajaranPageContent extends StatelessWidget {
               ],
             ),
           ),
-          // ── DATA ROWS
+          // DATA ROWS
+
           ...slots.asMap().entries.map((entry) {
             final i = entry.key;
             final slot = entry.value;

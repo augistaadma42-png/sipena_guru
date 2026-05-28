@@ -124,101 +124,13 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
 
           final isLoading = state is PasswordSaving;
 
-          // Ambil profil dari berbagai state
-          final profile = switch (state) {
-            ProfileLoaded s => s.profile,
-            PasswordSaving s => s.profile,
-            PasswordChanged s => s.profile,
-            PengaturanError s => s.profile,
-            _ => null,
-          };
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Kartu Profil Guru
-                if (profile != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF1B3C73), Color(0xFF2d5299)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF1B3C73).withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 32,
-                          backgroundColor: Colors.white.withValues(alpha: 0.2),
-                          child: Text(
-                            profile.nama.isNotEmpty
-                                ? profile.nama[0].toUpperCase()
-                                : 'G',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                profile.nama,
-                                style: AppTextStyles.sectionTitle.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                profile.jabatan,
-                                style: AppTextStyles.cardSubtitle.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.8),
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                profile.mapel,
-                                style: AppTextStyles.cardSubtitle.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.7),
-                                  fontSize: 11,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'NIP: ${profile.nip}',
-                                style: AppTextStyles.labelStyle.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.7),
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-
-                // ── Judul Section Ubah Password
+                // Judul Section Ubah Password
                 Text('Ubah Kata Sandi',
                     style:
                         AppTextStyles.sectionTitle.copyWith(fontSize: 22)),
@@ -230,7 +142,7 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
                 ),
                 const SizedBox(height: 24),
 
-                // ── Info hubungi admin
+                // Info hubungi admin
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -257,7 +169,7 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
                 ),
                 const SizedBox(height: 24),
 
-                // ── Form
+                // Form
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -325,7 +237,7 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
                 ),
                 const SizedBox(height: 24),
 
-                // ── Tombol Simpan
+                // Tombol Simpan
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(

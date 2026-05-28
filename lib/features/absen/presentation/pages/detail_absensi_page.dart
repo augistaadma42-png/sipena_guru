@@ -29,15 +29,36 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
   int _resetCount = 0;
 
   final List<Map<String, dynamic>> _dummyStudents = [
-    {'initials': 'EF', 'name': 'Esa Farellio', 'nisn': '2021001', 'status': 'Hadir'},
-    {'initials': 'AA', 'name': 'Augista A.Z', 'nisn': '2021002', 'status': 'Izin'},
-    {'initials': 'FS', 'name': 'Feby Shandy I.', 'nisn': '2021003', 'status': 'Sakit'},
-    {'initials': 'GK', 'name': 'Gavin K.H', 'nisn': '2021004', 'status': 'Alpha'},
-    {'initials': 'FA', 'name': 'Fariskha A.F', 'nisn': '2021005', 'status': 'Hadir'},
-    {'initials': 'DA', 'name': 'Devita A.V.P', 'nisn': '2021006', 'status': 'Hadir'},
-    {'initials': 'AF', 'name': 'Anindya F.A', 'nisn': '2021007', 'status': 'Hadir'},
-    {'initials': 'HA', 'name': 'Helmalia A', 'nisn': '2021008', 'status': 'Hadir'},
-    {'initials': 'ER', 'name': 'Eka Rara A.A', 'nisn': '2021009', 'status': 'Hadir'},
+    {'initials': 'AF', 'name': 'Ahmad Fauzan', 'nisn': '0057281', 'status': 'Hadir'},
+    {'initials': 'AA', 'name': 'Ananda Aryani', 'nisn': '0057282', 'status': 'Hadir'},
+    {'initials': 'BA', 'name': 'Bagus Akbar', 'nisn': '0057283', 'status': 'Hadir'},
+    {'initials': 'BP', 'name': 'Bunga Pertiwi', 'nisn': '0057284', 'status': 'Hadir'},
+    {'initials': 'CA', 'name': 'Candra Aditama', 'nisn': '0057285', 'status': 'Hadir'},
+    {'initials': 'DR', 'name': 'Daffa Rizaldi', 'nisn': '0057286', 'status': 'Hadir'},
+    {'initials': 'DL', 'name': 'Dewi Lestari', 'nisn': '0057287', 'status': 'Hadir'},
+    {'initials': 'EP', 'name': 'Eka Putri Sari', 'nisn': '0057288', 'status': 'Hadir'},
+    {'initials': 'FN', 'name': 'Fajar Nugroho', 'nisn': '0057289', 'status': 'Hadir'},
+    {'initials': 'GM', 'name': 'Gita Maharani', 'nisn': '0057290', 'status': 'Hadir'},
+    {'initials': 'HW', 'name': 'Hendra Wijaya', 'nisn': '0057291', 'status': 'Hadir'},
+    {'initials': 'IP', 'name': 'Indah Permata', 'nisn': '0057292', 'status': 'Hadir'},
+    {'initials': 'JS', 'name': 'Joko Susilo', 'nisn': '0057293', 'status': 'Hadir'},
+    {'initials': 'KP', 'name': 'Kartika Putri', 'nisn': '0057294', 'status': 'Hadir'},
+    {'initials': 'LH', 'name': 'Lutfi Hakim', 'nisn': '0057295', 'status': 'Hadir'},
+    {'initials': 'MR', 'name': 'Muhammad Rafli', 'nisn': '0057296', 'status': 'Hadir'},
+    {'initials': 'NS', 'name': 'Nabila Syifa', 'nisn': '0057297', 'status': 'Hadir'},
+    {'initials': 'OR', 'name': 'Olivia Rian', 'nisn': '0057298', 'status': 'Hadir'},
+    {'initials': 'PP', 'name': 'Putra Pratama', 'nisn': '0057299', 'status': 'Hadir'},
+    {'initials': 'QA', 'name': 'Qori Aina', 'nisn': '0057300', 'status': 'Hadir'},
+    {'initials': 'RH', 'name': 'Rian Hidayat', 'nisn': '0057301', 'status': 'Hadir'},
+    {'initials': 'SA', 'name': 'Siti Aminah', 'nisn': '0057302', 'status': 'Hadir'},
+    {'initials': 'TH', 'name': 'Taufik Hidayat', 'nisn': '0057303', 'status': 'Hadir'},
+    {'initials': 'UA', 'name': 'Umi Aminah', 'nisn': '0057304', 'status': 'Hadir'},
+    {'initials': 'VP', 'name': 'Vina Panduwinata', 'nisn': '0057305', 'status': 'Hadir'},
+    {'initials': 'WH', 'name': 'Wahyu Hidayat', 'nisn': '0057306', 'status': 'Hadir'},
+    {'initials': 'XC', 'name': 'Xena Clarissa', 'nisn': '0057307', 'status': 'Hadir'},
+    {'initials': 'YW', 'name': 'Yeni Wahid', 'nisn': '0057308', 'status': 'Hadir'},
+    {'initials': 'ZA', 'name': 'Zulfikar Ali', 'nisn': '0057309', 'status': 'Hadir'},
+    {'initials': 'ZM', 'name': 'Zaki Mubarak', 'nisn': '0057310', 'status': 'Hadir'},
   ];
 
   late List<String> _statuses;
@@ -45,10 +66,36 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
   @override
   void initState() {
     super.initState();
-    _statuses = _dummyStudents.map((s) => s['status'] as String).toList();
+    _statuses = _dummyStudents.map((s) {
+      final name = s['name'] as String;
+      if (widget.className == 'XII IPA 1') {
+        if (name == 'Ananda Aryani') return 'Izin';
+        if (name == 'Bagus Akbar') return 'Sakit';
+      } else if (widget.className == 'XI IPA 1') {
+        if (name == 'Ananda Aryani') return 'Izin';
+        if (name == 'Ahmad Fauzan') return 'Izin';
+        if (name == 'Bagus Akbar') return 'Sakit';
+      }
+      return 'Hadir';
+    }).toList();
   }
 
   void _simpan() {
+    final bool allStudentsHaveStatus = _statuses.isNotEmpty && 
+        _statuses.every((s) => s.isNotEmpty);
+
+    if (!allStudentsHaveStatus) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Gagal menyimpan! Seluruh siswa wajib memiliki status absensi.'),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(widget.isEditMode

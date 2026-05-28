@@ -66,7 +66,11 @@ class _DaftarMateriPageState extends State<DaftarMateriPage> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => BuatTugasPage(tugasToEdit: tugasToEdit),
+        builder: (context) => BuatTugasPage(
+          namaKelas: tugasToEdit.kelas,
+          namaMapel: tugasToEdit.mapel,
+          tugasToEdit: tugasToEdit,
+        ),
       ),
     );
   }

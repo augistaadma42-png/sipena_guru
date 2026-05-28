@@ -6,8 +6,9 @@ class DropdownChip extends StatelessWidget {
   final String value;
   final List<String> options;
   final ValueChanged<String?>? onChanged;
-  // [CHANGE] Tambah parameter disabled untuk support state abu-abu
+
   final bool disabled;
+  final bool hasError;
 
   const DropdownChip({
     super.key,
@@ -15,6 +16,7 @@ class DropdownChip extends StatelessWidget {
     required this.options,
     required this.onChanged,
     this.disabled = false,
+    this.hasError = false,
   });
 
   @override
@@ -29,9 +31,12 @@ class DropdownChip extends StatelessWidget {
             : AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: disabled
-              ? AppColors.disabledGrey.withOpacity(0.35)
-              : AppColors.borderLight,
+          color: hasError
+              ? Colors.red.shade400
+              : disabled
+                  ? AppColors.disabledGrey.withOpacity(0.35)
+                  : AppColors.borderLight,
+          width: hasError ? 1.5 : 1.0,
         ),
       ),
       child: DropdownButtonHideUnderline(

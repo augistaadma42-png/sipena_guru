@@ -156,11 +156,50 @@ class _NotifikasiPageContentState extends State<_NotifikasiPageContent> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        _formatWaktu(notif.waktu),
-                        style: AppTextStyles.labelStyle.copyWith(
-                          color: AppColors.disabledGrey,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _formatWaktu(notif.waktu),
+                            style: AppTextStyles.labelStyle.copyWith(
+                              color: AppColors.disabledGrey,
+                            ),
+                          ),
+                          if (!notif.dibaca)
+                            GestureDetector(
+                              onTap: () => _tandaiDibaca(context, notif.id),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryBlue.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: AppColors.primaryBlue.withOpacity(0.2),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline,
+                                      size: 12,
+                                      color: AppColors.primaryBlue,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Tandai dibaca',
+                                      style: AppTextStyles.labelStyle.copyWith(
+                                        color: AppColors.primaryBlue,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),

@@ -15,6 +15,7 @@ class TugasFormController extends ChangeNotifier {
   final ValueNotifier<String> selectedMateri = ValueNotifier('Pilih Materi');
   final ValueNotifier<DateTime?> tenggat = ValueNotifier(null);
   final ValueNotifier<bool> isLoading = ValueNotifier(false);
+  final ValueNotifier<List<String>> lampiranNames = ValueNotifier([]);
 
   // Options
   static const List<String> kelasList = ['XII IPA 1', 'XII IPA 2', 'XI IPA 1'];
@@ -62,8 +63,8 @@ class TugasFormController extends ChangeNotifier {
       siswa: siswa.value,
       tenggat: tenggat.value,
       createdAt: DateTime.now(),
-      // [CHANGE 4] Simpan materi terkait yang dipilih
       materiTerkait: selectedMateri.value == 'Pilih Materi' ? '' : selectedMateri.value,
+      lampiranNames: lampiranNames.value,
     );
   }
 
@@ -79,6 +80,7 @@ class TugasFormController extends ChangeNotifier {
     selectedMateri.dispose();
     tenggat.dispose();
     isLoading.dispose();
+    lampiranNames.dispose();
     super.dispose();
   }
 }

@@ -80,7 +80,7 @@ class AttendanceCard extends StatelessWidget {
               children: [
                 // JAM
                 Container(
-                  width: 73,
+                  width: 75,
                   padding: const EdgeInsets.symmetric(
                     vertical: 16,
                     horizontal: 5,
@@ -107,7 +107,7 @@ class AttendanceCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: AppTextStyles.labelStyle.copyWith(
                           color: Colors.white,
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                           height: 1.3,
                         ),

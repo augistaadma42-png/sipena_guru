@@ -11,6 +11,7 @@ class Tugas {
   final DateTime createdAt;
   // [CHANGE 4] Field materi terkait dari dropdown filter
   final String materiTerkait;
+  final List<String> lampiranNames;
 
   const Tugas({
     required this.id,
@@ -23,5 +24,6 @@ class Tugas {
     this.tenggat,
     required this.createdAt,
     this.materiTerkait = '',
+    this.lampiranNames = const [],
   });
 }

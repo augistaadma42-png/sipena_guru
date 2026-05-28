@@ -170,7 +170,7 @@ class TugasCard extends StatelessWidget {
                     child: Divider(height: 1, color: AppColors.borderLight),
                   ),
 
-                  // ── Footer: progress siswa | deadline 
+                  // Footer: progress siswa | deadline 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -232,7 +232,7 @@ class TugasCard extends StatelessWidget {
                     ],
                   ),
 
-                  // ── Grading status
+                  // Grading status
                   const SizedBox(height: 6),
                   Row(
                     children: [
@@ -421,7 +421,16 @@ class _PopupMenu extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: (value) {
         if (value == 'edit') {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => BuatTugasPage(tugasToEdit: tugas)));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BuatTugasPage(
+                namaKelas: tugas.kelas,
+                namaMapel: tugas.mapel,
+                tugasToEdit: tugas,
+              ),
+            ),
+          );
         }
       },
       itemBuilder: (_) => [

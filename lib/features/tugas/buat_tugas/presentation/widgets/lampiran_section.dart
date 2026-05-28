@@ -52,7 +52,9 @@ const _contohLampiran = {
 };
 
 class LampiranSection extends StatefulWidget {
-  const LampiranSection({super.key});
+  final ValueNotifier<List<String>>? lampiranNamesNotifier;
+
+  const LampiranSection({super.key, this.lampiranNamesNotifier});
 
   @override
   State<LampiranSection> createState() => _LampiranSectionState();
@@ -60,6 +62,25 @@ class LampiranSection extends StatefulWidget {
 
 class _LampiranSectionState extends State<LampiranSection> {
   final List<_LampiranAdded> _addedItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.lampiranNamesNotifier != null) {
+      for (final name in widget.lampiranNamesNotifier!.value) {
+        final match = _contohLampiran.values.firstWhere(
+          (element) => element.nama == name,
+          orElse: () => _LampiranAdded(
+            icon: Icons.insert_drive_file_outlined,
+            color: AppColors.primaryBlue,
+            nama: name,
+            tipe: 'File Upload',
+          ),
+        );
+        _addedItems.add(match);
+      }
+    }
+  }
 
   void _tambahLampiran(String label) {
     final contoh = _contohLampiran[label];
@@ -79,11 +100,23 @@ class _LampiranSectionState extends State<LampiranSection> {
       return;
     }
 
-    setState(() => _addedItems.add(contoh));
+    setState(() {
+      _addedItems.add(contoh);
+    });
+    _updateNotifier();
   }
 
   void _hapusLampiran(_LampiranAdded item) {
-    setState(() => _addedItems.remove(item));
+    setState(() {
+      _addedItems.remove(item);
+    });
+    _updateNotifier();
+  }
+
+  void _updateNotifier() {
+    if (widget.lampiranNamesNotifier != null) {
+      widget.lampiranNamesNotifier!.value = _addedItems.map((e) => e.nama).toList();
+    }
   }
 
   @override

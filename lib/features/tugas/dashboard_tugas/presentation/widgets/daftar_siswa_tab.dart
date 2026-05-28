@@ -39,7 +39,7 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Stats row ──────────────────────────────────────────
+            // Stats row
             Row(
               children: [
                 _StatChip(
@@ -67,7 +67,7 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
 
             const SizedBox(height: 14),
 
-            // ── Search + cetak ──────────────────────────────────────
+            // Search + cetak
             Row(
               children: [
                 Expanded(
@@ -129,7 +129,7 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
 
             const SizedBox(height: 14),
 
-            // ── Tabel ───────────────────────────────────────────────
+            // Tabel
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -303,7 +303,7 @@ class _DaftarSiswaTabState extends State<DaftarSiswaTab> {
   }
 }
 
-// ── Sub-widgets ─────────────────────────────────────────────────────────────
+// Sub-widgets
 
 class _StatChip extends StatelessWidget {
   final String label;

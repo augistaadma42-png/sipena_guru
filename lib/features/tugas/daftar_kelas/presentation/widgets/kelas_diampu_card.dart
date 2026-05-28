@@ -24,7 +24,10 @@ class KelasDiampuCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DashboardTugasPage(namaKelas: kelasDiampu.namaKelas),
+              builder: (context) => DashboardTugasPage(
+                namaKelas: kelasDiampu.namaKelas,
+                namaMapel: kelasDiampu.namaMapel,
+              ),
             ),
           );
         },

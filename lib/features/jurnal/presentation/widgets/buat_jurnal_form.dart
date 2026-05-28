@@ -26,6 +26,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
   String? _selectedKelas;
   String? _selectedMapel;
   DateTime _selectedTanggal = DateTime.now();
+  bool _showErrors = false;
 
   // Daftar kelas yang tersedia
   static const List<String> _kelasList = [
@@ -41,17 +42,18 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
   static const List<String> _mapelList = [
     'Matematika Wajib',
     'Matematika Peminatan',
-    'Fisika',
-    'Kimia',
-    'Biologi',
-    'Bahasa Indonesia',
-    'Bahasa Inggris',
   ];
 
   @override
   void initState() {
     super.initState();
     _initData();
+    _materiController.addListener(() {
+      if (_showErrors) setState(() {});
+    });
+    _quillController.changes.listen((_) {
+      if (_showErrors) setState(() {});
+    });
   }
 
   @override
@@ -104,6 +106,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
       _selectedKelas = null;
       _selectedMapel = null;
       _selectedTanggal = DateTime.now();
+      _showErrors = false;
     });
 
     _materiController.clear();
@@ -180,43 +183,77 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
           ),
           const SizedBox(height: 20),
 
-          // ── Tanggal (editable, date picker) ──────────────────────────
+          // Tanggal 
           _buildLabel('Tanggal'),
           const SizedBox(height: 8),
           _buildDatePickerField(),
           const SizedBox(height: 16),
 
-          // ── Kelas ─────────────────────────────────────────────────────
+          // Kelas 
           _buildLabel('Kelas'),
           const SizedBox(height: 8),
-          _buildDropdown<String>(
-            value: _selectedKelas,
-            items: _kelasList,
-            hint: 'Pilih Kelas',
-            onChanged: (value) {
-              setState(() {
-                _selectedKelas = value;
-              });
-            },
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDropdown<String>(
+                value: _selectedKelas,
+                items: _kelasList,
+                hint: 'Pilih Kelas',
+                hasError: _showErrors && _selectedKelas == null,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedKelas = value;
+                  });
+                },
+              ),
+              if (_showErrors && _selectedKelas == null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  '* Kelas wajib dipilih!',
+                  style: AppTextStyles.cardSubtitle.copyWith(
+                    fontSize: 11,
+                    color: Colors.red.shade400,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: 16),
 
-          // ── Mata Pelajaran (NEW) ────────────────────────────────────
+          // Mata Pelajaran 
           _buildLabel('Mata Pelajaran'),
           const SizedBox(height: 8),
-          _buildDropdown<String>(
-            value: _selectedMapel,
-            items: _mapelList,
-            hint: 'Pilih Mata Pelajaran',
-            onChanged: (value) {
-              setState(() {
-                _selectedMapel = value;
-              });
-            },
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDropdown<String>(
+                value: _selectedMapel,
+                items: _mapelList,
+                hint: 'Pilih Mapel',
+                hasError: _showErrors && _selectedMapel == null,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedMapel = value;
+                  });
+                },
+              ),
+              if (_showErrors && _selectedMapel == null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  '* Mapel wajib dipilih!',
+                  style: AppTextStyles.cardSubtitle.copyWith(
+                    fontSize: 11,
+                    color: Colors.red.shade400,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: 16),
 
-          // ── Materi ────────────────────────────────────────────────────
+          // Materi 
           _buildLabel('Materi Yang Diajarkan'),
           const SizedBox(height: 8),
           _buildTextField(
@@ -225,13 +262,13 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
           ),
           const SizedBox(height: 16),
 
-          // ── Catatan Guru ──────────────────────────────────────────────
+          // Catatan Guru 
           _buildLabel('Catatan Guru'),
           const SizedBox(height: 8),
           _buildRichTextEditor(),
           const SizedBox(height: 24),
 
-          // ── Tombol Aksi ───────────────────────────────────────────────
+          // Tombol Aksi 
           Row(
             children: [
               Expanded(
@@ -302,6 +339,35 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
   }
 
   void _simpanJurnal() {
+    final isKelasValid = _selectedKelas != null;
+    final isMapelValid = _selectedMapel != null;
+    final isMateriValid = _materiController.text.trim().isNotEmpty;
+    final isCatatanValid = _quillController.document.toPlainText().trim().isNotEmpty;
+
+    if (!isKelasValid || !isMapelValid || !isMateriValid || !isCatatanValid) {
+      setState(() {
+        _showErrors = true;
+      });
+
+      final List<String> missingFields = [];
+      if (!isKelasValid) missingFields.add('Kelas');
+      if (!isMapelValid) missingFields.add('Mata Pelajaran');
+      if (!isMateriValid) missingFields.add('Materi');
+      if (!isCatatanValid) missingFields.add('Catatan Guru');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menyimpan! Field berikut wajib diisi: ${missingFields.join(", ")}'),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -328,7 +394,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
     return Text(text, style: AppTextStyles.cardTitle.copyWith(fontSize: 12));
   }
 
-  // ── Date Picker Field ──────────────────────────────────────────────
+  // Date Picker Field 
   Widget _buildDatePickerField() {
     return InkWell(
       onTap: _pickTanggal,
@@ -367,11 +433,15 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
     String? hintText,
     bool isReadOnly = false,
   }) {
+    final bool hasError = _showErrors && (controller?.text.trim().isEmpty ?? false);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(
+          color: hasError ? Colors.red.shade400 : AppColors.borderLight,
+          width: hasError ? 1.5 : 1.0,
+        ),
       ),
       child: TextFormField(
         controller: controller,
@@ -397,12 +467,16 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
     required List<T> items,
     required String hint,
     required ValueChanged<T?> onChanged,
+    bool hasError = false,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(
+          color: hasError ? Colors.red.shade400 : AppColors.borderLight,
+          width: hasError ? 1.5 : 1.0,
+        ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButtonHideUnderline(
@@ -427,10 +501,14 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
   }
 
   Widget _buildRichTextEditor() {
+    final bool hasError = _showErrors && _quillController.document.toPlainText().trim().isEmpty;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(
+          color: hasError ? Colors.red.shade400 : AppColors.borderLight,
+          width: hasError ? 1.5 : 1.0,
+        ),
       ),
       child: Column(
         children: [

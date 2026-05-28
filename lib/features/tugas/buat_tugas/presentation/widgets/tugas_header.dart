@@ -6,12 +6,14 @@ class TugasHeader extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback onSimpan;
   final bool isLoading;
+  final String title;
 
   const TugasHeader({
     super.key,
     required this.onClose,
     required this.onSimpan,
     this.isLoading = false,
+    this.title = 'Buat tugas',
   });
 
   @override
@@ -41,7 +43,7 @@ class TugasHeader extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            'Buat tugas',
+            title,
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.w600,

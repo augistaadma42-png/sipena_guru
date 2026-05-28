@@ -4,7 +4,14 @@ import '../../../../../../core/constants/text_styles.dart';
 import '../../../buat_tugas/presentation/pages/buat_tugas_page.dart';
 
 class EmptyTugasWidget extends StatelessWidget {
-  const EmptyTugasWidget({super.key});
+  final String namaKelas;
+  final String namaMapel;
+
+  const EmptyTugasWidget({
+    super.key,
+    required this.namaKelas,
+    required this.namaMapel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +49,12 @@ class EmptyTugasWidget extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => BuatTugasPage()),
+                  MaterialPageRoute(
+                    builder: (context) => BuatTugasPage(
+                      namaKelas: namaKelas,
+                      namaMapel: namaMapel,
+                    ),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(

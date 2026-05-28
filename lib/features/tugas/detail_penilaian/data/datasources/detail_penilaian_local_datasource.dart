@@ -20,7 +20,7 @@ class DetailPenilaianLocalDatasourceImpl
 
   //  Dummy data per kombinasi siswaId_tugasId
   static final List<DetailPenilaianModel> _dummyData = [
-    // ── Tugas 1: Latihan Integral ──────────────────────────────────
+    // Tugas 1: Latihan Integral
     const DetailPenilaianModel(
       id: 'siswa_s1_tugas_1',
       studentName: 'Ahmad Fauzan',
@@ -99,7 +99,7 @@ class DetailPenilaianLocalDatasourceImpl
       feedback: 'Terlambat mengumpulkan, perlu lebih disiplin.',
       isSubmitted: true,
     ),
-    // ── Tugas 2: Quiz Integral Substitusi ─────────────────────────
+    // Tugas 2: Quiz Integral Substitusi
     const DetailPenilaianModel(
       id: 'siswa_s1_tugas_2',
       studentName: 'Daffa Rizaldi',
