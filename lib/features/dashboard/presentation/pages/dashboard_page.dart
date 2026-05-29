@@ -216,8 +216,7 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
 
                             // LIST
                             SizedBox(
-                              height: 350,
-
+                              height: (155 * 3) + (16 * 2) + 40,
                               child: RawScrollbar(
                                 controller: _attendanceScrollController,
 
