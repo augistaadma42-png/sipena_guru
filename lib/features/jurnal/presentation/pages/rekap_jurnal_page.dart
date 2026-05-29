@@ -136,7 +136,7 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Baris pertama: Filter Kelas + Filter Bulan ─────────────
+          // Baris pertama: Filter Kelas + Filter Bulan
           Row(
             children: [
               // Dropdown Kelas
@@ -184,7 +184,7 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
           ),
           const SizedBox(height: 16),
 
-          // ── Baris kedua: Tombol Reset + Terapkan ──────────────────
+          // Baris kedua: Tombol Reset + Terapkan
           Row(
             children: [
               Expanded(
@@ -263,7 +263,7 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
             ],
           ),
 
-          // ── Chip indikator filter aktif ────────────────────────────
+          // Chip indikator filter aktif
           if (_selectedFilterBulan != null ||
               _selectedFilterKelas != 'Semua Kelas') ...[
             const SizedBox(height: 12),

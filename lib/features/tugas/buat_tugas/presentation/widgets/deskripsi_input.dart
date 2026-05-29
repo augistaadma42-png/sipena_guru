@@ -5,8 +5,15 @@ import 'rich_text_toolbar.dart';
 
 class DeskripsiInput extends StatefulWidget {
   final TextEditingController controller;
+  final bool hasError;
+  final String? errorText;
 
-  const DeskripsiInput({super.key, required this.controller});
+  const DeskripsiInput({
+    super.key,
+    required this.controller,
+    this.hasError = false,
+    this.errorText,
+  });
 
   @override
   State<DeskripsiInput> createState() => _DeskripsiInputState();
@@ -72,8 +79,12 @@ class _DeskripsiInputState extends State<DeskripsiInput> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _isFocused ? AppColors.primaryBlue : AppColors.borderLight,
-          width: _isFocused ? 1.5 : 1.0,
+          color: widget.hasError
+              ? Colors.red.shade400
+              : _isFocused
+                  ? AppColors.primaryBlue
+                  : AppColors.borderLight,
+          width: (widget.hasError || _isFocused) ? 1.5 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
@@ -141,6 +152,19 @@ class _DeskripsiInputState extends State<DeskripsiInput> {
               return _MarkdownPreviewBar(rawText: value.text);
             },
           ),
+          if (widget.hasError && widget.errorText != null) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 12, bottom: 12, top: 4),
+              child: Text(
+                widget.errorText!,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.red.shade400,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -53,7 +53,7 @@ class MateriCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              // ── Ikon mapel
+              // Ikon mapel
               Container(
                 width: 48,
                 height: 48,
@@ -65,7 +65,7 @@ class MateriCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
 
-              // ── Info
+              // Info
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

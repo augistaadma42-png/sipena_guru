@@ -15,14 +15,14 @@ import '../widgets/nilai_input_card.dart';
 import '../widgets/simpan_penilaian_button.dart';
 import '../widgets/siswa_profile_card.dart';
 
-// ── Navigation Arguments 
+// Navigation Arguments 
 class DetailPenilaianArgs {
   final String siswaId;
   final String tugasId;
   const DetailPenilaianArgs({required this.siswaId, required this.tugasId});
 }
 
-// ── Entry Point Page ─────────────────────────────────────────────
+// Entry Point Page
 class DetailPenilaianSiswaPage extends StatelessWidget {
   final DetailPenilaianArgs args;
   const DetailPenilaianSiswaPage({super.key, required this.args});
@@ -48,7 +48,7 @@ class DetailPenilaianSiswaPage extends StatelessWidget {
   }
 }
 
-// ── View dengan BlocConsumer 
+// View dengan BlocConsumer
 class _DetailPenilaianView extends StatelessWidget {
   const _DetailPenilaianView();
 
@@ -120,7 +120,7 @@ class _DetailPenilaianView extends StatelessWidget {
   }
 }
 
-// ── Body — susunan semua card 
+// Body — susunan semua card
 class _DetailPenilaianBody extends StatelessWidget {
   final DetailPenilaianLoaded loaded;
   final bool isSubmitting;

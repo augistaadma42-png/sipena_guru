@@ -30,7 +30,7 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
     {'id': 'XI IPA 1',  'name': 'XI IPA 1 — Matematika Peminatan', 'subject': 'Matematika Peminatan'},
   ];
 
-  /// Mapel aktif: dari jadwal (prefilledSubject) atau dari dropdown pilihan kelas.
+  /// Mapel aktif: dari jadwal (prefilledSubject) or dari dropdown pilihan kelas.
   String get _activeSubject {
     if (widget.prefilledSubject != null) return widget.prefilledSubject!;
     final match = _kelasList.firstWhere(
@@ -38,6 +38,20 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
       orElse: () => {},
     );
     return match['subject'] ?? '';
+  }
+
+  String get _selectedJamPelajaran {
+    if (_selectedKelas == 'XII IPA 1') return '07:00 - 08:40';
+    if (_selectedKelas == 'XII IPA 2') return '10:00 - 11:40';
+    if (_selectedKelas == 'XI IPA 1') return '07:00 - 09:00';
+    return '07:00 - 08:30';
+  }
+
+  String get _selectedJamKe {
+    if (_selectedKelas == 'XII IPA 1') return 'Jam Ke 1-2';
+    if (_selectedKelas == 'XII IPA 2') return 'Jam Ke 5-6';
+    if (_selectedKelas == 'XI IPA 1') return 'Jam Ke 1-3';
+    return 'Jam Ke 1-2';
   }
 
   // Track per-student status by ID
@@ -86,8 +100,24 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
     if (_selectedKelas == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Pilih kelas terlebih dahulu'),
-          backgroundColor: Colors.redAccent,
+          content: const Text('Gagal menyimpan! Silakan pilih kelas terlebih dahulu.'),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+      return;
+    }
+
+    final bool allStudentsHaveStatus = _currentStudents.isNotEmpty && 
+        _currentStudents.every((s) => _studentStatusMap[s.id] != null && _studentStatusMap[s.id]!.isNotEmpty);
+
+    if (!allStudentsHaveStatus) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Gagal menyimpan! Seluruh siswa wajib memiliki status absensi.'),
+          backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -325,6 +355,53 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
 
               // Tabel Siswa (muncul setelah kelas dipilih)
               if (_selectedKelas != null) ...[
+                Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderLight),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryOrange.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.access_time_outlined,
+                          color: AppColors.secondaryOrange,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Jam Pelajaran',
+                              style: AppTextStyles.cardSubtitle.copyWith(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textSecondary),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '$_selectedJamPelajaran ($_selectedJamKe)',
+                              style: AppTextStyles.cardTitle.copyWith(
+                                  fontSize: 14,
+                                  color: AppColors.primaryBlue),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 BlocConsumer<AbsenBloc, AbsenState>(
                   listener: (context, state) {
                     if (state is StudentAttendanceLoaded) {

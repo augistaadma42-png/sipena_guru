@@ -34,27 +34,11 @@ class NotifikasiLocalDatasourceImpl implements NotifikasiLocalDatasource {
       dibaca: false,
     ),
     NotifikasiModel(
-      id: '004',
-      judul: 'Pengajuan tidak masuk',
-      isi: 'Terdapat pengajuan tidak masuk dari Ahmad Fauzan (XII IPA 1) — Sakit.',
-      jenis: JenisNotif.pengajuan,
-      waktu: DateTime.now().subtract(const Duration(hours: 5)),
-      dibaca: false,
-    ),
-    NotifikasiModel(
       id: '005',
       judul: 'Absensi belum diisi',
       isi: 'Absensi kelas XII IPA 2 belum diisi hari ini.',
       jenis: JenisNotif.absensi,
       waktu: DateTime.now().subtract(const Duration(days: 1)),
-      dibaca: true,
-    ),
-    NotifikasiModel(
-      id: '006',
-      judul: 'Pengajuan tidak masuk',
-      isi: 'Terdapat pengajuan tidak masuk dari Ananda Aryani (XII IPA 1) — Izin.',
-      jenis: JenisNotif.pengajuan,
-      waktu: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
       dibaca: true,
     ),
     NotifikasiModel(

@@ -61,7 +61,7 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
       TaskSummaryModel(
         title: 'Latihan Integral',
         subtitle: 'XII IPA 1',
-        countText: '25/30 Siswa',
+        countText: '24/30 Siswa',
         dateText: '12 Mei 2026',
         kelas: 'XII IPA 1',
         mataPelajaran: 'Matematika Wajib',
@@ -69,7 +69,7 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
       TaskSummaryModel(
         title: 'Quiz Substitusi',
         subtitle: 'XII IPA 2',
-        countText: '12/30 Siswa',
+        countText: '30/30 Siswa',
         dateText: '15 Mei 2026',
         kelas: 'XII IPA 2',
         mataPelajaran: 'Matematika Wajib',
@@ -82,7 +82,7 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
     await Future.delayed(const Duration(milliseconds: 500));
     return const [
       AttendanceOverviewModel(
-        time: '10:40-12:00',
+        time: '07:00 - 08:40',
         className: 'XII IPA 1',
         room: 'R.12',
         subject: 'Matematika Wajib',
@@ -92,7 +92,7 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
         totalCount: 30,
       ),
       AttendanceOverviewModel(
-        time: '09:40-10:00',
+        time: '10:00 - 11:40',
         className: 'XII IPA 2',
         room: 'R.13',
         subject: 'Matematika Wajib',
@@ -100,9 +100,9 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
         statusText: 'Menunggu',
       ),
       AttendanceOverviewModel(
-        time: '12:00-13:40',
+        time: '07:00 - 09:00',
         className: 'XI IPA 1',
-        room: 'R.11',
+        room: 'R.14',
         subject: 'Matematika Peminatan',
         status: AttendanceOverviewStatus.locked,
         statusText: 'Belum Waktunya',

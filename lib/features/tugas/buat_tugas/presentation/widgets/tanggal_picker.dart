@@ -5,11 +5,15 @@ import '../../../../../../core/constants/colors.dart';
 class TanggalPicker extends StatelessWidget {
   final ValueNotifier<DateTime?> tenggatNotifier;
   final bool enabled;
+  final bool hasError;
+  final String? errorText;
 
   const TanggalPicker({
     super.key,
     required this.tenggatNotifier,
     this.enabled = true,
+    this.hasError = false,
+    this.errorText,
   });
 
   Future<void> _pickDateTime(BuildContext context) async {
@@ -86,7 +90,12 @@ class TanggalPicker extends StatelessWidget {
         color: enabled ? Colors.white : AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: enabled ? AppColors.borderLight : AppColors.disabledGrey,
+          color: hasError
+              ? Colors.red.shade400
+              : enabled
+                  ? AppColors.borderLight
+                  : AppColors.disabledGrey,
+          width: hasError ? 1.5 : 1.0,
         ),
         boxShadow: enabled
             ? [
@@ -147,6 +156,17 @@ class TanggalPicker extends StatelessWidget {
               );
             },
           ),
+          if (hasError && errorText != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              errorText!,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.red.shade400,
+              ),
+            ),
+          ],
         ],
       ),
     );

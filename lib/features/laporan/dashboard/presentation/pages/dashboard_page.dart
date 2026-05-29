@@ -20,7 +20,7 @@ import 'package:fitur_guru/features/laporan/absensi/presentation/pages/laporan_a
 
 import 'package:fitur_guru/features/laporan/laporan_tugas/presentation/pages/laporan_tugas_page.dart';
 
-/// DashboardPage - Tampilan PERSIS seperti gambar yang diberikan
+/// DashboardPage - 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -47,7 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               // Title: Report Hub
               Text(
-                'Laporan Tugas',
+                'Laporan',
                 style: GoogleFonts.inter(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
