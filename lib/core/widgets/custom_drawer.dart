@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fitur_guru/features/absen/presentation/bloc/absen_draft_cache.dart';
 import '../../features/jadwal/presentation/pages/jadwal_pelajaran_page.dart';
 import '../../features/pengaturan/presentation/pages/pengaturan_page.dart';
 import '../../core/constants/colors.dart';
@@ -102,6 +103,7 @@ class CustomDrawer extends StatelessWidget {
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context); // Close dialog
+                              AbsenDraftCache.reset(); // Clear draft cache
                               // Navigate to a login screen or clear stack
                               // Since there is no login screen yet, we just show a snackbar
                               ScaffoldMessenger.of(context).showSnackBar(

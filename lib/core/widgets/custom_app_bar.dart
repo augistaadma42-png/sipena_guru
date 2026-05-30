@@ -6,6 +6,7 @@ import '../../features/notifikasi/presentation/pages/notifikasi_page.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showBackButton;
+  final VoidCallback? onBackTap;
   final int notifCount;
   final PreferredSizeWidget? bottom;
 
@@ -13,6 +14,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     Key? key,
     required this.title,
     this.showBackButton = false,
+    this.onBackTap,
     this.notifCount = 3, // dummy, nanti dari state management
     this.bottom,
   }) : super(key: key);
@@ -28,7 +30,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: showBackButton
           ? IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.primaryBlue),
-              onPressed: () => Navigator.pop(context),
+              onPressed: onBackTap ?? () => Navigator.pop(context),
             )
           : Builder(
               builder: (context) => IconButton(

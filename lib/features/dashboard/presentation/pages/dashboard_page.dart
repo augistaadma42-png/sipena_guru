@@ -7,7 +7,6 @@ import '../../../../core/widgets/custom_drawer.dart';
 import '../widgets/attendance_card.dart';
 import '../widgets/task_summary_card.dart';
 import '../widgets/aktivitas_terbaru_widget.dart';
-import '../../../tugas/dashboard_tugas/presentation/pages/dashboard_tugas_page.dart';
 import '../../../tugas/daftar_kelas/presentation/pages/daftar_kelas_page.dart'; // [CHANGE 3]
 import '../../../laporan/laporan_tugas/presentation/pages/laporan_tugas_page.dart'; // [CHANGE 3]
 import 'aktivitas_semua_page.dart';
@@ -20,29 +19,18 @@ import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_event.dart';
 import '../bloc/dashboard_state.dart';
 import '../../domain/entities/attendance_overview_entity.dart';
-import '../../data/datasources/dashboard_local_datasource.dart';
-import '../../data/repositories/dashboard_repository_impl.dart';
-import '../../domain/usecases/get_aktivitas_terbaru_usecase.dart';
-import '../../domain/usecases/get_task_summary_usecase.dart';
-import '../../domain/usecases/get_attendance_overview_usecase.dart';
+
+import '../../../jurnal/presentation/bloc/jurnal_bloc.dart';
+import '../../../jurnal/presentation/bloc/jurnal_event.dart';
+import '../../../absen/presentation/bloc/absen_bloc.dart';
+import '../../../absen/presentation/bloc/absen_event.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final ds = DashboardLocalDatasourceImpl();
-        final repo = DashboardRepositoryImpl(localDatasource: ds);
-        return DashboardBloc(
-          getAktivitasTerbaruUsecase: GetAktivitasTerbaruUsecase(repo),
-          getTaskSummaryUsecase: GetTaskSummaryUsecase(repo),
-          getAttendanceOverviewUsecase: GetAttendanceOverviewUsecase(repo),
-        )..add(LoadDashboardDataEvent());
-      },
-      child: const _DashboardPageContent(),
-    );
+    return const _DashboardPageContent();
   }
 }
 
@@ -133,6 +121,9 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
 
               onRefresh: () async {
                 context.read<DashboardBloc>().add(LoadDashboardDataEvent());
+                context.read<JurnalBloc>().add(LoadJurnalTerbaruEvent());
+                context.read<AbsenBloc>().add(LoadRiwayatAbsensiEvent(date: DateTime.now()));
+                await Future.delayed(const Duration(milliseconds: 500));
               },
 
               child: SingleChildScrollView(

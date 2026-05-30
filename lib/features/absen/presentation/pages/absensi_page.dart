@@ -20,21 +20,7 @@ class AbsensiPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final ds = AbsenLocalDatasourceImpl();
-        final repo = AbsenRepositoryImpl(localDatasource: ds);
-        return AbsenBloc(
-          getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
-          getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
-          getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
-          updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(
-            repo,
-          ),
-        );
-      },
-      child: const _AbsensiPageContent(),
-    );
+    return const _AbsensiPageContent();
   }
 }
 
@@ -48,16 +34,37 @@ class _AbsensiPageContent extends StatefulWidget {
 class _AbsensiPageContentState extends State<_AbsensiPageContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late AbsenBloc _inputAbsenBloc;
+  late AbsenBloc _riwayatAbsenBloc;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    final ds = AbsenLocalDatasourceImpl();
+    final repo = AbsenRepositoryImpl(localDatasource: ds);
+
+    _inputAbsenBloc = AbsenBloc(
+      getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
+      getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
+      getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
+      updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(repo),
+    );
+
+    _riwayatAbsenBloc = AbsenBloc(
+      getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
+      getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
+      getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
+      updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(repo),
+    );
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _inputAbsenBloc.close();
+    _riwayatAbsenBloc.close();
     super.dispose();
   }
 
@@ -90,7 +97,16 @@ class _AbsensiPageContentState extends State<_AbsensiPageContent>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [InputAbsensiTab(), RiwayatAbsensiTab()],
+              children: [
+                BlocProvider<AbsenBloc>.value(
+                  value: _inputAbsenBloc,
+                  child: const InputAbsensiTab(),
+                ),
+                BlocProvider<AbsenBloc>.value(
+                  value: _riwayatAbsenBloc,
+                  child: const RiwayatAbsensiTab(),
+                ),
+              ],
             ),
           ),
         ],

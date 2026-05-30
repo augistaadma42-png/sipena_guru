@@ -10,7 +10,7 @@ abstract class AbsenLocalDatasource {
 }
 
 class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
-  final List<RiwayatAbsensiModel> _riwayatList = [
+  static final List<RiwayatAbsensiModel> _riwayatList = [
     RiwayatAbsensiModel(
       id: '1',
       tanggal: DateTime(2026, 5, 4),
@@ -65,7 +65,7 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
     ),
   ];
 
-  final List<StudentAttendanceModel> _studentList = [
+  static final List<StudentAttendanceModel> _studentList = [
     const StudentAttendanceModel(id: 's1', nisn: '0057281', name: 'Ahmad Fauzan', initials: 'AF', status: 'hadir'),
     const StudentAttendanceModel(id: 's2', nisn: '0057282', name: 'Ananda Aryani', initials: 'AA', status: 'hadir'),
     const StudentAttendanceModel(id: 's3', nisn: '0057283', name: 'Bagus Akbar', initials: 'BA', status: 'hadir'),
@@ -98,7 +98,7 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
     const StudentAttendanceModel(id: 's30', nisn: '0057310', name: 'Zaki Mubarak', initials: 'ZM', status: 'hadir'),
   ];
 
-  final List<LeaveRequestModel> _leaveRequests = [
+  static final List<LeaveRequestModel> _leaveRequests = [
     LeaveRequestModel(
       id: '001',
       studentName: 'Ananda Aryani',
@@ -200,5 +200,9 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
     if (idx != -1) {
       _leaveRequests[idx] = _leaveRequests[idx].copyWith(status: status);
     }
+  }
+
+  static void addRiwayat(RiwayatAbsensiModel item) {
+    _riwayatList.insert(0, item);
   }
 }

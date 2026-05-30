@@ -7,7 +7,10 @@ import '../../../../core/widgets/main_layout.dart';
 import '../bloc/absen_bloc.dart';
 import '../bloc/absen_event.dart';
 import '../bloc/absen_state.dart';
+import '../bloc/absen_draft_cache.dart';
 import '../../domain/entities/student_attendance_entity.dart';
+import '../../data/datasources/absen_local_datasource.dart';
+import '../../data/models/riwayat_absensi_model.dart';
 
 class InputAbsensiTab extends StatefulWidget {
   final String? prefilledKelas;
@@ -18,11 +21,14 @@ class InputAbsensiTab extends StatefulWidget {
   State<InputAbsensiTab> createState() => _InputAbsensiTabState();
 }
 
-class _InputAbsensiTabState extends State<InputAbsensiTab> {
+class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAliveClientMixin {
   final DateTime _today = DateTime.now();
   String? _selectedKelas;
   bool _tandaiSemuaHadir = false;
   int _resetCount = 0;
+
+  @override
+  bool get wantKeepAlive => true;
 
   final List<Map<String, String>> _kelasList = [
     {'id': 'XII IPA 1', 'name': 'XII IPA 1 — Matematika Wajib',    'subject': 'Matematika Wajib'},
@@ -57,12 +63,29 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
   // Track per-student status by ID
   Map<String, String> _studentStatusMap = {};
   List<StudentAttendanceEntity> _currentStudents = [];
+  final Set<String> _userModifiedStudentIds = {};
+
+  String _capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+  }
 
   @override
   void initState() {
     super.initState();
-    if (widget.prefilledKelas != null) {
+    // Restore from cache if available
+    if (AbsenDraftCache.selectedKelas != null) {
+      _selectedKelas = AbsenDraftCache.selectedKelas;
+      _tandaiSemuaHadir = AbsenDraftCache.tandaiSemuaHadir ?? false;
+      _studentStatusMap = Map.from(AbsenDraftCache.studentStatusMap);
+      _userModifiedStudentIds.addAll(AbsenDraftCache.userModifiedStudentIds);
+      
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<AbsenBloc>().add(LoadStudentAttendanceEvent(kelas: _selectedKelas!));
+      });
+    } else if (widget.prefilledKelas != null) {
       _selectedKelas = widget.prefilledKelas;
+      AbsenDraftCache.selectedKelas = _selectedKelas;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.read<AbsenBloc>().add(LoadStudentAttendanceEvent(kelas: _selectedKelas!));
       });
@@ -75,9 +98,13 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
   void _onTandaiSemuaHadir(bool? val) {
     setState(() {
       _tandaiSemuaHadir = val ?? false;
+      AbsenDraftCache.tandaiSemuaHadir = _tandaiSemuaHadir;
       if (_tandaiSemuaHadir) {
         for (var s in _currentStudents) {
           _studentStatusMap[s.id] = 'Hadir';
+          AbsenDraftCache.studentStatusMap[s.id] = 'Hadir';
+          _userModifiedStudentIds.add(s.id);
+          AbsenDraftCache.userModifiedStudentIds.add(s.id);
         }
       }
       _resetCount++;
@@ -90,7 +117,9 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
       _tandaiSemuaHadir = false;
       _studentStatusMap.clear();
       _currentStudents.clear();
+      _userModifiedStudentIds.clear();
       _resetCount++;
+      AbsenDraftCache.reset();
     });
   }
 
@@ -135,6 +164,32 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
       setState(() {
         _isLoading = false;
       });
+
+      // Simpan ke riwayat lokal agar data ter-update secara global di aplikasi
+      final countHadir = _studentStatusMap.values.where((v) => v == 'Hadir').length;
+      final times = _selectedJamPelajaran.split(' - ');
+      final jamMulai = times.first;
+      final jamSelesai = times.last;
+      
+      AbsenLocalDatasourceImpl.addRiwayat(
+        RiwayatAbsensiModel(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          tanggal: DateTime.now(),
+          hari: DateFormat('EEEE', 'id_ID').format(DateTime.now()),
+          kelas: _selectedKelas ?? '',
+          mapel: _activeSubject,
+          jamMulai: jamMulai,
+          jamSelesai: jamSelesai,
+          jamKe: _selectedJamKe,
+          jumlahHadir: countHadir,
+          totalSiswa: _currentStudents.length,
+          lengkap: true,
+        ),
+      );
+
+      // Clear draft cache upon saving
+      AbsenDraftCache.reset();
+      
       // Simpan absensi, lalu arahkan ke jurnal dengan data terisi
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -166,10 +221,20 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Stack(
       children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        RefreshIndicator(
+          color: AppColors.secondaryOrange,
+          onRefresh: () async {
+            if (_selectedKelas != null) {
+              context.read<AbsenBloc>().add(LoadStudentAttendanceEvent(kelas: _selectedKelas!));
+              await Future.delayed(const Duration(milliseconds: 500));
+            }
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -279,7 +344,12 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
                           setState(() {
                             _selectedKelas = val;
                             _tandaiSemuaHadir = false;
+                            _studentStatusMap.clear();
                             _resetCount++;
+                            
+                            AbsenDraftCache.selectedKelas = val;
+                            AbsenDraftCache.tandaiSemuaHadir = false;
+                            AbsenDraftCache.studentStatusMap.clear();
                           });
                           context.read<AbsenBloc>().add(LoadStudentAttendanceEvent(kelas: val));
                         }
@@ -408,7 +478,17 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
                       setState(() {
                         _currentStudents = state.studentList;
                         for (var student in state.studentList) {
-                          _studentStatusMap[student.id] = student.status;
+                          if (_userModifiedStudentIds.contains(student.id)) {
+                            // Pelanggan sudah merubah status secara manual, pertahankan draft
+                            if (_studentStatusMap[student.id] == null) {
+                              _studentStatusMap[student.id] = AbsenDraftCache.studentStatusMap[student.id]!;
+                            }
+                          } else {
+                            // Update dengan data sumber/API yang paling segar
+                            final cleanStatus = _capitalize(student.status);
+                            _studentStatusMap[student.id] = cleanStatus;
+                            AbsenDraftCache.studentStatusMap[student.id] = cleanStatus;
+                          }
                         }
                       });
                     }
@@ -546,13 +626,17 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
                           initials: student.initials,
                           name: student.name,
                           nisn: student.nisn,
-                          initialStatus: _studentStatusMap[student.id] ?? student.status,
+                          initialStatus: _studentStatusMap[student.id] ?? _capitalize(student.status),
                           onStatusChanged: (newStatus) {
                             setState(() {
                               _studentStatusMap[student.id] = newStatus;
+                              AbsenDraftCache.studentStatusMap[student.id] = newStatus;
+                              _userModifiedStudentIds.add(student.id);
+                              AbsenDraftCache.userModifiedStudentIds.add(student.id);
                               if (_tandaiSemuaHadir &&
                                   newStatus != 'Hadir') {
                                 _tandaiSemuaHadir = false;
+                                AbsenDraftCache.tandaiSemuaHadir = false;
                               }
                             });
                           },
@@ -596,6 +680,7 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> {
             ],
           ),
         ),
+),
 
         // Bottom Action Bar (hanya tampil jika kelas sudah dipilih)
         if (_selectedKelas != null)

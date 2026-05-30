@@ -271,12 +271,11 @@ class _MainLayoutState extends State<MainLayout> {
     final currentKey = _currentTabNavigatorKey;
 
     // 1. Jika masih ada halaman sebelumnya di nested navigator tab saat ini,
-    // lakukan pop pada navigator tersebut.
-    if (currentKey != null &&
-        currentKey.currentState != null &&
-        currentKey.currentState!.canPop()) {
-      currentKey.currentState!.pop();
-      return;
+    // atau jika ada PopScope di halaman tersebut yang menangani/mencegah pop,
+    // biarkan navigator anak menangani aksi pop.
+    if (currentKey != null && currentKey.currentState != null) {
+      final handled = await currentKey.currentState!.maybePop();
+      if (handled) return;
     }
 
     // 2. Jika berada di tab lain selain dashboard (index != 0) dan tidak ada halaman
@@ -330,7 +329,10 @@ class _MainLayoutState extends State<MainLayout> {
       child: Scaffold(
         drawer: const CustomDrawer(),
 
-        body: _pages[_selectedIndex],
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
+        ),
 
         bottomNavigationBar: BottomNavigationBar(
           items: const [

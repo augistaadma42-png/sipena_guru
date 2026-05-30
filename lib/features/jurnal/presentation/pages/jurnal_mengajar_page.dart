@@ -24,17 +24,7 @@ class JurnalMengajarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final ds = JurnalLocalDatasourceImpl();
-        final repo = JurnalRepositoryImpl(localDatasource: ds);
-        return JurnalBloc(
-          getJurnalTerbaruUsecase: GetJurnalTerbaruUsecase(repo),
-          getRekapJurnalUsecase: GetRekapJurnalUsecase(repo),
-        )..add(LoadJurnalTerbaruEvent());
-      },
-      child: _JurnalMengajarPageContent(initialData: initialData),
-    );
+    return _JurnalMengajarPageContent(initialData: initialData);
   }
 }
 
@@ -54,6 +44,7 @@ class _JurnalMengajarPageContentState
   final ScrollController _scrollController = ScrollController();
   Map<String, String>? _editingJurnalMap;
   Map<String, String>? _autoFillData;
+  bool _editFromRekap = false;
 
   @override
   void initState() {
@@ -63,8 +54,9 @@ class _JurnalMengajarPageContentState
 
   /// Dipanggil saat tombol Edit ditekan di timeline atau rekap.
   /// Mengisi form dengan seluruh data jurnal termasuk mapel & tanggal.
-  void _handleEditJurnal(JurnalEntity data) {
+  void _handleEditJurnal(JurnalEntity data, {bool fromRekap = false}) {
     setState(() {
+      _editFromRekap = fromRekap;
       _editingJurnalMap = {
         'title': data.title,
         'className': data.className,
@@ -87,6 +79,15 @@ class _JurnalMengajarPageContentState
     setState(() {
       _editingJurnalMap = null;
     });
+    if (_editFromRekap) {
+      _editFromRekap = false;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const RekapJurnalPage(),
+        ),
+      );
+    }
   }
 
   @override
@@ -97,62 +98,77 @@ class _JurnalMengajarPageContentState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: const CustomAppBar(title: 'Jurnal Mengajar'),
-      drawer: const CustomDrawer(),
-      body: RefreshIndicator(
-        color: AppColors.secondaryOrange,
-        onRefresh: () async {
-          context.read<JurnalBloc>().add(LoadJurnalTerbaruEvent());
-        },
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const PanduanJurnalCard(),
-                const SizedBox(height: 20),
-                BuatJurnalForm(
-                  initialData: _editingJurnalMap ?? _autoFillData,
-                  onCancelEdit: _cancelEdit,
-                  isEditMode: _editingJurnalMap != null,
-                ),
-                const SizedBox(height: 20),
-                BlocBuilder<JurnalBloc, JurnalState>(
-                  builder: (context, state) {
-                    if (state is JurnalLoading || state is JurnalInitial) {
-                      return const Center(
-                          child: CircularProgressIndicator());
-                    } else if (state is JurnalError) {
-                      return Center(child: Text(state.message));
-                    } else if (state is JurnalTerbaruLoaded) {
-                      return JurnalTerbaruTimeline(
-                        jurnalList: state.jurnalList,
-                        onEditTap: _handleEditJurnal,
-                        onLihatRekapTap: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const RekapJurnalPage(),
-                            ),
-                          );
+    final bool isEdit = _editingJurnalMap != null;
 
-                          // Jika kembali dari rekap dengan data entity (Edit)
-                          if (result != null && result is JurnalEntity) {
-                            _handleEditJurnal(result);
-                          }
-                        },
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-                const SizedBox(height: 80),
-              ],
+    return PopScope(
+      canPop: !isEdit,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (isEdit) {
+          _cancelEdit();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        appBar: CustomAppBar(
+          title: isEdit ? 'Edit Jurnal' : 'Jurnal Mengajar',
+          showBackButton: isEdit,
+          onBackTap: isEdit ? _cancelEdit : null,
+        ),
+        drawer: isEdit ? null : const CustomDrawer(),
+        body: RefreshIndicator(
+          color: AppColors.secondaryOrange,
+          onRefresh: () async {
+            context.read<JurnalBloc>().add(LoadJurnalTerbaruEvent());
+          },
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const PanduanJurnalCard(),
+                  const SizedBox(height: 20),
+                  BuatJurnalForm(
+                    initialData: _editingJurnalMap ?? _autoFillData,
+                    onCancelEdit: _cancelEdit,
+                    isEditMode: _editingJurnalMap != null,
+                  ),
+                  const SizedBox(height: 20),
+                  BlocBuilder<JurnalBloc, JurnalState>(
+                    builder: (context, state) {
+                      if (state is JurnalLoading || state is JurnalInitial) {
+                        return const Center(
+                            child: CircularProgressIndicator());
+                      } else if (state is JurnalError) {
+                        return Center(child: Text(state.message));
+                      } else if (state is JurnalTerbaruLoaded) {
+                        return JurnalTerbaruTimeline(
+                          jurnalList: state.jurnalList,
+                          onEditTap: _handleEditJurnal,
+                          onLihatRekapTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const RekapJurnalPage(),
+                              ),
+                            );
+
+                            // Jika kembali dari rekap dengan data entity (Edit)
+                            if (result != null && result is JurnalEntity) {
+                              _handleEditJurnal(result, fromRekap: true);
+                            }
+                          },
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  const SizedBox(height: 80),
+                ],
+              ),
             ),
           ),
         ),

@@ -16,7 +16,7 @@ class RiwayatAbsensiTab extends StatefulWidget {
   State<RiwayatAbsensiTab> createState() => _RiwayatAbsensiTabState();
 }
 
-class _RiwayatAbsensiTabState extends State<RiwayatAbsensiTab> {
+class _RiwayatAbsensiTabState extends State<RiwayatAbsensiTab> with AutomaticKeepAliveClientMixin {
   DateTime _selectedDate = DateTime(2026, 5, 4);
   String? _selectedKelas;
 
@@ -26,6 +26,9 @@ class _RiwayatAbsensiTabState extends State<RiwayatAbsensiTab> {
     'XII IPA 2',
     'XI IPA 1',
   ];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -58,132 +61,141 @@ class _RiwayatAbsensiTabState extends State<RiwayatAbsensiTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Filter Row
-          Row(
-            children: [
-              // Filter Tanggal
-              Expanded(
-                child: GestureDetector(
-                  onTap: _pickDate,
+    return RefreshIndicator(
+      color: AppColors.secondaryOrange,
+      onRefresh: () async {
+        _loadData();
+        await Future.delayed(const Duration(milliseconds: 500));
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Filter Row
+            Row(
+              children: [
+                // Filter Tanggal
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _pickDate,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.borderLight),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_today_outlined,
+                              size: 16, color: AppColors.primaryBlue),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              DateFormat('d MMM yyyy', 'id_ID')
+                                  .format(_selectedDate),
+                              style: AppTextStyles.cardTitle
+                                  .copyWith(fontSize: 13),
+                            ),
+                          ),
+                          const Icon(Icons.keyboard_arrow_down,
+                              color: AppColors.secondaryOrange, size: 18),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Filter Kelas
+                Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: AppColors.borderLight),
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today_outlined,
-                            size: 16, color: AppColors.primaryBlue),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            DateFormat('d MMM yyyy', 'id_ID')
-                                .format(_selectedDate),
-                            style: AppTextStyles.cardTitle
-                                .copyWith(fontSize: 13),
-                          ),
-                        ),
-                        const Icon(Icons.keyboard_arrow_down,
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedKelas ?? 'Semua Kelas',
+                        icon: const Icon(Icons.keyboard_arrow_down,
                             color: AppColors.secondaryOrange, size: 18),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Filter Kelas
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderLight),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _selectedKelas ?? 'Semua Kelas',
-                      icon: const Icon(Icons.keyboard_arrow_down,
-                          color: AppColors.secondaryOrange, size: 18),
-                      style: AppTextStyles.cardTitle.copyWith(fontSize: 13),
-                      isExpanded: true,
-                      items: _kelasList
-                          .map((k) => DropdownMenuItem(
-                                value: k,
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.apartment_outlined,
-                                        size: 15,
-                                        color: AppColors.primaryBlue),
-                                    const SizedBox(width: 6),
-                                    Flexible(
-                                      child: Text(k,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ],
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (val) {
-                        setState(() => _selectedKelas = val);
-                        _loadData();
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Hasil List
-          BlocBuilder<AbsenBloc, AbsenState>(
-            builder: (context, state) {
-              if (state is AbsenLoading || state is AbsenInitial) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is AbsenError) {
-                return Center(child: Text(state.message));
-              } else if (state is RiwayatAbsensiLoaded) {
-                if (state.riwayatList.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 40),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Icon(Icons.history,
-                              size: 64,
-                              color: AppColors.textSecondary.withOpacity(0.3)),
-                          const SizedBox(height: 16),
-                          Text('Tidak ada riwayat absensi',
-                              style: AppTextStyles.sectionTitle
-                                  .copyWith(color: AppColors.textSecondary)),
-                          const SizedBox(height: 8),
-                          Text('Coba ubah filter tanggal atau kelas',
-                              style: AppTextStyles.cardSubtitle),
-                        ],
+                        style: AppTextStyles.cardTitle.copyWith(fontSize: 13),
+                        isExpanded: true,
+                        items: _kelasList
+                            .map((k) => DropdownMenuItem(
+                                  value: k,
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.apartment_outlined,
+                                          size: 15,
+                                          color: AppColors.primaryBlue),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(k,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (val) {
+                          setState(() => _selectedKelas = val);
+                          _loadData();
+                        },
                       ),
                     ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Hasil List
+            BlocBuilder<AbsenBloc, AbsenState>(
+              builder: (context, state) {
+                if (state is AbsenLoading || state is AbsenInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is AbsenError) {
+                  return Center(child: Text(state.message));
+                } else if (state is RiwayatAbsensiLoaded) {
+                  if (state.riwayatList.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(Icons.history,
+                                size: 64,
+                                color: AppColors.textSecondary.withOpacity(0.3)),
+                            const SizedBox(height: 16),
+                            Text('Tidak ada riwayat absensi',
+                                style: AppTextStyles.sectionTitle
+                                    .copyWith(color: AppColors.textSecondary)),
+                            const SizedBox(height: 8),
+                            Text('Coba ubah filter tanggal atau kelas',
+                                style: AppTextStyles.cardSubtitle),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: state.riwayatList
+                        .map((item) => _RiwayatCard(item: item))
+                        .toList(),
                   );
                 }
-                return Column(
-                  children: state.riwayatList
-                      .map((item) => _RiwayatCard(item: item))
-                      .toList(),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ],
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

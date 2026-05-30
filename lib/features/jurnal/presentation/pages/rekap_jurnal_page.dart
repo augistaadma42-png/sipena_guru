@@ -81,25 +81,38 @@ class _RekapJurnalPageContentState extends State<_RekapJurnalPageContent> {
       appBar: const CustomAppBar(title: 'Rekap Jurnal'),
       body: BlocBuilder<JurnalBloc, JurnalState>(
         builder: (context, state) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  _buildFilterSection(context),
-                  const SizedBox(height: 24),
-                  if (state is JurnalLoading || state is JurnalInitial)
-                    const Center(child: CircularProgressIndicator())
-                  else if (state is JurnalError)
-                    Center(child: Text(state.message))
-                  else if (state is RekapJurnalLoaded) ...[
-                    if (state.rekapList.isEmpty)
-                      _buildEmptyState()
-                    else
-                      ...state.rekapList
-                          .map((jurnal) => _buildRekapCard(jurnal)),
+          return RefreshIndicator(
+            color: AppColors.secondaryOrange,
+            onRefresh: () async {
+              context.read<JurnalBloc>().add(LoadRekapJurnalEvent(
+                    filterKelas: _selectedFilterKelas == 'Semua Kelas'
+                        ? null
+                        : _selectedFilterKelas,
+                    filterBulan: _selectedFilterBulan?.bulan,
+                  ));
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    _buildFilterSection(context),
+                    const SizedBox(height: 24),
+                    if (state is JurnalLoading || state is JurnalInitial)
+                      const Center(child: CircularProgressIndicator())
+                    else if (state is JurnalError)
+                      Center(child: Text(state.message))
+                    else if (state is RekapJurnalLoaded) ...[
+                      if (state.rekapList.isEmpty)
+                        _buildEmptyState()
+                      else
+                        ...state.rekapList
+                            .map((jurnal) => _buildRekapCard(jurnal)),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           );

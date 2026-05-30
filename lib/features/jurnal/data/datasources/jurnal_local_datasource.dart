@@ -9,7 +9,7 @@ abstract class JurnalLocalDatasource {
 
 class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
   // Data dummy jurnal terbaru
-  final List<JurnalModel> _jurnalTerbaruData = [
+  static final List<JurnalModel> _jurnalTerbaruData = [
     const JurnalModel(
       id: 'j1',
       className: 'XII IPA 1',
@@ -53,12 +53,12 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
       tanggal: '26/05/2026',
       mapel: 'Matematika Peminatan',
       title: 'Teorema Sisa Polinomial',
-      description: 'Penjelasan dan latihan soal teorema sisa...',
+      description: 'Penjelasan and latihan soal teorema sisa...',
     ),
   ];
 
   // Data dummy rekap jurnal
-  final List<JurnalModel> _rekapJurnalData = [
+  static final List<JurnalModel> _rekapJurnalData = [
     // Mei 2026
     const JurnalModel(
       id: 'r1',
@@ -207,5 +207,21 @@ class JurnalLocalDatasourceImpl implements JurnalLocalDatasource {
   @override
   Future<void> simpanJurnal(JurnalModel jurnal) async {
     await Future.delayed(const Duration(milliseconds: 500));
+    
+    // Update atau insert di _jurnalTerbaruData
+    final index = _jurnalTerbaruData.indexWhere((j) => j.id == jurnal.id);
+    if (index != -1) {
+      _jurnalTerbaruData[index] = jurnal;
+    } else {
+      _jurnalTerbaruData.insert(0, jurnal);
+    }
+
+    // Update atau insert di _rekapJurnalData
+    final rekapIndex = _rekapJurnalData.indexWhere((j) => j.id == jurnal.id);
+    if (rekapIndex != -1) {
+      _rekapJurnalData[rekapIndex] = jurnal;
+    } else {
+      _rekapJurnalData.insert(0, jurnal);
+    }
   }
 }
