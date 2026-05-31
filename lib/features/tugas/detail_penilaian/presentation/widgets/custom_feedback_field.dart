@@ -5,8 +5,14 @@ import 'package:fitur_guru/core/constants/text_styles.dart';
 class CustomFeedbackField extends StatefulWidget {
   final String initialValue;
   final ValueChanged<String> onChanged;
-  const CustomFeedbackField({super.key, required this.initialValue,
-      required this.onChanged});
+  final bool readOnly;
+
+  const CustomFeedbackField({
+    super.key,
+    required this.initialValue,
+    required this.onChanged,
+    this.readOnly = false,
+  });
 
   @override
   State<CustomFeedbackField> createState() => _CustomFeedbackFieldState();
@@ -31,23 +37,41 @@ class _CustomFeedbackFieldState extends State<CustomFeedbackField> {
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: widget.readOnly
+            ? AppColors.backgroundLight
+            : AppColors.cardBackground,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderLight, width: 1.5),
+        border: Border.all(
+          color: widget.readOnly
+              ? AppColors.borderLight.withOpacity(0.5)
+              : AppColors.borderLight,
+          width: 1.5,
+        ),
       ),
       child: TextField(
         controller: _controller,
-        maxLines: 5, minLines: 4,
-        onChanged: widget.onChanged,
-        style: AppTextStyles.tableBody,
+        maxLines: 5,
+        minLines: 4,
+        onChanged: widget.readOnly ? null : widget.onChanged,
+        readOnly: widget.readOnly,
+        style: AppTextStyles.tableBody.copyWith(
+          color: widget.readOnly
+              ? AppColors.textSecondary
+              : AppColors.textPrimary,
+        ),
         decoration: InputDecoration(
-          hintText: 'Tulis catatan untuk siswa...',
+          hintText: widget.readOnly
+              ? 'Tidak ada feedback'
+              : 'Tulis catatan untuk siswa...',
           hintStyle: AppTextStyles.cardSubtitle.copyWith(fontSize: 14),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(16),

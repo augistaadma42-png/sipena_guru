@@ -71,7 +71,7 @@ class RekapPengumpulanLocalDatasourceImpl
           avatar: '',
           submittedAt: '23 Okt, 14:15',
           fileName: 'Bunga_Integral.pdf',
-          score: 88,
+          score: null, // Belum dinilai — contoh siswa yang perlu dinilai
           isSubmitted: true,
         ),
         AssignmentSubmissionModel(
@@ -398,7 +398,7 @@ class RekapPengumpulanLocalDatasourceImpl
           avatar: '',
           submittedAt: '29 Okt, 16:00',
           fileName: 'Eka_Integral.pdf',
-          score: 78,
+          score: null, // Belum dinilai — contoh siswa yang perlu dinilai
           isSubmitted: true,
           isLate: true,
         ),
@@ -643,6 +643,8 @@ class RekapPengumpulanLocalDatasourceImpl
       'Zaki Mubarak',
     ];
 
+    // Skor per siswa — index 1 (Ananda Aryani) null = belum dinilai
+    final scores = [85, null, 93, 89, 85, 93, 89, 85];
     for (int i = 0; i < activeStudents.length; i++) {
       list.add(
         AssignmentSubmissionModel(
@@ -651,7 +653,7 @@ class RekapPengumpulanLocalDatasourceImpl
           avatar: '',
           submittedAt: '29 Okt, 09:30',
           fileName: '${activeStudents[i].replaceAll(' ', '_')}_Polinomial.pdf',
-          score: 85 + (i % 3) * 4,
+          score: scores[i], // null = sudah submit, belum dinilai
           isSubmitted: true,
         ),
       );

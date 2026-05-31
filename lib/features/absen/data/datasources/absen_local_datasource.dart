@@ -22,7 +22,6 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
       jamKe: 'Jam Ke 1-2',
       jumlahHadir: 28,
       totalSiswa: 30,
-      lengkap: true,
     ),
     RiwayatAbsensiModel(
       id: '2',
@@ -35,7 +34,6 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
       jamKe: 'Jam Ke 5-6',
       jumlahHadir: 30,
       totalSiswa: 30,
-      lengkap: true,
     ),
     RiwayatAbsensiModel(
       id: '3',
@@ -48,7 +46,6 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
       jamKe: 'Jam Ke 1-3',
       jumlahHadir: 27,
       totalSiswa: 30,
-      lengkap: false,
     ),
     RiwayatAbsensiModel(
       id: '4',
@@ -61,7 +58,6 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
       jamKe: 'Jam Ke 3',
       jumlahHadir: 30,
       totalSiswa: 30,
-      lengkap: true,
     ),
   ];
 

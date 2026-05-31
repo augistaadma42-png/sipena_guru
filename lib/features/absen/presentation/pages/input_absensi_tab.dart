@@ -283,7 +283,6 @@ class InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAliv
           jamKe: _selectedJamKe,
           jumlahHadir: countHadir,
           totalSiswa: _currentStudents.length,
-          lengkap: true,
         ),
       );
 

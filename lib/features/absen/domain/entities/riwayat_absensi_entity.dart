@@ -9,7 +9,6 @@ class RiwayatAbsensiEntity {
   final String jamKe;
   final int jumlahHadir;
   final int totalSiswa;
-  final bool lengkap;
 
   const RiwayatAbsensiEntity({
     required this.id,
@@ -22,6 +21,8 @@ class RiwayatAbsensiEntity {
     required this.jamKe,
     required this.jumlahHadir,
     required this.totalSiswa,
-    required this.lengkap,
   });
+
+  /// Dihitung otomatis — tidak perlu di-hardcode manual
+  bool get lengkap => jumlahHadir == totalSiswa;
 }

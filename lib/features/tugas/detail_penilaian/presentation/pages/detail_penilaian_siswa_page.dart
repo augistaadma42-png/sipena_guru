@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitur_guru/core/constants/colors.dart';
+import 'package:fitur_guru/core/widgets/confirmation_dialog.dart';
 import '../../data/datasources/detail_penilaian_local_datasource.dart';
 import '../../data/repositories/detail_penilaian_repository_impl.dart';
 import '../../domain/usecase/get_detail_penilaian_usecase.dart';
@@ -164,11 +165,26 @@ class _DetailPenilaianBody extends StatelessWidget {
             FeedbackInputCard(
               currentFeedback: loaded.currentFeedback,
               onFeedbackChanged: (v) => bloc.add(UpdateFeedbackEvent(v)),
+              readOnly: loaded.entity.currentScore > 0,
             ),
             const SizedBox(height: 28),
             SimpanPenilaianButton(
               isLoading: isSubmitting,
-              onPressed: () => bloc.add(const SubmitPenilaianEvent()),
+              isAlreadyGraded: loaded.entity.currentScore > 0,
+              onPressed: () async {
+                final confirmed = await showConfirmationDialog(
+                  context: context,
+                  title: 'Simpan Penilaian?',
+                  message:
+                      'Nilai ${loaded.currentNilai} akan disimpan untuk ${loaded.entity.studentName}. '
+                      'Penilaian tidak dapat diubah setelah disimpan.',
+                  cancelText: 'Batal',
+                  confirmText: 'Simpan',
+                );
+                if (confirmed == true) {
+                  bloc.add(const SubmitPenilaianEvent());
+                }
+              },
             ),
           ],
         ),

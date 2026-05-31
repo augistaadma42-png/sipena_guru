@@ -12,6 +12,5 @@ class RiwayatAbsensiModel extends RiwayatAbsensiEntity {
     required super.jamKe,
     required super.jumlahHadir,
     required super.totalSiswa,
-    required super.lengkap,
   });
 }
