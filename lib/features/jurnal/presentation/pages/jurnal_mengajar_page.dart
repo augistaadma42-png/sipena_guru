@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_drawer.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
+import '../../../../core/widgets/main_layout.dart';
 import '../widgets/panduan_jurnal_card.dart';
 import '../widgets/buat_jurnal_form.dart';
 import '../widgets/jurnal_terbaru_timeline.dart';
@@ -42,6 +44,7 @@ class _JurnalMengajarPageContent extends StatefulWidget {
 class _JurnalMengajarPageContentState
     extends State<_JurnalMengajarPageContent> {
   final ScrollController _scrollController = ScrollController();
+  final _formKey = GlobalKey<BuatJurnalFormState>();
   Map<String, String>? _editingJurnalMap;
   Map<String, String>? _autoFillData;
   bool _editFromRekap = false;
@@ -75,17 +78,65 @@ class _JurnalMengajarPageContentState
     );
   }
 
-  void _cancelEdit() {
+  Future<void> _cancelEdit() async {
+    final shouldCancel = await showConfirmationDialog(
+      context: context,
+      title: 'Batalkan Perubahan?',
+      message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+      cancelText: 'Tetap di Halaman',
+      confirmText: 'Kembali',
+      isDestructive: true,
+    );
+    if (shouldCancel != true) return;
+
     setState(() {
       _editingJurnalMap = null;
     });
     if (_editFromRekap) {
       _editFromRekap = false;
-      Navigator.push(
-        context,
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RekapJurnalPage(),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleSystemBack() async {
+    final isEdit = _editingJurnalMap != null;
+    final formIsDirty = _formKey.currentState?.isDirty ?? false;
+
+    if (isEdit) {
+      await _cancelEdit();
+    } else if (formIsDirty) {
+      final shouldCancel = await showConfirmationDialog(
+        context: context,
+        title: 'Batalkan Perubahan?',
+        message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+        cancelText: 'Tetap di Halaman',
+        confirmText: 'Kembali',
+        isDestructive: true,
+      );
+      if (shouldCancel == true && mounted) {
+        _doBackNavigation();
+      }
+    } else {
+      _doBackNavigation();
+    }
+  }
+
+  void _doBackNavigation() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => const RekapJurnalPage(),
+          builder: (context) => const MainLayout(initialIndex: 0),
         ),
+        (route) => false,
       );
     }
   }
@@ -101,12 +152,10 @@ class _JurnalMengajarPageContentState
     final bool isEdit = _editingJurnalMap != null;
 
     return PopScope(
-      canPop: !isEdit,
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        if (isEdit) {
-          _cancelEdit();
-        }
+        await _handleSystemBack();
       },
       child: Scaffold(
         backgroundColor: AppColors.backgroundLight,
@@ -120,6 +169,7 @@ class _JurnalMengajarPageContentState
           color: AppColors.secondaryOrange,
           onRefresh: () async {
             context.read<JurnalBloc>().add(LoadJurnalTerbaruEvent());
+            _formKey.currentState?.clearForm();
           },
           child: SingleChildScrollView(
             controller: _scrollController,
@@ -131,6 +181,7 @@ class _JurnalMengajarPageContentState
                   const PanduanJurnalCard(),
                   const SizedBox(height: 20),
                   BuatJurnalForm(
+                    key: _formKey,
                     initialData: _editingJurnalMap ?? _autoFillData,
                     onCancelEdit: _cancelEdit,
                     isEditMode: _editingJurnalMap != null,

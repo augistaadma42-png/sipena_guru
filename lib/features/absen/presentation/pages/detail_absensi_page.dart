@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 
 class DetailAbsensiPage extends StatefulWidget {
   final String className;
@@ -62,6 +64,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
   ];
 
   late List<String> _statuses;
+  late List<String> _initialStatuses;
 
   @override
   void initState() {
@@ -78,9 +81,30 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
       }
       return 'Hadir';
     }).toList();
+    _initialStatuses = List.from(_statuses);
   }
 
-  void _simpan() {
+  bool get _isDirty => !listEquals(_statuses, _initialStatuses);
+
+  Future<void> _handleBack() async {
+    if (_isDirty && !widget.isReadOnly) {
+      final shouldPop = await showConfirmationDialog(
+        context: context,
+        title: 'Batalkan Perubahan?',
+        message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+        cancelText: 'Tetap di Halaman',
+        confirmText: 'Kembali',
+        isDestructive: true,
+      );
+      if (shouldPop == true && mounted) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _handleSave() async {
     final bool allStudentsHaveStatus = _statuses.isNotEmpty && 
         _statuses.every((s) => s.isNotEmpty);
 
@@ -96,6 +120,24 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
       return;
     }
 
+    final String title = widget.isEditMode ? 'Simpan Perubahan Absensi?' : 'Simpan Absensi?';
+    final String message = widget.isEditMode 
+        ? 'Perubahan data kehadiran siswa akan diterapkan.'
+        : 'Data kehadiran siswa akan disimpan untuk sesi pembelajaran ini.';
+
+    final shouldSave = await showConfirmationDialog(
+      context: context,
+      title: title,
+      message: message,
+      cancelText: 'Batal',
+      confirmText: 'Simpan',
+    );
+    if (shouldSave == true && mounted) {
+      _simpan();
+    }
+  }
+
+  void _simpan() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(widget.isEditMode
@@ -111,8 +153,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
 
   void _reset() {
     setState(() {
-      _statuses =
-          _dummyStudents.map((s) => s['status'] as String).toList();
+      _statuses = List.from(_initialStatuses);
       _resetCount++;
     });
   }
@@ -122,14 +163,24 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
     final String appBarTitle =
         widget.isEditMode ? 'Edit Absensi' : 'Detail Absensi';
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: CustomAppBar(title: appBarTitle, showBackButton: true),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+    return PopScope(
+      canPop: !_isDirty || widget.isReadOnly,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleBack();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        appBar: CustomAppBar(
+          title: appBarTitle,
+          showBackButton: true,
+          onBackTap: _handleBack,
+        ),
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildHeader(),
@@ -146,8 +197,9 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
           if (!widget.isReadOnly) _buildBottomBar(),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildHeader() {
     return Container(
@@ -372,14 +424,14 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
             Expanded(
               flex: 1,
               child: OutlinedButton(
-                onPressed: _reset,
+                onPressed: _handleBack,
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: const BorderSide(color: AppColors.primaryBlue),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24)),
                 ),
-                child: Text('Reset',
+                child: Text('Batalkan',
                     style: AppTextStyles.cardTitle
                         .copyWith(color: AppColors.primaryBlue)),
               ),
@@ -388,7 +440,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                onPressed: _simpan,
+                onPressed: _handleSave,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: AppColors.secondaryOrange,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/widgets/confirmation_dialog.dart';
 import '../bloc/tugas_form_controller.dart';
 import '../widgets/tugas_header.dart';
 import '../widgets/input_judul.dart';
@@ -47,7 +48,30 @@ class _BuatMateriPageState extends State<BuatMateriPage> {
     super.dispose();
   }
 
-  void _onSimpan() {
+  bool get _isDirty =>
+      _controller.judulMateriController.text.trim().isNotEmpty ||
+      _controller.deskripsiController.text.trim().isNotEmpty ||
+      _controller.lampiranNames.value.isNotEmpty;
+
+  Future<void> _handleBack() async {
+    if (_isDirty) {
+      final shouldPop = await showConfirmationDialog(
+        context: context,
+        title: 'Batalkan Perubahan?',
+        message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+        cancelText: 'Tetap di Halaman',
+        confirmText: 'Kembali',
+        isDestructive: true,
+      );
+      if (shouldPop == true && mounted) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _handleSave() async {
     final isJudulValid = _controller.judulMateriController.text.trim().isNotEmpty;
     final isDeskripsiValid = _controller.deskripsiController.text.trim().isNotEmpty;
 
@@ -71,6 +95,19 @@ class _BuatMateriPageState extends State<BuatMateriPage> {
       return;
     }
 
+    final shouldSave = await showConfirmationDialog(
+      context: context,
+      title: 'Publikasikan Materi?',
+      message: 'Materi akan ditambahkan ke daftar pembelajaran.',
+      cancelText: 'Batal',
+      confirmText: 'Simpan',
+    );
+    if (shouldSave == true && mounted) {
+      _simpanMateri();
+    }
+  }
+
+  void _simpanMateri() {
     final tugas = _controller.buildEntity();
     final repo = TugasRepositoryImpl();
     final createTugas = CreateTugas(repo);
@@ -90,17 +127,23 @@ class _BuatMateriPageState extends State<BuatMateriPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SafeArea(
-        child: Column(
-          children: [
-            TugasHeader(
-              title: 'Buat materi',
-              onClose: () => Navigator.of(context).pop(),
-              onSimpan: _onSimpan,
-            ),
-            Expanded(
+    return PopScope(
+      canPop: !_isDirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleBack();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        body: SafeArea(
+          child: Column(
+            children: [
+              TugasHeader(
+                title: 'Buat materi',
+                onClose: _handleBack,
+                onSimpan: _handleSave,
+              ),
+              Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -137,8 +180,9 @@ class _BuatMateriPageState extends State<BuatMateriPage> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLabel(String text) {
     return Text(

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 import '../bloc/pengaturan_bloc.dart';
 import '../bloc/pengaturan_event.dart';
 import '../bloc/pengaturan_state.dart';
@@ -66,6 +67,11 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
     });
   }
 
+  bool get _isDirty =>
+      _passwordLamaController.text.isNotEmpty ||
+      _passwordBaruController.text.isNotEmpty ||
+      _konfirmasiController.text.isNotEmpty;
+
   void _handleError(String message) {
     _clearErrors();
     final parts = message.split(':');
@@ -78,6 +84,37 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
         else if (field == 'konfirmasi') _errorKonfirmasi = msg;
         else _errorPasswordLama = msg;
       });
+    }
+  }
+
+  Future<void> _handleBack() async {
+    if (_isDirty) {
+      final shouldPop = await showConfirmationDialog(
+        context: context,
+        title: 'Batalkan Perubahan?',
+        message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+        cancelText: 'Tetap di Halaman',
+        confirmText: 'Kembali',
+        isDestructive: true,
+      );
+      if (shouldPop == true && mounted) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _handleSave() async {
+    final shouldSave = await showConfirmationDialog(
+      context: context,
+      title: 'Ubah Kata Sandi?',
+      message: 'Pastikan Anda mengingat kata sandi baru yang akan digunakan.',
+      cancelText: 'Batal',
+      confirmText: 'Simpan',
+    );
+    if (shouldSave == true && mounted) {
+      _simpan();
     }
   }
 
@@ -94,10 +131,20 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: const CustomAppBar(title: 'Pengaturan', showBackButton: true),
-      body: BlocConsumer<PengaturanBloc, PengaturanState>(
+    return PopScope(
+      canPop: !_isDirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleBack();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        appBar: CustomAppBar(
+          title: 'Pengaturan',
+          showBackButton: true,
+          onBackTap: _handleBack,
+        ),
+        body: BlocConsumer<PengaturanBloc, PengaturanState>(
         listener: (context, state) {
           if (state is PasswordChanged) {
             _passwordLamaController.clear();
@@ -241,7 +288,7 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: isLoading ? null : _simpan,
+                    onPressed: isLoading ? null : _handleSave,
                     icon: isLoading
                         ? const SizedBox(
                             width: 18,
@@ -272,8 +319,9 @@ class _PengaturanPageContentState extends State<_PengaturanPageContent> {
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLabel(String text) {
     return Text(

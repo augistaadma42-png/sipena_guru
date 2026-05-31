@@ -12,7 +12,7 @@ import '../../domain/usecases/get_student_attendance_usecase.dart';
 import '../../domain/usecases/get_leave_requests_usecase.dart';
 import '../../domain/usecases/update_leave_request_status_usecase.dart';
 
-class AbsensiDariJadwalPage extends StatelessWidget {
+class AbsensiDariJadwalPage extends StatefulWidget {
   final String className;
   final String subject;
   final String time;
@@ -29,35 +29,61 @@ class AbsensiDariJadwalPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<AbsensiDariJadwalPage> createState() => _AbsensiDariJadwalPageState();
+}
+
+class _AbsensiDariJadwalPageState extends State<AbsensiDariJadwalPage> {
+  late final AbsenBloc _absenBloc;
+  final GlobalKey<InputAbsensiTabState> _inputAbsensiTabKey =
+      GlobalKey<InputAbsensiTabState>();
+
+  @override
+  void initState() {
+    super.initState();
+    final ds = AbsenLocalDatasourceImpl();
+    final repo = AbsenRepositoryImpl(localDatasource: ds);
+    _absenBloc = AbsenBloc(
+      getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
+      getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
+      getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
+      updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(repo),
+    );
+  }
+
+  @override
+  void dispose() {
+    _absenBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Jika sudah diisi (isReadOnly = true), tampilkan detail absensi (view)
-    // Jika belum diisi (isReadOnly = false), tampilkan form input absensi
-    if (isReadOnly) {
+    // Jika sudah diisi (isReadOnly = true), tampilkan detail absensi
+    if (widget.isReadOnly) {
       return DetailAbsensiPage(
-        className: className,
-        subject: subject,
-        time: time,
-        jamKe: jamKe,
+        className: widget.className,
+        subject: widget.subject,
+        time: widget.time,
+        jamKe: widget.jamKe,
         isReadOnly: true,
       );
     }
 
-    final ds = AbsenLocalDatasourceImpl();
-    final repo = AbsenRepositoryImpl(localDatasource: ds);
-
-    return BlocProvider(
-      create: (_) => AbsenBloc(
-        getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
-        getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
-        getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
-        updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(repo),
-      ),
+    return BlocProvider.value(
+      value: _absenBloc,
       child: Scaffold(
         backgroundColor: AppColors.backgroundLight,
-        appBar: const CustomAppBar(title: 'Isi Absensi', showBackButton: true),
+        appBar: CustomAppBar(
+          title: 'Isi Absensi',
+          showBackButton: true,
+          onBackTap: () {
+            _inputAbsensiTabKey.currentState?.handleBack();
+          },
+        ),
         body: InputAbsensiTab(
-          prefilledKelas: className,
-          prefilledSubject: subject,
+          key: _inputAbsensiTabKey,
+          prefilledKelas: widget.className,
+          prefilledSubject: widget.subject,
         ),
       ),
     );

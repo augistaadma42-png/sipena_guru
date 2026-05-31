@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/main_layout.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 import '../bloc/absen_bloc.dart';
 import '../bloc/absen_event.dart';
 import '../bloc/absen_state.dart';
@@ -18,10 +19,10 @@ class InputAbsensiTab extends StatefulWidget {
   const InputAbsensiTab({Key? key, this.prefilledKelas, this.prefilledSubject}) : super(key: key);
 
   @override
-  State<InputAbsensiTab> createState() => _InputAbsensiTabState();
+  State<InputAbsensiTab> createState() => InputAbsensiTabState();
 }
 
-class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAliveClientMixin {
+class InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAliveClientMixin {
   final DateTime _today = DateTime.now();
   String? _selectedKelas;
   bool _tandaiSemuaHadir = false;
@@ -113,17 +114,116 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAli
 
   void _resetAbsensi() {
     setState(() {
-      _selectedKelas = null;
+      // Kalau dari jadwal, jangan null-kan _selectedKelas
+      if (widget.prefilledKelas == null) {
+        _selectedKelas = null;
+      }
       _tandaiSemuaHadir = false;
       _studentStatusMap.clear();
       _currentStudents.clear();
       _userModifiedStudentIds.clear();
       _resetCount++;
       AbsenDraftCache.reset();
+
+      // Kalau dari jadwal, set cache kelas lagi
+      if (widget.prefilledKelas != null) {
+        AbsenDraftCache.selectedKelas = widget.prefilledKelas;
+      }
     });
+
+    if (widget.prefilledKelas != null) {
+      // Dari jadwal: langsung reload, tidak perlu ResetAbsenEvent
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<AbsenBloc>().add(
+            LoadStudentAttendanceEvent(kelas: widget.prefilledKelas!),
+          );
+        }
+      });
+    } else {
+      // Manual: reset bloc state
+      context.read<AbsenBloc>().add(const ResetAbsenEvent());
+    }
   }
 
   bool _isLoading = false;
+
+  bool get _isDirty =>
+      _selectedKelas != null ||
+      _studentStatusMap.isNotEmpty ||
+      _userModifiedStudentIds.isNotEmpty;
+
+  Future<void> handleBack() async {
+    if (_isDirty) {
+      final shouldPop = await showConfirmationDialog(
+        context: context,
+        title: 'Batalkan Perubahan?',
+        message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+        cancelText: 'Tetap di Halaman',
+        confirmText: 'Kembali',
+        isDestructive: true,
+      );
+      if (shouldPop == true && mounted) {
+        _doBackNavigation();
+      }
+    } else {
+      _doBackNavigation();
+    }
+  }
+
+  void _doBackNavigation() {
+    _resetAbsensi();
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const MainLayout(initialIndex: 0),
+        ),
+        (route) => false,
+      );
+    }
+  }
+
+  Future<void> _handleSave() async {
+    if (_selectedKelas == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Gagal menyimpan! Silakan pilih kelas terlebih dahulu.'),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+      return;
+    }
+
+    final bool allStudentsHaveStatus = _currentStudents.isNotEmpty && 
+        _currentStudents.every((s) => _studentStatusMap[s.id] != null && _studentStatusMap[s.id]!.isNotEmpty);
+
+    if (!allStudentsHaveStatus) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Gagal menyimpan! Seluruh siswa wajib memiliki status absensi.'),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+      return;
+    }
+
+    final shouldSave = await showConfirmationDialog(
+      context: context,
+      title: 'Simpan Absensi?',
+      message: 'Data kehadiran siswa akan disimpan untuk sesi pembelajaran ini.',
+      cancelText: 'Batal',
+      confirmText: 'Simpan',
+    );
+    if (shouldSave == true && mounted) {
+      _simpanAbsensi();
+    }
+  }
 
   void _simpanAbsensi() {
     if (_selectedKelas == null) {
@@ -222,9 +322,15 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAli
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Stack(
-      children: [
-        RefreshIndicator(
+    return PopScope(
+      canPop: !_isDirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await handleBack();
+      },
+      child: Stack(
+        children: [
+          RefreshIndicator(
           color: AppColors.secondaryOrange,
           onRefresh: () async {
             if (_selectedKelas != null) {
@@ -341,16 +447,19 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAli
                           .toList(),
                       onChanged: (val) {
                         if (val != null) {
+                          print('DEBUG_UI: onChanged triggered with class: $val');
                           setState(() {
                             _selectedKelas = val;
                             _tandaiSemuaHadir = false;
                             _studentStatusMap.clear();
+                            _currentStudents.clear();
                             _resetCount++;
                             
                             AbsenDraftCache.selectedKelas = val;
                             AbsenDraftCache.tandaiSemuaHadir = false;
                             AbsenDraftCache.studentStatusMap.clear();
                           });
+                          print('DEBUG_UI: Dispatching LoadStudentAttendanceEvent for class: $val');
                           context.read<AbsenBloc>().add(LoadStudentAttendanceEvent(kelas: val));
                         }
                       },
@@ -424,259 +533,295 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAli
               const SizedBox(height: 20),
 
               // Tabel Siswa (muncul setelah kelas dipilih)
-              if (_selectedKelas != null) ...[
-                Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderLight),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.secondaryOrange.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.access_time_outlined,
-                          color: AppColors.secondaryOrange,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Jam Pelajaran',
-                              style: AppTextStyles.cardSubtitle.copyWith(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textSecondary),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '$_selectedJamPelajaran ($_selectedJamKe)',
-                              style: AppTextStyles.cardTitle.copyWith(
-                                  fontSize: 14,
-                                  color: AppColors.primaryBlue),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                BlocConsumer<AbsenBloc, AbsenState>(
-                  listener: (context, state) {
-                    if (state is StudentAttendanceLoaded) {
-                      setState(() {
-                        _currentStudents = state.studentList;
-                        for (var student in state.studentList) {
-                          if (_userModifiedStudentIds.contains(student.id)) {
-                            // Pelanggan sudah merubah status secara manual, pertahankan draft
-                            if (_studentStatusMap[student.id] == null) {
-                              _studentStatusMap[student.id] = AbsenDraftCache.studentStatusMap[student.id]!;
-                            }
-                          } else {
-                            // Update dengan data sumber/API yang paling segar
-                            final cleanStatus = _capitalize(student.status);
-                            _studentStatusMap[student.id] = cleanStatus;
-                            AbsenDraftCache.studentStatusMap[student.id] = cleanStatus;
+              BlocConsumer<AbsenBloc, AbsenState>(
+                listener: (context, state) {
+                  print('DEBUG_UI: BlocConsumer listener received state: $state');
+                  if (state is StudentAttendanceLoaded) {
+                    print('DEBUG_UI: Listener received StudentAttendanceLoaded, student count: ${state.studentList.length}');
+                    setState(() {
+                      _currentStudents = state.studentList;
+                      for (var student in state.studentList) {
+                        if (_userModifiedStudentIds.contains(student.id)) {
+                          // Pelanggan sudah merubah status secara manual, pertahankan draft
+                          if (_studentStatusMap[student.id] == null) {
+                            _studentStatusMap[student.id] = AbsenDraftCache.studentStatusMap[student.id]!;
                           }
+                        } else {
+                          // Update dengan data sumber/API yang paling segar
+                          final cleanStatus = _capitalize(student.status);
+                          _studentStatusMap[student.id] = cleanStatus;
+                          AbsenDraftCache.studentStatusMap[student.id] = cleanStatus;
                         }
-                      });
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is AbsenLoading) {
-                      return const Center(
-                          child: Padding(
-                        padding: EdgeInsets.all(40.0),
-                        child: CircularProgressIndicator(),
-                      ));
-                    } else if (state is AbsenError) {
-                      return Center(child: Text(state.message));
-                    } else if (state is StudentAttendanceLoaded) {
-                      final students = state.studentList;
-                      return Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.borderLight),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Daftar Siswa
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Daftar Siswa',
-                            style: AppTextStyles.sectionTitle
-                                .copyWith(fontSize: 16),
-                          ),
-                          Row(
+                      }
+                    });
+                    print('DEBUG_UI: Listener completed setState, _currentStudents is now: ${_currentStudents.length} items');
+                  }
+                },
+                builder: (context, state) {
+                  print('DEBUG_UI: BlocConsumer builder called with state: $state, _selectedKelas: $_selectedKelas, _currentStudents: ${_currentStudents.length}');
+                  if (_selectedKelas == null) {
+                    print('DEBUG_UI: Builder returning empty state (selectedKelas is null)');
+                    // Empty state
+                    return Column(
+                      children: [
+                        const SizedBox(height: 40),
+                        Center(
+                          child: Column(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondaryOrange,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '${students.length} Siswa',
-                                  style: AppTextStyles.cardTitle
-                                      .copyWith(color: Colors.white, fontSize: 12),
-                                ),
+                              Icon(
+                                Icons.groups_outlined,
+                                size: 72,
+                                color: AppColors.textSecondary.withOpacity(0.4),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Belum Ada Kelas Terpilih',
+                                style: AppTextStyles.sectionTitle
+                                    .copyWith(color: AppColors.primaryBlue),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Daftar siswa akan muncul di sini setelah\nAnda menentukan kelas yang ingin\ndiproses presensinya.',
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.cardSubtitle,
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
+                        ),
+                      ],
+                    );
+                  }
 
-                      // Checklist Tandai Semua Hadir
-                      InkWell(
-                        onTap: () => _onTandaiSemuaHadir(!_tandaiSemuaHadir),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
+                  if (state is AbsenLoading) {
+                    print('DEBUG_UI: Builder returning CircularProgressIndicator (AbsenLoading)');
+                    return const Center(
+                        child: Padding(
+                      padding: EdgeInsets.all(40.0),
+                      child: CircularProgressIndicator(),
+                    ));
+                  } else if (state is AbsenError) {
+                    print('DEBUG_UI: Builder returning AbsenError: ${state.message}');
+                    return Center(child: Text(state.message));
+                  }
+                  
+                  // Jika state adalah StudentAttendanceLoaded, pastikan _currentStudents terisi
+                  if (state is StudentAttendanceLoaded) {
+                    if (_currentStudents.isEmpty && state.studentList.isNotEmpty) {
+                      _currentStudents = state.studentList;
+                      for (var student in state.studentList) {
+                        if (_userModifiedStudentIds.contains(student.id)) {
+                          if (_studentStatusMap[student.id] == null) {
+                            _studentStatusMap[student.id] = AbsenDraftCache.studentStatusMap[student.id]!;
+                          }
+                        } else {
+                          final cleanStatus = _capitalize(student.status);
+                          _studentStatusMap[student.id] = cleanStatus;
+                          AbsenDraftCache.studentStatusMap[student.id] = cleanStatus;
+                        }
+                      }
+                    }
+                  }
+
+                  if (_currentStudents.isNotEmpty) {
+                    print('DEBUG_UI: Builder rendering student list (length: ${_currentStudents.length})');
+                    final students = _currentStudents;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Jam Pelajaran Card
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           decoration: BoxDecoration(
-                            color: _tandaiSemuaHadir
-                                ? const Color(0xFFE8F5E9)
-                                : AppColors.backgroundLight,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _tandaiSemuaHadir
-                                  ? const Color(0xFF2E7D32)
-                                  : AppColors.borderLight,
-                            ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.borderLight),
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                _tandaiSemuaHadir
-                                    ? Icons.check_box
-                                    : Icons.check_box_outline_blank,
-                                color: _tandaiSemuaHadir
-                                    ? const Color(0xFF2E7D32)
-                                    : AppColors.textSecondary,
-                                size: 20,
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.secondaryOrange.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.access_time_outlined,
+                                  color: AppColors.secondaryOrange,
+                                  size: 20,
+                                ),
                               ),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Tandai semua hadir (Nihil)',
-                                style: AppTextStyles.cardTitle.copyWith(
-                                  fontSize: 13,
-                                  color: _tandaiSemuaHadir
-                                      ? const Color(0xFF2E7D32)
-                                      : AppColors.textPrimary,
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Jam Pelajaran',
+                                      style: AppTextStyles.cardSubtitle.copyWith(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.textSecondary),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      '$_selectedJamPelajaran ($_selectedJamKe)',
+                                      style: AppTextStyles.cardTitle.copyWith(
+                                          fontSize: 14,
+                                          color: AppColors.primaryBlue),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 14),
+                        
+                        // Student List Container
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.borderLight),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.02),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Header Daftar Siswa
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Daftar Siswa',
+                                    style: AppTextStyles.sectionTitle
+                                        .copyWith(fontSize: 16),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.secondaryOrange,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      '${students.length} Siswa',
+                                      style: AppTextStyles.cardTitle
+                                          .copyWith(color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
 
-                      // Table Header
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBlue.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('NAMA SISWA',
-                                style: AppTextStyles.labelStyle),
-                            Text('STATUS', style: AppTextStyles.labelStyle),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
+                              // Checklist Tandai Semua Hadir
+                              InkWell(
+                                onTap: () => _onTandaiSemuaHadir(!_tandaiSemuaHadir),
+                                borderRadius: BorderRadius.circular(10),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 14, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: _tandaiSemuaHadir
+                                        ? const Color(0xFFE8F5E9)
+                                        : AppColors.backgroundLight,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: _tandaiSemuaHadir
+                                          ? const Color(0xFF2E7D32)
+                                          : AppColors.borderLight,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        _tandaiSemuaHadir
+                                            ? Icons.check_box
+                                            : Icons.check_box_outline_blank,
+                                        color: _tandaiSemuaHadir
+                                            ? const Color(0xFF2E7D32)
+                                            : AppColors.textSecondary,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        'Tandai semua hadir (Nihil)',
+                                        style: AppTextStyles.cardTitle.copyWith(
+                                          fontSize: 13,
+                                          color: _tandaiSemuaHadir
+                                              ? const Color(0xFF2E7D32)
+                                              : AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
 
-                      // Student List
-                      ...students.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final student = entry.value;
-                        return _StudentRow(
-                          key: ValueKey(
-                              'input_student_${student.id}_$_resetCount'),
-                          index: index + 1,
-                          initials: student.initials,
-                          name: student.name,
-                          nisn: student.nisn,
-                          initialStatus: _studentStatusMap[student.id] ?? _capitalize(student.status),
-                          onStatusChanged: (newStatus) {
-                            setState(() {
-                              _studentStatusMap[student.id] = newStatus;
-                              AbsenDraftCache.studentStatusMap[student.id] = newStatus;
-                              _userModifiedStudentIds.add(student.id);
-                              AbsenDraftCache.userModifiedStudentIds.add(student.id);
-                              if (_tandaiSemuaHadir &&
-                                  newStatus != 'Hadir') {
-                                _tandaiSemuaHadir = false;
-                                AbsenDraftCache.tandaiSemuaHadir = false;
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-          const SizedBox(height: 100),
-              ] else ...[
-                // Empty state
-                const SizedBox(height: 40),
-                Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.groups_outlined,
-                        size: 72,
-                        color: AppColors.textSecondary.withOpacity(0.4),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Belum Ada Kelas Terpilih',
-                        style: AppTextStyles.sectionTitle
-                            .copyWith(color: AppColors.primaryBlue),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Daftar siswa akan muncul di sini setelah\nAnda menentukan kelas yang ingin\ndiproses presensinya.',
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.cardSubtitle,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                              // Table Header
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryBlue.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('NAMA SISWA',
+                                        style: AppTextStyles.labelStyle),
+                                    Text('STATUS', style: AppTextStyles.labelStyle),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+
+                              // Student List
+                              ...students.asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final student = entry.value;
+                                return _StudentRow(
+                                  key: ValueKey(
+                                      'input_student_${student.id}_$_resetCount'),
+                                  index: index + 1,
+                                  initials: student.initials,
+                                  name: student.name,
+                                  nisn: student.nisn,
+                                  initialStatus: _studentStatusMap[student.id] ?? _capitalize(student.status),
+                                  onStatusChanged: (newStatus) {
+                                    setState(() {
+                                      _studentStatusMap[student.id] = newStatus;
+                                      AbsenDraftCache.studentStatusMap[student.id] = newStatus;
+                                      _userModifiedStudentIds.add(student.id);
+                                      AbsenDraftCache.userModifiedStudentIds.add(student.id);
+                                      if (_tandaiSemuaHadir &&
+                                          newStatus != 'Hadir') {
+                                        _tandaiSemuaHadir = false;
+                                        AbsenDraftCache.tandaiSemuaHadir = false;
+                                      }
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -705,7 +850,19 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAli
                   Expanded(
                     flex: 1,
                     child: OutlinedButton(
-                      onPressed: _resetAbsensi,
+                      onPressed: () async {
+                        final shouldReset = await showConfirmationDialog(
+                          context: context,
+                          title: 'Reset Absensi?',
+                          message: 'Seluruh status kehadiran yang sudah diisi akan dikosongkan. Apakah Anda yakin?',
+                          cancelText: 'Batal',
+                          confirmText: 'Reset',
+                          isDestructive: true,
+                        );
+                        if (shouldReset == true && mounted) {
+                          _resetAbsensi();
+                        }
+                      },
                       style: OutlinedButton.styleFrom(
                         padding:
                             const EdgeInsets.symmetric(vertical: 14),
@@ -724,7 +881,7 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAli
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
-                      onPressed: _simpanAbsensi,
+                      onPressed: _handleSave,
                       style: ElevatedButton.styleFrom(
                         padding:
                             const EdgeInsets.symmetric(vertical: 14),
@@ -755,8 +912,9 @@ class _InputAbsensiTabState extends State<InputAbsensiTab> with AutomaticKeepAli
             ),
           ),
       ],
-    );
-  }
+    ),
+  );
+}
 }
 
 // Widget baris siswa dengan dropdown status

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 
 class BuatJurnalForm extends StatefulWidget {
   final Map<String, String>? initialData;
@@ -16,10 +17,10 @@ class BuatJurnalForm extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<BuatJurnalForm> createState() => _BuatJurnalFormState();
+  State<BuatJurnalForm> createState() => BuatJurnalFormState();
 }
 
-class _BuatJurnalFormState extends State<BuatJurnalForm> {
+class BuatJurnalFormState extends State<BuatJurnalForm> {
   final quill.QuillController _quillController = quill.QuillController.basic();
   final TextEditingController _materiController = TextEditingController();
 
@@ -99,6 +100,10 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
     } else {
       _clearForm();
     }
+  }
+
+  void clearForm() {
+    _clearForm();
   }
 
   void _clearForm() {
@@ -273,14 +278,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {
-                    if (widget.onCancelEdit != null &&
-                        widget.initialData != null) {
-                      widget.onCancelEdit!();
-                    } else {
-                      _clearForm();
-                    }
-                  },
+                  onPressed: _handleCancel,
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: const BorderSide(color: AppColors.primaryBlue),
@@ -299,7 +297,7 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
               const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _simpanJurnal,
+                  onPressed: _handleSave,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: AppColors.secondaryOrange,
@@ -336,6 +334,103 @@ class _BuatJurnalFormState extends State<BuatJurnalForm> {
         ],
       ),
     );
+  }
+
+  bool get isDirty => _isDirty;
+
+  bool get _isDirty {
+    if (widget.isEditMode && widget.initialData != null) {
+      final data = widget.initialData!;
+      final currentKelas = _selectedKelas;
+      final currentMapel = _selectedMapel;
+      final currentTanggal = _tanggalToStorage(_selectedTanggal);
+      final currentMateri = _materiController.text.trim();
+      final currentCatatan = _quillController.document.toPlainText().trim();
+
+      final initialKelas = data['className'];
+      final initialMapel = data['mapel'];
+      final initialTanggal = data['tanggal'];
+      final initialMateri = (data['title'] ?? '').trim();
+      final initialCatatan = (data['description'] ?? '').replaceAll('"', '').trim();
+
+      return currentKelas != initialKelas ||
+          currentMapel != initialMapel ||
+          currentTanggal != initialTanggal ||
+          currentMateri != initialMateri ||
+          currentCatatan != initialCatatan;
+    } else {
+      return _selectedKelas != null ||
+          _selectedMapel != null ||
+          _materiController.text.trim().isNotEmpty ||
+          _quillController.document.toPlainText().trim().isNotEmpty;
+    }
+  }
+
+  Future<void> _handleCancel() async {
+    if (_isDirty) {
+      final shouldCancel = await showConfirmationDialog(
+        context: context,
+        title: 'Batalkan Perubahan?',
+        message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+        cancelText: 'Tetap di Halaman',
+        confirmText: 'Kembali',
+        isDestructive: true,
+      );
+      if (shouldCancel != true) return;
+    }
+    
+    if (widget.onCancelEdit != null && widget.initialData != null) {
+      widget.onCancelEdit!();
+    } else {
+      _clearForm();
+    }
+  }
+
+  Future<void> _handleSave() async {
+    final isKelasValid = _selectedKelas != null;
+    final isMapelValid = _selectedMapel != null;
+    final isMateriValid = _materiController.text.trim().isNotEmpty;
+    final isCatatanValid = _quillController.document.toPlainText().trim().isNotEmpty;
+
+    if (!isKelasValid || !isMapelValid || !isMateriValid || !isCatatanValid) {
+      setState(() {
+        _showErrors = true;
+      });
+
+      final List<String> missingFields = [];
+      if (!isKelasValid) missingFields.add('Kelas');
+      if (!isMapelValid) missingFields.add('Mata Pelajaran');
+      if (!isMateriValid) missingFields.add('Materi');
+      if (!isCatatanValid) missingFields.add('Catatan Guru');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menyimpan! Field berikut wajib diisi: ${missingFields.join(", ")}'),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+      return;
+    }
+
+    final String title = widget.isEditMode ? 'Simpan Perubahan Jurnal?' : 'Simpan Jurnal?';
+    final String message = widget.isEditMode 
+        ? 'Perubahan jurnal akan diterapkan pada data yang ada.'
+        : 'Jurnal mengajar akan disimpan ke dalam riwayat pembelajaran.';
+
+    final shouldSave = await showConfirmationDialog(
+      context: context,
+      title: title,
+      message: message,
+      cancelText: 'Batal',
+      confirmText: 'Simpan',
+    );
+    if (shouldSave == true && mounted) {
+      _simpanJurnal();
+    }
   }
 
   void _simpanJurnal() {

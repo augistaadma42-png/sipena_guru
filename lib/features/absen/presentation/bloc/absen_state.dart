@@ -25,11 +25,13 @@ class RiwayatAbsensiLoaded extends AbsenState {
 
 class StudentAttendanceLoaded extends AbsenState {
   final List<StudentAttendanceEntity> studentList;
+  final DateTime timestamp;
 
-  const StudentAttendanceLoaded({required this.studentList});
+  StudentAttendanceLoaded({required this.studentList, DateTime? timestamp})
+      : timestamp = timestamp ?? DateTime.now();
 
   @override
-  List<Object?> get props => [studentList];
+  List<Object?> get props => [studentList, timestamp];
 }
 
 class LeaveRequestsLoaded extends AbsenState {

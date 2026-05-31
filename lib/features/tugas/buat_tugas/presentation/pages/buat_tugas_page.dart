@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/widgets/dropdown_chip.dart';
+import '../../../../../../core/widgets/confirmation_dialog.dart';
 import '../bloc/tugas_form_controller.dart';
 import '../widgets/tugas_header.dart';
 import '../widgets/input_judul.dart';
@@ -74,7 +76,51 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
     return list;
   }
 
-  void _onSimpan() {
+  bool get _isDirty {
+    if (widget.tugasToEdit != null) {
+      final edit = widget.tugasToEdit!;
+      final initialJudul = edit.title.trim();
+      final initialDeskripsi = edit.subtitle.trim();
+      final initialMateri = (edit.judulMateri ?? 'Pilih Materi').trim();
+      final initialLampiran = edit.lampiranNames;
+
+      final currentJudul = _controller.judulController.text.trim();
+      final currentDeskripsi = _controller.deskripsiController.text.trim();
+      final currentMateri = _controller.selectedMateri.value.trim();
+      final currentLampiran = _controller.lampiranNames.value;
+
+      return currentJudul != initialJudul ||
+          currentDeskripsi != initialDeskripsi ||
+          currentMateri != initialMateri ||
+          !listEquals(currentLampiran, initialLampiran);
+    } else {
+      return _controller.judulController.text.trim().isNotEmpty ||
+          _controller.deskripsiController.text.trim().isNotEmpty ||
+          _controller.selectedMateri.value != 'Pilih Materi' ||
+          _controller.lampiranNames.value.isNotEmpty ||
+          _controller.tenggat.value != null;
+    }
+  }
+
+  Future<void> _handleBack() async {
+    if (_isDirty) {
+      final shouldPop = await showConfirmationDialog(
+        context: context,
+        title: 'Batalkan Perubahan?',
+        message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+        cancelText: 'Tetap di Halaman',
+        confirmText: 'Kembali',
+        isDestructive: true,
+      );
+      if (shouldPop == true && mounted) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _handleSave() async {
     final isJudulValid = _controller.judulController.text.trim().isNotEmpty;
     final isMateriValid = _controller.selectedMateri.value != 'Pilih Materi';
     final isDeskripsiValid = _controller.deskripsiController.text.trim().isNotEmpty;
@@ -102,6 +148,24 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
       return;
     }
 
+    final String title = widget.tugasToEdit != null ? 'Simpan Perubahan Tugas?' : 'Terbitkan Tugas?';
+    final String message = widget.tugasToEdit != null 
+        ? 'Perubahan tugas akan diterapkan pada data yang ada.'
+        : 'Tugas akan tersedia dan dapat dilihat oleh siswa.';
+
+    final shouldSave = await showConfirmationDialog(
+      context: context,
+      title: title,
+      message: message,
+      cancelText: 'Batal',
+      confirmText: 'Simpan',
+    );
+    if (shouldSave == true && mounted) {
+      _simpanTugas();
+    }
+  }
+
+  void _simpanTugas() {
     final tugas = _controller.buildEntity();
     final repo = TugasRepositoryImpl();
     final createTugas = CreateTugas(repo);
@@ -125,16 +189,22 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SafeArea(
-        child: Column(
-          children: [
-            TugasHeader(
-              onClose: () => Navigator.of(context).pop(),
-              onSimpan: _onSimpan,
-            ),
-            Expanded(
+    return PopScope(
+      canPop: !_isDirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleBack();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        body: SafeArea(
+          child: Column(
+            children: [
+              TugasHeader(
+                onClose: _handleBack,
+                onSimpan: _handleSave,
+              ),
+              Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -209,8 +279,9 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLabel(String text) {
     return Text(

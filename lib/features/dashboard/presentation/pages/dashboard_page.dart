@@ -22,8 +22,7 @@ import '../../domain/entities/attendance_overview_entity.dart';
 
 import '../../../jurnal/presentation/bloc/jurnal_bloc.dart';
 import '../../../jurnal/presentation/bloc/jurnal_event.dart';
-import '../../../absen/presentation/bloc/absen_bloc.dart';
-import '../../../absen/presentation/bloc/absen_event.dart';
+
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -122,7 +121,6 @@ class _DashboardPageContentState extends State<_DashboardPageContent> {
               onRefresh: () async {
                 context.read<DashboardBloc>().add(LoadDashboardDataEvent());
                 context.read<JurnalBloc>().add(LoadJurnalTerbaruEvent());
-                context.read<AbsenBloc>().add(LoadRiwayatAbsensiEvent(date: DateTime.now()));
                 await Future.delayed(const Duration(milliseconds: 500));
               },
 

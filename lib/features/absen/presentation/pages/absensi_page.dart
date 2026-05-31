@@ -34,25 +34,13 @@ class _AbsensiPageContent extends StatefulWidget {
 class _AbsensiPageContentState extends State<_AbsensiPageContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late AbsenBloc _inputAbsenBloc;
-  late AbsenBloc _riwayatAbsenBloc;
+  late AbsenBloc _inputBloc;
+  late AbsenBloc _riwayatBloc;
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-
+  AbsenBloc _createBloc() {
     final ds = AbsenLocalDatasourceImpl();
     final repo = AbsenRepositoryImpl(localDatasource: ds);
-
-    _inputAbsenBloc = AbsenBloc(
-      getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
-      getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
-      getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
-      updateLeaveRequestStatusUsecase: UpdateLeaveRequestStatusUsecase(repo),
-    );
-
-    _riwayatAbsenBloc = AbsenBloc(
+    return AbsenBloc(
       getRiwayatAbsensiUsecase: GetRiwayatAbsensiUsecase(repo),
       getStudentAttendanceUsecase: GetStudentAttendanceUsecase(repo),
       getLeaveRequestsUsecase: GetLeaveRequestsUsecase(repo),
@@ -61,10 +49,19 @@ class _AbsensiPageContentState extends State<_AbsensiPageContent>
   }
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    // Buat bloc sekali saja di initState, bukan di build()
+    _inputBloc = _createBloc();
+    _riwayatBloc = _createBloc();
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
-    _inputAbsenBloc.close();
-    _riwayatAbsenBloc.close();
+    _inputBloc.close();
+    _riwayatBloc.close();
     super.dispose();
   }
 
@@ -98,12 +95,14 @@ class _AbsensiPageContentState extends State<_AbsensiPageContent>
             child: TabBarView(
               controller: _tabController,
               children: [
+                // Tab Input: pakai _inputBloc yang dibuat di initState
                 BlocProvider<AbsenBloc>.value(
-                  value: _inputAbsenBloc,
+                  value: _inputBloc,
                   child: const InputAbsensiTab(),
                 ),
+                // Tab Riwayat: pakai _riwayatBloc yang dibuat di initState
                 BlocProvider<AbsenBloc>.value(
-                  value: _riwayatAbsenBloc,
+                  value: _riwayatBloc,
                   child: const RiwayatAbsensiTab(),
                 ),
               ],

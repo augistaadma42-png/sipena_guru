@@ -18,6 +18,10 @@ class AbsenBloc extends Bloc<AbsenEvent, AbsenState> {
     required this.getLeaveRequestsUsecase,
     required this.updateLeaveRequestStatusUsecase,
   }) : super(AbsenInitial()) {
+    on<ResetAbsenEvent>((event, emit) {
+      emit(AbsenInitial());
+    });
+
     on<LoadRiwayatAbsensiEvent>((event, emit) async {
       emit(AbsenLoading());
       try {
@@ -32,7 +36,8 @@ class AbsenBloc extends Bloc<AbsenEvent, AbsenState> {
       emit(AbsenLoading());
       try {
         final data = await getStudentAttendanceUsecase(event.kelas);
-        emit(StudentAttendanceLoaded(studentList: data));
+        final loadedState = StudentAttendanceLoaded(studentList: data);
+        emit(loadedState);
       } catch (e) {
         emit(AbsenError(message: e.toString()));
       }

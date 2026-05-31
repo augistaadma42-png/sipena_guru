@@ -37,3 +37,10 @@ class UpdateLeaveRequestStatusEvent extends AbsenEvent {
   @override
   List<Object?> get props => [id, status];
 }
+
+class ResetAbsenEvent extends AbsenEvent {
+  const ResetAbsenEvent();
+
+  @override
+  List<Object?> get props => [];
+}

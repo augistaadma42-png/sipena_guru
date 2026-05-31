@@ -185,7 +185,8 @@ class AbsenLocalDatasourceImpl implements AbsenLocalDatasource {
   @override
   Future<List<StudentAttendanceModel>> getStudentAttendance(String kelas) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return _studentList;
+    print('[DATASOURCE] getStudentAttendance called, _studentList.length = ${_studentList.length}');
+    return List.from(_studentList); // return copy, bukan referensi langsung
   }
 
   @override
