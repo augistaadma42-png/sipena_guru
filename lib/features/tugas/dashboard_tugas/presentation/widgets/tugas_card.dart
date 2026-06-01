@@ -153,10 +153,7 @@ class TugasCard extends StatelessWidget {
                           icon: Icons.subject_rounded,
                           label: tugas.mapel,
                         ),
-                      _InfoChip(
-                        icon: Icons.people_outline_rounded,
-                        label: tugas.siswa,
-                      ),
+
                     ],
                   ),
 

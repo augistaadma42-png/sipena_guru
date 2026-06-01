@@ -201,6 +201,7 @@ class _BuatTugasPageState extends State<BuatTugasPage> {
           child: Column(
             children: [
               TugasHeader(
+                title: widget.tugasToEdit != null ? 'Edit tugas' : 'Buat tugas',
                 onClose: _handleBack,
                 onSimpan: _handleSave,
               ),

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../domain/entities/materi_entity.dart';
-import '../../domain/entities/tugas_entity.dart';
 import '../widgets/materi_card.dart';
-import '../../../buat_tugas/presentation/pages/buat_tugas_page.dart';
+import '../../../buat_tugas/presentation/pages/buat_materi_page.dart';
 
 class DaftarMateriPage extends StatefulWidget {
   final List<MateriEntity> materiList;
@@ -46,30 +45,12 @@ class _DaftarMateriPageState extends State<DaftarMateriPage> {
   }
 
   void _openEdit(BuildContext context, MateriEntity materi) {
-    final tugasToEdit = TugasEntity(
-      id: materi.id,
-      kelas: materi.kelas,
-      title: materi.title,
-      subtitle: materi.deskripsi,
-      deadline: '',
-      totalAnggota: 0,
-      submittedCount: 0,
-      createdAt: materi.tanggal,
-      sisaHari: '',
-      isUrgent: false,
-      jenisNilai: 'Materi',
-      mapel: materi.category,
-      siswa: 'Semua pelajar',
-      lampiranCount: materi.lampiranCount,
-      judulMateri: materi.title,
-    );
-
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => BuatTugasPage(
-          namaKelas: tugasToEdit.kelas,
-          namaMapel: tugasToEdit.mapel,
-          tugasToEdit: tugasToEdit,
+        builder: (context) => BuatMateriPage(
+          namaKelas: materi.kelas,
+          namaMapel: materi.category,
+          materiToEdit: materi,
         ),
       ),
     );
