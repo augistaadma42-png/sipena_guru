@@ -611,37 +611,49 @@ class BuatJurnalFormState extends State<BuatJurnalForm> {
       ),
       child: Column(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.backgroundLight,
-              border: Border(bottom: BorderSide(color: AppColors.borderLight)),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-            ),
-            child: quill.QuillSimpleToolbar(
-              controller: _quillController,
-              config: const quill.QuillSimpleToolbarConfig(
-                multiRowsDisplay: true,
-                showFontFamily: false,
-                showFontSize: false,
-                showColorButton: false,
-                showBackgroundColorButton: false,
-                showClearFormat: false,
-                showAlignmentButtons: true,
-                showDirection: false,
-                showDividers: false,
-                showInlineCode: false,
-                showQuote: false,
-                showCodeBlock: false,
-                showIndent: false,
-                showSearchButton: false,
-                showSubscript: false,
-                showSuperscript: false,
-                showStrikeThrough: false,
-                showLink: false,
-                showUndo: false,
-                showRedo: false,
-              ),
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                width: constraints.maxWidth,
+                decoration: const BoxDecoration(
+                  color: AppColors.backgroundLight,
+                  border: Border(bottom: BorderSide(color: AppColors.borderLight)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: constraints.maxWidth,
+                    child: quill.QuillSimpleToolbar(
+                      controller: _quillController,
+                      config: const quill.QuillSimpleToolbarConfig(
+                        multiRowsDisplay: false,
+                        showFontFamily: false,
+                        showFontSize: false,
+                        showColorButton: false,
+                        showBackgroundColorButton: false,
+                        showClearFormat: false,
+                        showAlignmentButtons: true,
+                        showDirection: false,
+                        showDividers: false,
+                        showInlineCode: false,
+                        showQuote: false,
+                        showCodeBlock: false,
+                        showIndent: false,
+                        showSearchButton: false,
+                        showSubscript: false,
+                        showSuperscript: false,
+                        showStrikeThrough: false,
+                        showLink: false,
+                        showUndo: false,
+                        showRedo: false,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
           Container(
             height: 120,
