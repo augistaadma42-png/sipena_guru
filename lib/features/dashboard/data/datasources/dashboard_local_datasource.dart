@@ -43,6 +43,13 @@ class DashboardLocalDatasourceImpl implements DashboardLocalDatasource {
         jenis: 'absensi',
         icon: Icons.fact_check_outlined,
       ),
+      AktivitasModel(
+        tanggal: '07 Mei 2026',
+        jam: '08.00',
+        deskripsi: 'Mengedit absensi XI DKV 2',
+        jenis: 'absensi',
+        icon: Icons.edit_note_outlined,
+      ),
     ];
   }
 

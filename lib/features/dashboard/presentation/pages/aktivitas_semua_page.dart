@@ -33,7 +33,6 @@ class _AktivitasSemuaState extends State<AktivitasSemua> {
     {'tanggal': DateTime(2026, 5, 6), 'jam': '09.00', 'deskripsi': 'Membuat jurnal XI RPL 1', 'jenis': 'jurnal', 'icon': Icons.book_outlined},
     {'tanggal': DateTime(2026, 5, 5), 'jam': '10.00', 'deskripsi': 'Membuat tugas baru — Latihan Soal Bab 3', 'jenis': 'tugas', 'icon': Icons.assignment_outlined},
     {'tanggal': DateTime(2026, 5, 5), 'jam': '10.30', 'deskripsi': 'Mengubah deadline tugas — Kuis Harian', 'jenis': 'tugas', 'icon': Icons.edit_calendar_outlined},
-    {'tanggal': DateTime(2026, 5, 5), 'jam': '11.00', 'deskripsi': 'Menghapus tugas — Tugas Prakarya', 'jenis': 'tugas', 'icon': Icons.delete_outline},
     {'tanggal': DateTime(2026, 5, 5), 'jam': '14.00', 'deskripsi': 'Menginput nilai tugas XI RPL 2', 'jenis': 'nilai', 'icon': Icons.grade_outlined},
     {'tanggal': DateTime(2026, 5, 4), 'jam': '12.00', 'deskripsi': 'Menyetujui pengajuan izin — Augusta A.Z', 'jenis': 'pengajuan', 'icon': Icons.check_circle_outline},
     {'tanggal': DateTime(2026, 5, 4), 'jam': '12.30', 'deskripsi': 'Menolak pengajuan izin — Farisalha A.F', 'jenis': 'pengajuan', 'icon': Icons.cancel_outlined},

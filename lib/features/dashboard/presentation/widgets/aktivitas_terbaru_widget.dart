@@ -16,23 +16,35 @@ class AktivitasTerbaruWidget extends StatelessWidget {
 
   Color _jenisColor(String jenis) {
     switch (jenis) {
-      case 'absensi': return AppColors.primaryBlue;
-      case 'jurnal': return const Color(0xFF6A1B9A);
-      case 'tugas': return AppColors.secondaryOrange;
-      case 'nilai': return const Color(0xFF2E7D32);
-      case 'pengajuan': return const Color(0xFF1565C0);
-      default: return AppColors.textSecondary;
+      case 'absensi':
+        return AppColors.primaryBlue;
+      case 'jurnal':
+        return const Color(0xFF6A1B9A);
+      case 'tugas':
+        return AppColors.secondaryOrange;
+      case 'nilai':
+        return const Color(0xFF2E7D32);
+      case 'pengajuan':
+        return const Color(0xFF1565C0);
+      default:
+        return AppColors.textSecondary;
     }
   }
 
   Color _jenisBg(String jenis) {
     switch (jenis) {
-      case 'absensi': return AppColors.primaryBlue.withOpacity(0.1);
-      case 'jurnal': return const Color(0xFFF3E5F5);
-      case 'tugas': return const Color(0xFFFFF3E0);
-      case 'nilai': return const Color(0xFFE8F5E9);
-      case 'pengajuan': return const Color(0xFFE3F2FD);
-      default: return AppColors.backgroundLight;
+      case 'absensi':
+        return AppColors.primaryBlue.withOpacity(0.1);
+      case 'jurnal':
+        return const Color(0xFFF3E5F5);
+      case 'tugas':
+        return const Color(0xFFFFF3E0);
+      case 'nilai':
+        return const Color(0xFFE8F5E9);
+      case 'pengajuan':
+        return const Color(0xFFE3F2FD);
+      default:
+        return AppColors.backgroundLight;
     }
   }
 
@@ -56,18 +68,10 @@ class AktivitasTerbaruWidget extends StatelessWidget {
                 color: _jenisBg(jenis),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 18,
-                color: _jenisColor(jenis),
-              ),
+              child: Icon(icon, size: 18, color: _jenisColor(jenis)),
             ),
             if (!isLast)
-              Container(
-                width: 2,
-                height: 32,
-                color: AppColors.borderLight,
-              ),
+              Container(width: 2, height: 32, color: AppColors.borderLight),
           ],
         ),
         const SizedBox(width: 14),
@@ -96,6 +100,8 @@ class AktivitasTerbaruWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayedActivities = aktivitasList.take(5).toList();
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -130,16 +136,17 @@ class AktivitasTerbaruWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ...aktivitasList.asMap().entries.map((entry) {
+          ...displayedActivities.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
+
             return _buildAktivitasItem(
               tanggal: item.tanggal,
               jam: item.jam,
               deskripsi: item.deskripsi,
               jenis: item.jenis,
               icon: item.icon,
-              isLast: index == aktivitasList.length - 1,
+              isLast: index == displayedActivities.length - 1,
             );
           }).toList(),
         ],
