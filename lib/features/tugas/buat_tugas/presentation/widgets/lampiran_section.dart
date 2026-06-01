@@ -19,24 +19,6 @@ class _LampiranAdded {
 
 // Contoh lampiran per tombol
 const _contohLampiran = {
-  'Drive': _LampiranAdded(
-    icon: Icons.add_to_drive,
-    color: Color(0xFF4285F4),
-    nama: 'Modul_Integral_Bab3.pdf',
-    tipe: 'Google Drive',
-  ),
-  'YouTube': _LampiranAdded(
-    icon: Icons.smart_display_outlined,
-    color: Color(0xFFFF0000),
-    nama: 'Penjelasan Integral Tentu - YouTube',
-    tipe: 'Video YouTube',
-  ),
-  'Buat': _LampiranAdded(
-    icon: Icons.description_outlined,
-    color: AppColors.textSecondary,
-    nama: 'Dokumen Baru - Latihan Soal',
-    tipe: 'Google Docs',
-  ),
   'Upload': _LampiranAdded(
     icon: Icons.insert_drive_file_outlined,
     color: AppColors.primaryBlue,
@@ -94,7 +76,9 @@ class _LampiranSectionState extends State<LampiranSection> {
           content: Text('Lampiran $label sudah ditambahkan'),
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -115,18 +99,25 @@ class _LampiranSectionState extends State<LampiranSection> {
 
   void _updateNotifier() {
     if (widget.lampiranNamesNotifier != null) {
-      widget.lampiranNamesNotifier!.value = _addedItems.map((e) => e.nama).toList();
+      widget.lampiranNamesNotifier!.value = _addedItems
+          .map((e) => e.nama)
+          .toList();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      _ButtonData(icon: Icons.add_to_drive, label: 'Drive', color: const Color(0xFF4285F4)),
-      _ButtonData(icon: Icons.smart_display_outlined, label: 'YouTube', color: const Color(0xFFFF0000)),
-      _ButtonData(icon: Icons.add_circle_outline, label: 'Buat', color: AppColors.textSecondary),
-      _ButtonData(icon: Icons.upload_outlined, label: 'Upload', color: AppColors.primaryBlue),
-      _ButtonData(icon: Icons.link, label: 'Link', color: const Color(0xFF10B981)),
+      _ButtonData(
+        icon: Icons.upload_outlined,
+        label: 'Upload',
+        color: AppColors.primaryBlue,
+      ),
+      _ButtonData(
+        icon: Icons.link,
+        label: 'Link',
+        color: const Color(0xFF10B981),
+      ),
     ];
 
     return Container(
@@ -149,7 +140,11 @@ class _LampiranSectionState extends State<LampiranSection> {
           // Header
           Row(
             children: [
-              const Icon(Icons.attach_file, color: AppColors.primaryBlue, size: 18),
+              const Icon(
+                Icons.attach_file,
+                color: AppColors.primaryBlue,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Lampirkan',
@@ -162,7 +157,10 @@ class _LampiranSectionState extends State<LampiranSection> {
               if (_addedItems.isNotEmpty) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primaryBlue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -184,12 +182,16 @@ class _LampiranSectionState extends State<LampiranSection> {
           // Tombol-tombol lampiran
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: buttons.map((b) => _LampiranButton(
-              icon: b.icon,
-              label: b.label,
-              color: b.color,
-              onTap: () => _tambahLampiran(b.label),
-            )).toList(),
+            children: buttons
+                .map(
+                  (b) => _LampiranButton(
+                    icon: b.icon,
+                    label: b.label,
+                    color: b.color,
+                    onTap: () => _tambahLampiran(b.label),
+                  ),
+                )
+                .toList(),
           ),
 
           // Daftar lampiran yang sudah ditambahkan
@@ -206,10 +208,12 @@ class _LampiranSectionState extends State<LampiranSection> {
               ),
             ),
             const SizedBox(height: 8),
-            ...(_addedItems.map((item) => _LampiranItem(
-              item: item,
-              onHapus: () => _hapusLampiran(item),
-            ))),
+            ...(_addedItems.map(
+              (item) => _LampiranItem(
+                item: item,
+                onHapus: () => _hapusLampiran(item),
+              ),
+            )),
           ],
         ],
       ),
@@ -221,7 +225,11 @@ class _ButtonData {
   final IconData icon;
   final String label;
   final Color color;
-  const _ButtonData({required this.icon, required this.label, required this.color});
+  const _ButtonData({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 }
 
 class _LampiranButton extends StatelessWidget {
@@ -231,6 +239,7 @@ class _LampiranButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const _LampiranButton({
+    super.key,
     required this.icon,
     required this.label,
     required this.color,
@@ -239,28 +248,39 @@ class _LampiranButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              height: 90,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: color.withOpacity(0.25)),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, color: color, size: 26),
+                  const SizedBox(height: 8),
+                  Text(
+                    label,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -314,7 +334,11 @@ class _LampiranItem extends StatelessWidget {
           const SizedBox(width: 8),
           GestureDetector(
             onTap: onHapus,
-            child: Icon(Icons.close_rounded, size: 18, color: AppColors.textSecondary),
+            child: Icon(
+              Icons.close_rounded,
+              size: 18,
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),

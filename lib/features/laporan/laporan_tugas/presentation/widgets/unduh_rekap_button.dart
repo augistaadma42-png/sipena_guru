@@ -13,8 +13,7 @@ class UnduhRekapButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: AppColors.secondaryOrange,
           borderRadius: BorderRadius.circular(12),
@@ -29,14 +28,10 @@ class UnduhRekapButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.download_rounded,
-              color: Colors.white,
-              size: 14,
-            ),
+            const Icon(Icons.download_rounded, color: Colors.white, size: 14),
             const SizedBox(width: 6),
             Text(
-              'Unduh Rekap',
+              'Unduh',
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
