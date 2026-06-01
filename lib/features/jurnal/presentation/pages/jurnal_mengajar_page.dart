@@ -78,8 +78,25 @@ class _JurnalMengajarPageContentState
     );
   }
 
-  Future<void> _cancelEdit() async {
-    final shouldCancel = await showConfirmationDialog(
+  /// Dipanggil setelah jurnal berhasil disimpan (tanpa dialog konfirmasi batal).
+  void _handleSaveSuccess() {
+    setState(() {
+      _editingJurnalMap = null;
+    });
+    if (_editFromRekap) {
+      _editFromRekap = false;
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RekapJurnalPage(),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _cancelEdit() async {    final shouldCancel = await showConfirmationDialog(
       context: context,
       title: 'Batalkan Perubahan?',
       message: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
@@ -184,6 +201,7 @@ class _JurnalMengajarPageContentState
                     key: _formKey,
                     initialData: _editingJurnalMap ?? _autoFillData,
                     onCancelEdit: _cancelEdit,
+                    onSaveSuccess: _handleSaveSuccess,
                     isEditMode: _editingJurnalMap != null,
                   ),
                   const SizedBox(height: 20),

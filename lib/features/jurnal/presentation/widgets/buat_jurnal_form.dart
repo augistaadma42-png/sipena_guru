@@ -7,12 +7,14 @@ import '../../../../core/widgets/confirmation_dialog.dart';
 class BuatJurnalForm extends StatefulWidget {
   final Map<String, String>? initialData;
   final VoidCallback? onCancelEdit;
+  final VoidCallback? onSaveSuccess;
   final bool isEditMode;
 
   const BuatJurnalForm({
     Key? key,
     this.initialData,
     this.onCancelEdit,
+    this.onSaveSuccess,
     this.isEditMode = false,
   }) : super(key: key);
 
@@ -480,7 +482,9 @@ class BuatJurnalFormState extends State<BuatJurnalForm> {
 
     _clearForm();
 
-    if (widget.onCancelEdit != null && widget.initialData != null) {
+    if (widget.onSaveSuccess != null) {
+      widget.onSaveSuccess!();
+    } else if (widget.onCancelEdit != null && widget.initialData != null) {
       widget.onCancelEdit!();
     }
   }
@@ -616,7 +620,7 @@ class BuatJurnalFormState extends State<BuatJurnalForm> {
             child: quill.QuillSimpleToolbar(
               controller: _quillController,
               config: const quill.QuillSimpleToolbarConfig(
-                multiRowsDisplay: false,
+                multiRowsDisplay: true,
                 showFontFamily: false,
                 showFontSize: false,
                 showColorButton: false,
